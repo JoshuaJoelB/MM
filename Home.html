@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Match Monster · Home</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Font: Irish Grover -->
+  <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet" />
+  <!-- Google Font: Keania One (for navbar brand) -->
+  <link href="https://fonts.googleapis.com/css2?family=Keania+One&display=swap" rel="stylesheet" />
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HOME PAGE                                                  -->
+  <div id="homePage" class="page active-page">
+    <div class="home-bg">
+      <div class="home-overlay">
+
+        <!-- NAVBAR – Bootstrap with glassmorphism                    -->
+        <nav class="navbar navbar-expand-sm navbar-custom w-100">
+          <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand" href="#">
+              <i class="fas fa-dragon"></i>
+              <span>Match Monster</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+              <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <li class="nav-item">
+                  <button class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#inboxModal" title="Inbox">
+                    <i class="fas fa-inbox"></i>
+                    <span class="badge bg-danger badge-notif">3</span>
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Settings">
+                    <i class="fas fa-cog"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <!-- LOBBY / HOMEPAGE                                        -->
+        <div id="homeLobby" class="home-lobby">
+
+          <!-- Hero Title -->
+          <div class="home-title-content text-center">
+            <div class="home-character-wrapper">
+              <span class="home-character">👾</span>
+            </div>
+            <h1 class="home-main-title">Match</h1>
+            <h2 class="home-sub-title">Monsters</h2>
+            <p class="home-tagline">FLIP · MATCH · EARN</p>
+          </div>
+
+          <!-- Stats Dashboard -->
+          <div class="container stats-container">
+            <div class="row g-3 justify-content-center">
+              <div class="col-6 col-sm-3">
+                <div class="stat-card">
+                  <i class="fas fa-trophy stat-icon"></i>
+                  <div class="stat-number" id="gamesPlayed">0</div>
+                  <div class="stat-label">Games Played</div>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <div class="stat-card">
+                  <i class="fas fa-clock stat-icon"></i>
+                  <div class="stat-number" id="bestTime">--</div>
+                  <div class="stat-label">Best Time</div>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <div class="stat-card">
+                  <i class="fas fa-check-double stat-icon"></i>
+                  <div class="stat-number" id="totalMatches">0</div>
+                  <div class="stat-label">Total Matches</div>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <div class="stat-card">
+                  <i class="fas fa-star stat-icon"></i>
+                  <div class="stat-number" id="rewardsCount">0</div>
+                  <div class="stat-label">Rewards</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Start Button -->
+          <button class="btn btn-start-game mt-4" id="homeStartBtn">
+            <i class="fas fa-play me-2"></i> Start
+          </button>
+        </div>
+
+        <!-- GAME BOARD (hidden initially)                           -->
+        <div id="homeGameScreen" class="home-game-screen" style="display: none;">
+          <div class="game-header">
+            <div class="game-title-sm">
+              <i class="fas fa-dragon"></i> Match Monster
+            </div>
+            <div class="game-stats">
+              <div class="stat-item">
+                <i class="fas fa-exchange-alt"></i>
+                Moves: <span class="stat-value" id="moveCount">0</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-check-circle"></i>
+                Matches: <span class="stat-value" id="matchCount">0</span>
+                <span style="color: rgba(196,181,253,0.3);">/ 8</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                <span class="stat-value" id="timerDisplay">0s</span>
+              </div>
+              <button class="btn-back-home" id="btnQuitGame">
+                <i class="fas fa-home me-1"></i> Quit
+              </button>
+            </div>
+          </div>
+          <div class="card-grid" id="cardGrid">
+            <!-- cards rendered by JS -->
+          </div>
+        </div>
+
+        <!-- WIN OVERLAY                                             -->
+        <div id="winOverlay">
+          <div class="win-box">
+            <div class="win-icon">🏆</div>
+            <h2>You matched them all!</h2>
+            <p>Monsters are impressed by your memory!</p>
+            <div class="win-stats">
+              <div>
+                <div class="num" id="winMoves">0</div>
+                <div class="label">Moves</div>
+              </div>
+              <div>
+                <div class="num" id="winTime">0s</div>
+                <div class="label">Time</div>
+              </div>
+              <div>
+                <div class="num">⭐</div>
+                <div class="label">Reward</div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+              <button class="btn-win-play" id="btnWinReplay">
+                <i class="fas fa-redo me-2"></i> Play Again
+              </button>
+              <button class="btn-win-home" id="btnWinHome">
+                <i class="fas fa-home me-2"></i> Home
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /home-overlay -->
+    </div> <!-- /home-bg -->
+  </div> <!-- /homePage -->
+
+
+  <!-- INBOX MODAL                                                -->
+  <div class="modal fade" id="inboxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-inbox me-2"></i>Inbox</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group inbox-list">
+            <li class="list-group-item">
+              <i class="fas fa-star text-warning me-2"></i>
+              <span><strong>Welcome!</strong> Start your monster matching adventure!</span>
+            </li>
+            <li class="list-group-item">
+              <i class="fas fa-coins text-warning me-2"></i>
+              <span><strong>Reward!</strong> You earned 50 coins for your first match.</span>
+            </li>
+            <li class="list-group-item">
+              <i class="fas fa-unlock text-warning me-2"></i>
+              <span><strong>New Monster!</strong> You unlocked the <strong>Dragon</strong> skin.</span>
+            </li>
+            <li class="list-group-item">
+              <i class="fas fa-gem text-warning me-2"></i>
+              <span><strong>Daily Bonus</strong> Log in tomorrow for a free reward.</span>
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL                                             -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-cog me-2"></i>Settings</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body settings-body">
+          <div class="settings-item">
+            <span><i class="fas fa-volume-up me-2"></i>Sound Effects</span>
+            <div class="form-check form-switch">
+              <input class="form-check-input settings-toggle" type="checkbox" id="soundToggle" data-key="soundEnabled" checked>
+            </div>
+          </div>
+          <div class="settings-item">
+            <span><i class="fas fa-music me-2"></i>Background Music</span>
+            <div class="form-check form-switch">
+              <input class="form-check-input settings-toggle" type="checkbox" id="musicToggle" data-key="musicEnabled" checked>
+            </div>
+          </div>
+          <div class="settings-item">
+            <span><i class="fas fa-palette me-2"></i>Dark Mode</span>
+            <div class="form-check form-switch">
+              <input class="form-check-input settings-toggle" type="checkbox" id="darkModeToggle" data-key="darkMode">
+            </div>
+          </div>
+          <div class="settings-item">
+            <span><i class="fas fa-dragon me-2"></i>Difficulty</span>
+            <select class="form-select form-select-sm settings-select" id="difficultySelect">
+              <option value="easy">Easy</option>
+              <option value="normal" selected>Normal</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <hr style="border-color: rgba(139,92,246,0.2);">
+          <button class="btn btn-danger btn-sm w-100" id="resetProgressBtn">
+            <i class="fas fa-trash-alt me-2"></i> Reset Progress
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
