@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Match Monster · Subjects</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Keania+One&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style/style.css" />
+</head>
+<body>
+
+  <div id="subjectPage" class="page active-page">
+    <div class="home-bg">
+      <div class="home-overlay subject-overlay">
+
+        <!-- Back to Home -->
+        <a href="Home.html" class="btn btn-back-top">
+          <i class="fas fa-arrow-left me-2"></i> Home
+        </a>
+
+        <div class="subject-content text-center">
+          <h1 class="subject-main-title">Choose Your Subject</h1>
+          <p class="subject-tagline">pick a topic to start matching</p>
+
+          <div class="subject-grid">
+            <!-- Computer Science -->
+            <a href="Level.html?subject=computer" class="subject-card">
+              <div class="subject-icon">💻</div>
+              <h3>Computer Science</h3>
+              <p>Algorithms, Code &amp; Logic</p>
+            </a>
+
+            <!-- Science -->
+            <a href="Level.html?subject=science" class="subject-card">
+              <div class="subject-icon">🔬</div>
+              <h3>Science</h3>
+              <p>Physics, Chemistry &amp; Biology</p>
+            </a>
+
+            <!-- AP -->
+            <a href="Level.html?subject=ap" class="subject-card">
+              <div class="subject-icon">📚</div>
+              <h3>AP</h3>
+              <p>Advanced Placement</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="script/script.js"></script>
+</body>
+</html>
