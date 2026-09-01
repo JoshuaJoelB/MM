@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Match Monster · Levels</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Keania+One&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style/style.css" />
+  <link rel="stylesheet" href="style/Level.css" />
+</head>
+<body>
+
+  <div id="levelPage" class="page active-page">
+    <div class="level-bg">
+      <div class="level-overlay">
+
+        <!-- Back to Subjects -->
+        <a href="Subject.html" class="btn btn-back-top">
+          <i class="fas fa-arrow-left me-2"></i> Subjects
+        </a>
+
+        <div class="level-content text-center">
+          <h1 class="level-main-title">Island Map</h1>
+          <p class="level-tagline" id="subjectDisplay">Select a level to start</p>
+
+          <!-- The Island Map -->
+          <div class="level-map" id="levelMap">
+            <!-- Levels will be injected by JavaScript -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get subject from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const subject = urlParams.get('subject') || 'computer';
+
+      // Display subject name
+      const subjectNames = {
+        computer: 'Computer Science',
+        science: 'Science',
+        ap: 'AP'
+      };
+      document.getElementById('subjectDisplay').textContent = subjectNames[subject] || 'Select a level';
+
+      // Build level map
+      const mapContainer = document.getElementById('levelMap');
+      const totalLevels = 10;
+
+      // Layout: 5 columns, 2 rows (snake pattern)
+      const row1 = [1, 2, 3, 4, 5];
+      const row2 = [10, 9, 8, 7, 6];
+      const allLevels = [...row1, ...row2];
+
+      // Create a wrapper for each row
+      const row1Wrapper = document.createElement('div');
+      row1Wrapper.className = 'map-row';
+      const row2Wrapper = document.createElement('div');
+      row2Wrapper.className = 'map-row';
+
+      allLevels.forEach((level, index) => {
+        const island = document.createElement('div');
+        island.className = 'island-item';
+        if (level === 1) island.classList.add('start-island');
+        if (level === 10) island.classList.add('end-island');
+
+        // ✅ FIXED: path now uses "Gameplay/" folder
+        const link = document.createElement('a');
+        link.href = `Gameplay/Gameplay-${subject}.html?level=${level}`;
+        link.className = 'island-link';
+
+        const number = document.createElement('span');
+        number.className = 'island-number';
+        number.textContent = level;
+
+        const label = document.createElement('span');
+        label.className = 'island-label';
+        label.textContent = `Level ${level}`;
+
+        link.appendChild(number);
+        link.appendChild(label);
+        island.appendChild(link);
+
+        // Add bridge (except after last element in each row)
+        if (index < row1.length - 1 && level < 5) {
+          const bridge = document.createElement('div');
+          bridge.className = 'bridge-horizontal';
+          island.appendChild(bridge);
+        }
+        if (index === row1.length - 1) {
+          // Vertical bridge between row 1 and row 2
+          const bridgeV = document.createElement('div');
+          bridgeV.className = 'bridge-vertical';
+          island.appendChild(bridgeV);
+        }
+        if (index >= row1.length && index < allLevels.length - 1) {
+          const bridge = document.createElement('div');
+          bridge.className = 'bridge-horizontal';
+          island.appendChild(bridge);
+        }
+
+        if (index < row1.length) {
+          row1Wrapper.appendChild(island);
+        } else {
+          row2Wrapper.appendChild(island);
+        }
+      });
+
+      mapContainer.appendChild(row1Wrapper);
+      mapContainer.appendChild(row2Wrapper);
+    });
+  </script>
+</body>
+</html>

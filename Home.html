@@ -3,26 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Match Monster</title>
-  <!-- Bootstrap 5 CSS -->
+  <title>Match Monster · Home</title>
+  <link rel="icon" href="Assets/top_icon.png" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Google Font: Irish Grover -->
   <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet" />
-  <!-- Google Font: Keania One (for navbar brand) -->
   <link href="https://fonts.googleapis.com/css2?family=Keania+One&display=swap" rel="stylesheet" />
-  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon"  href="Assets/top_icon.png">
+  <link rel="stylesheet" href="style/style.css" />
 </head>
 <body>
 
-  <!-- HOME PAGE                                                  -->
   <div id="homePage" class="page active-page">
     <div class="home-bg">
       <div class="home-overlay">
 
-        <!-- NAVBAR – Bootstrap with glassmorphism                    -->
+        <!-- NAVBAR -->
         <nav class="navbar navbar-expand-sm navbar-custom w-100">
           <div class="container-fluid px-3 px-md-4">
             <a class="navbar-brand" href="#">
@@ -50,10 +45,8 @@
           </div>
         </nav>
 
-        <!-- LOBBY / HOMEPAGE                                        -->
+        <!-- LOBBY -->
         <div id="homeLobby" class="home-lobby">
-
-          <!-- Hero Title -->
           <div class="home-title-content text-center">
             <div class="home-character-wrapper">
               <span class="home-character">👾</span>
@@ -63,7 +56,6 @@
             <p class="home-tagline">FLIP · MATCH · EARN</p>
           </div>
 
-          <!-- Stats Dashboard -->
           <div class="container stats-container">
             <div class="row g-3 justify-content-center">
               <div class="col-6 col-sm-3">
@@ -97,13 +89,13 @@
             </div>
           </div>
 
-          <!-- Start Button -->
-          <button class="btn btn-start-game mt-4" id="homeStartBtn">
-            <i class="fas fa-play me-2"></i> Start
-          </button>
+          <!-- ✅ ONLY "Choose Subject" – styled like Start button -->
+          <a href="Subject.html" class="btn btn-start-game mt-3" id="chooseSubjectBtn">
+            <i class="fas fa-book-open me-2"></i> Choose Subject
+          </a>
         </div>
 
-        <!-- GAME BOARD (hidden initially)                           -->
+        <!-- GAME BOARD (hidden initially) -->
         <div id="homeGameScreen" class="home-game-screen" style="display: none;">
           <div class="game-header">
             <div class="game-title-sm">
@@ -133,7 +125,7 @@
           </div>
         </div>
 
-        <!-- WIN OVERLAY                                             -->
+        <!-- WIN OVERLAY -->
         <div id="winOverlay">
           <div class="win-box">
             <div class="win-icon">🏆</div>
@@ -164,12 +156,11 @@
           </div>
         </div>
 
-      </div> <!-- /home-overlay -->
-    </div> <!-- /home-bg -->
-  </div> <!-- /homePage -->
+      </div>
+    </div>
+  </div>
 
-
-  <!-- INBOX MODAL                                                -->
+  <!-- MODALS -->
   <div class="modal fade" id="inboxModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -191,10 +182,6 @@
               <i class="fas fa-unlock text-warning me-2"></i>
               <span><strong>New Monster!</strong> You unlocked the <strong>Dragon</strong> skin.</span>
             </li>
-            <li class="list-group-item">
-              <i class="fas fa-gem text-warning me-2"></i>
-              <span><strong>Daily Bonus</strong> Log in tomorrow for a free reward.</span>
-            </li>
           </ul>
         </div>
         <div class="modal-footer">
@@ -204,7 +191,6 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL                                             -->
   <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -248,8 +234,7 @@
     </div>
   </div>
 
-  <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="script.js"></script>
+  <script src="script/script.js"></script>
 </body>
 </html>
