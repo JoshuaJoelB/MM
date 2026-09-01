@@ -9,8 +9,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const level = parseInt(urlParams.get('level')) || 1;
   const subject = urlParams.get('subject') || 'computer';
 
+  // ---- PROGRESSION: verify level is unlocked ----
+  const storageKey = `matchMonster_unlocked_${subject}`;
+  let unlockedLevels = JSON.parse(localStorage.getItem(storageKey)) || [1];
+  if (!unlockedLevels.includes(level)) {
+    alert('This level is locked! Complete previous levels first.');
+    window.location.href = `../Level.html?subject=${subject}`;
+    return;
+  }
+
   // ---- Calculate cards based on level ----
-  // Level 1: 6 cards (3 pairs), Level 2: 8 cards (4 pairs), ... Level 10: 24 cards (12 pairs)
   const totalCards = 4 + level * 2;
   const pairs = totalCards / 2;
 
@@ -19,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const selectedEmojis = emojiPool.slice(0, pairs);
 
-  // ---- Build deck (double & shuffle) ----
+  // ---- Build deck ----
   let deck = [...selectedEmojis, ...selectedEmojis];
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -38,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const winOverlay = document.getElementById('winOverlay');
   const winMoves = document.getElementById('winMoves');
   const winTime = document.getElementById('winTime');
+  const nextLevelBtn = document.getElementById('btnNextLevel');
 
   // ---- Game state ----
   let flippedCards = [];
@@ -54,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // ---- Render cards ----
   function renderCards() {
     grid.innerHTML = '';
-    // Dynamic columns based on total cards
     let cols = Math.min(6, Math.ceil(Math.sqrt(totalCards)));
     if (totalCards <= 6) cols = 3;
     if (totalCards <= 8) cols = 4;
@@ -160,13 +168,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // ---- Win ----
+  // ---- Win – unlock next level, save completion, update Next button ----
   function showWin() {
     if (winMoves) winMoves.textContent = moves;
     if (winTime) winTime.textContent = seconds + 's';
     if (winOverlay) winOverlay.classList.add('show');
 
-    // Save stats to localStorage
+    // ----- UNLOCK NEXT LEVEL -----
+    const nextLevel = level + 1;
+    if (nextLevel <= 10) {
+      let unlocked = JSON.parse(localStorage.getItem(storageKey)) || [1];
+      if (!unlocked.includes(nextLevel)) {
+        unlocked.push(nextLevel);
+        localStorage.setItem(storageKey, JSON.stringify(unlocked));
+        console.log(`🎉 Unlocked Level ${nextLevel} for ${subject}!`);
+      }
+    }
+
+    // ----- MARK CURRENT LEVEL AS COMPLETED -----
+    const completedKey = `matchMonster_completed_${subject}`;
+    let completed = JSON.parse(localStorage.getItem(completedKey)) || [];
+    if (!completed.includes(level)) {
+      completed.push(level);
+      localStorage.setItem(completedKey, JSON.stringify(completed));
+    }
+
+    // ----- UPDATE NEXT LEVEL BUTTON -----
+    if (nextLevelBtn) {
+      if (nextLevel <= 10) {
+        nextLevelBtn.innerHTML = `<i class="fas fa-arrow-right me-2"></i> Next Level`;
+        nextLevelBtn.onclick = function() {
+          window.location.href = `Gameplay-${subject}.html?level=${nextLevel}`;
+        };
+        nextLevelBtn.style.display = 'inline-block';
+      } else {
+        // All levels completed – change button to "All Done"
+        nextLevelBtn.innerHTML = `<i class="fas fa-trophy me-2"></i> All Done`;
+        nextLevelBtn.onclick = function() {
+          window.location.href = `../Level.html?subject=${subject}`;
+        };
+      }
+    }
+
+    // ----- Save global stats -----
     const stats = {
       gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
       bestTime: localStorage.getItem('bestTime') || null,
@@ -185,26 +229,12 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('rewardsCount', stats.rewards);
   }
 
-  // ---- Replay ----
-  function replayGame() {
-    if (winOverlay) winOverlay.classList.remove('show');
-    deck = shuffle([...selectedEmojis, ...selectedEmojis]);
-    flippedCards = [];
-    matchedPairs = 0;
-    moves = 0;
-    isLocked = false;
-    resetTimer();
-    updateStats();
-    renderCards();
-  }
-
   // ---- Go back to Levels ----
   function goToLevels() {
     window.location.href = `../Level.html?subject=${subject}`;
   }
 
   // ---- Event listeners ----
-  document.getElementById('btnReplay')?.addEventListener('click', replayGame);
   document.getElementById('btnLevels')?.addEventListener('click', goToLevels);
 
   // ---- Keyboard shortcut ----
