@@ -1,24 +1,28 @@
+/* ================================================================
+   SCRIPT.JS – shared logic for all pages
+   ================================================================ */
+
 document.addEventListener('DOMContentLoaded', function () {
 
   const isIndex = document.getElementById('indexPage') !== null;
   const isStart = document.getElementById('startPage') !== null;
   const isHome = document.getElementById('homePage') !== null;
 
-  //  INDEX PAGE
+  // ---- INDEX PAGE (auto-redirect to Start.html) ----
   if (isIndex) {
     setTimeout(function () {
       window.location.href = 'Start.html';
     }, 2000);
   }
 
-  // START PAGE 
+  // ---- START PAGE (button leads to Home.html) ----
   if (isStart) {
     document.getElementById('letsStartBtn').addEventListener('click', function () {
       window.location.href = 'Home.html';
     });
   }
 
-  // HOME PAGE 
+  // ---- HOME PAGE ----
   if (isHome) {
     initSettings();
     initHomePage();
@@ -32,7 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// SETTINGS 
+// --------------------------------------------------------------
+// SETTINGS – load/save from localStorage
+// --------------------------------------------------------------
 function initSettings() {
   // Load saved settings from localStorage
   const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
@@ -54,7 +60,7 @@ function initSettings() {
   // Apply dark mode class
   if (darkMode) document.body.classList.add('dark-mode');
 
-  // Event listeners for settings toggles
+  // ---- Event listeners for settings toggles ----
   document.querySelectorAll('.settings-toggle').forEach(toggle => {
     toggle.addEventListener('change', function () {
       const key = this.dataset.key;
@@ -74,24 +80,50 @@ function initSettings() {
     });
   }
 
-  // Reset Progress button
+  // ---- RESET PROGRESS BUTTON (clears ALL data) ----
   const resetBtn = document.getElementById('resetProgressBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', function () {
-      if (confirm('Reset all progress and stats?')) {
+      if (confirm('⚠️ Reset all progress? This will erase all stats, unlocked levels, and completed levels for all subjects. This cannot be undone!')) {
+        
+        // ----- Clear GLOBAL STATS -----
         localStorage.removeItem('gamesPlayed');
         localStorage.removeItem('bestTime');
         localStorage.removeItem('totalMatches');
         localStorage.removeItem('rewardsCount');
+        
+        // ----- Clear LEVEL PROGRESSION for ALL subjects -----
+        const subjects = ['computer', 'science', 'ap'];
+        subjects.forEach(sub => {
+          localStorage.removeItem(`matchMonster_unlocked_${sub}`);
+          localStorage.removeItem(`matchMonster_completed_${sub}`);
+        });
+        
+        // ----- Reset all UI displays -----
         updateStatsDisplay();
+        
+        // Close the settings modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
         if (modal) modal.hide();
+        
+        // Optional: show a brief confirmation
+        alert('✅ All progress has been reset! Level 1 is now unlocked.');
+        
+        // If on home page, also reset the game board if it's visible
+        const homeLobby = document.getElementById('homeLobby');
+        const homeGameScreen = document.getElementById('homeGameScreen');
+        if (homeLobby) homeLobby.style.display = 'block';
+        if (homeGameScreen) homeGameScreen.style.display = 'none';
+        // Reset any ongoing game state if needed
+        if (window.__quitGame) window.__quitGame();
       }
     });
   }
 }
 
-// STATS 
+// --------------------------------------------------------------
+// STATS – read/write from localStorage
+// --------------------------------------------------------------
 function getStats() {
   return {
     gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
@@ -260,7 +292,6 @@ function initHomePage() {
     if (winTime) winTime.textContent = seconds + 's';
     if (winOverlay) winOverlay.classList.add('show');
 
-    // Update global stats
     const stats = getStats();
     stats.gamesPlayed += 1;
     if (stats.bestTime === null || seconds < stats.bestTime) {
@@ -303,7 +334,7 @@ function initHomePage() {
     updateStatsDisplay();
   }
 
-  // Event listeners
+  // ---- Event listeners ----
   if (startBtn) startBtn.addEventListener('click', initGame);
   if (quitBtn) quitBtn.addEventListener('click', quitGame);
 
@@ -318,7 +349,6 @@ function initHomePage() {
     quitGame();
   });
 
-  // Keyboard shortcut: Escape 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       const homePage = document.getElementById('homePage');
@@ -332,7 +362,6 @@ function initHomePage() {
     }
   });
 
-  // Responsive grid 
   function adjustGridColumns() {
     if (!grid) return;
     const width = window.innerWidth;
@@ -343,21 +372,19 @@ function initHomePage() {
   }
   window.addEventListener('resize', adjustGridColumns);
 
-  // Pre-build cards 
   cards = buildCardData();
   renderCards();
   updateGameStats();
   resetTimer();
   adjustGridColumns();
 
-  //  Ensure lobby visible, game hidden
   if (lobby) lobby.style.display = 'block';
   if (gameScreen) gameScreen.style.display = 'none';
 
   window.__quitGame = quitGame;
 }
 
-// preload background 
+// ---- preload background ----
 document.addEventListener('DOMContentLoaded', function () {
   const img = new Image();
   img.src = 'Assets/background.png';
