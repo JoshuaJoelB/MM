@@ -60,13 +60,51 @@ document.addEventListener('DOMContentLoaded', function() {
   // ---- Display level ----
   if (levelDisplay) levelDisplay.textContent = level;
 
-  // ---- Render cards ----
+  // ---- Calculate the most balanced grid layout ----
+  function calculateGrid(totalCards) {
+    // Find the factor pair closest to sqrt (most balanced)
+    let bestCols = 1;
+    let bestRows = totalCards;
+    let bestDiff = Math.abs(1 - totalCards);
+    
+    for (let c = 1; c <= Math.ceil(Math.sqrt(totalCards)); c++) {
+      if (totalCards % c === 0) {
+        const r = totalCards / c;
+        const diff = Math.abs(c - r);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestCols = c;
+          bestRows = r;
+        }
+      }
+    }
+    
+    // Ensure columns are the larger dimension for landscape display
+    // (makes better use of screen width on most devices)
+    if (bestCols < bestRows) {
+      [bestCols, bestRows] = [bestRows, bestCols];
+    }
+    
+    // Cap columns at 6 to prevent too many on smaller screens
+    if (bestCols > 6) {
+      bestCols = 6;
+      bestRows = Math.ceil(totalCards / bestCols);
+    }
+    
+    // For Level 1 (6 cards), explicitly use 3 columns × 2 rows
+    if (totalCards === 6) {
+      bestCols = 3;
+      bestRows = 2;
+    }
+    
+    return { cols: bestCols, rows: bestRows };
+  }
+
+    // ---- Render cards (CSS handles responsive columns) ----
   function renderCards() {
     grid.innerHTML = '';
-    let cols = Math.min(6, Math.ceil(Math.sqrt(totalCards)));
-    if (totalCards <= 6) cols = 3;
-    if (totalCards <= 8) cols = 4;
-    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    // The CSS grid with auto-fit + minmax handles all column changes
+    // No need to calculate columns in JavaScript!
 
     deck.forEach((emoji, index) => {
       const div = document.createElement('div');
@@ -76,22 +114,50 @@ document.addEventListener('DOMContentLoaded', function() {
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
+      // ---- BACK FACE ----
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
+      inner.appendChild(back);
 
+      // ---- FRONT FACE (Blue Card) ----
       const front = document.createElement('div');
       front.className = 'card-face card-face-front';
-      front.textContent = emoji;
 
-      inner.appendChild(back);
+      // 1. Card Number (top-left)
+      const number = document.createElement('span');
+      number.className = 'card-number';
+      number.textContent = String(index + 1).padStart(2, '0');
+      front.appendChild(number);
+
+      // 2. Emoji (center)
+      const emojiSpan = document.createElement('span');
+      emojiSpan.className = 'card-emoji';
+      emojiSpan.textContent = emoji;
+      front.appendChild(emojiSpan);
+
+      // 3. Footer (bottom bar)
+      const footer = document.createElement('div');
+      footer.className = 'card-footer';
+
+      const bonus = document.createElement('span');
+      bonus.className = 'card-bonus';
+      bonus.textContent = '⭐ BONUS POINTS';
+      footer.appendChild(bonus);
+
+      const text = document.createElement('span');
+      text.className = 'card-text';
+      text.textContent = 'Lorem ipsum dolor sit amet, consectetur';
+      footer.appendChild(text);
+
+      front.appendChild(footer);
       inner.appendChild(front);
-      div.appendChild(inner);
 
+      // ---- FINALIZE ----
+      div.appendChild(inner);
       div.addEventListener('click', () => onCardClick(index));
       grid.appendChild(div);
     });
   }
-
   // ---- Update stats ----
   function updateStats() {
     if (movesDisplay) movesDisplay.textContent = moves;
@@ -168,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // ---- Win – unlock next level, save completion, update Next button ----
+  // ---- Win – unlock next level, save completion ----
   function showWin() {
     if (winMoves) winMoves.textContent = moves;
     if (winTime) winTime.textContent = seconds + 's';
@@ -202,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         nextLevelBtn.style.display = 'inline-block';
       } else {
-        // All levels completed – change button to "All Done"
         nextLevelBtn.innerHTML = `<i class="fas fa-trophy me-2"></i> All Done`;
         nextLevelBtn.onclick = function() {
           window.location.href = `../Level.html?subject=${subject}`;
