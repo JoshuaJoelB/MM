@@ -1051,6 +1051,8 @@ body {
    GAMEPLAY PAGES
    ================================================================ */
 .gameplay-overlay {
+  flex-direction: column !important;
+  align-items: center !important;
   justify-content: flex-start !important;
   padding: 20px !important;
   overflow-y: auto;
@@ -1082,6 +1084,7 @@ body {
 }
 .gameplay-info {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   font-family: 'Irish Grover', cursive;
   color: rgba(196, 181, 253, 0.6);
@@ -1207,6 +1210,9 @@ body.dark-mode .card-face-front {
   .card-face { font-size: 1.4rem; }
   .game-stats { gap: 6px; }
   .stat-item { font-size: 0.55rem; padding: 2px 10px; }
+  .gameplay-overlay {
+    padding: 12px !important;
+  }
 }
 
 @media (max-width: 768px) {
