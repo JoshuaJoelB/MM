@@ -28,7 +28,9 @@ body {
   display: block;
 }
 
-/* ----- INDEX PAGE ----- */
+/* ================================================================
+   INDEX PAGE
+   ================================================================ */
 #indexPage {
   background-color: #07567F;
   min-height: 100vh;
@@ -39,99 +41,113 @@ body {
 #indexPage.active-page {
   display: flex;
 }
+
 .index-content {
   text-align: center;
   padding: 20px;
 }
-.index-logo {
-  display: block;
+
+/* --- Animated Logo --- */
+.index-logo-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
   margin: 0 auto 20px;
-  border-radius: 20px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.index-logo-img {
+  width: 136px;
+  height: 136px;
+  object-fit: contain;
+  border-radius: 24px;
+  animation: logoPulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 8px 32px rgba(255, 255, 255, 0.35));
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.08);
   padding: 8px;
-  transition: transform 0.3s ease;
 }
-.index-logo:hover {
-  transform: scale(1.04);
+
+.index-logo-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: #fff;
+  border-right-color: rgba(255, 255, 255, 0.4);
+  border-bottom-color: transparent;
+  border-left-color: rgba(255, 255, 255, 0.4);
+  animation: logoSpin 1.4s linear infinite;
+  z-index: 1;
 }
+
+@keyframes logoSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 8px 32px rgba(255, 255, 255, 0.35));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 10px 42px rgba(255, 255, 255, 0.55));
+  }
+}
+
 .index-title {
   font-family: 'Keania One', cursive;
   font-size: 4rem;
   color: #fff;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   letter-spacing: 2px;
   margin-bottom: 0;
 }
+
 .index-sub {
   font-family: 'Irish Grover', cursive;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 1.1rem;
   letter-spacing: 6px;
   text-transform: uppercase;
 }
 
-/* ----- LOADING PAGE ----- */
-.loading-bg {
-  min-height: 100vh;
-  width: 100%;
-  background: url('../Assets/background.png') center center / cover no-repeat;
-  position: relative;
-}
-.loading-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(11,7,16,0.65);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.loading-box {
-  background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 32px;
-  padding: 48px 40px;
-  max-width: 420px;
-  width: 100%;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-}
-.loading-title {
+.index-loading-text {
+  margin-top: 24px;
+  color: rgba(255, 255, 255, 0.55);
   font-family: 'Irish Grover', cursive;
-  color: #f0e9ff;
-  font-size: 2.4rem;
-  letter-spacing: 4px;
-}
-.loading-dots {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 8px;
-}
-.loading-dots span {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fcd34d;
-  animation: dotBounce 1.4s ease-in-out infinite;
-}
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
-  40% { transform: scale(1); opacity: 1; }
-}
-.loading-sub {
-  color: rgba(255,255,255,0.4);
-  font-family: 'Irish Grover', cursive;
-  letter-spacing: 2px;
-  font-size: 0.9rem;
+  letter-spacing: 3px;
+  font-size: 1rem;
+  animation: loadingFade 1.5s ease-in-out infinite;
 }
 
-/* ----- START PAGE ----- */
+@keyframes loadingFade {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .index-logo-wrapper {
+    width: 130px;
+    height: 130px;
+  }
+  .index-logo-img {
+    width: 110px;
+    height: 110px;
+  }
+  .index-title {
+    font-size: 2.6rem;
+  }
+}
+
+/* ================================================================
+   START PAGE
+   ================================================================ */
 .start-bg {
   min-height: 100vh;
   width: 100%;
@@ -470,7 +486,7 @@ body {
 }
 .btn-start-game:active {
   transform: scale(0.96);
-  background: linear-gradient(135deg, #fbbf24, #d97706) !important; /* slightly darker gold, NOT black */
+  background: linear-gradient(135deg, #fbbf24, #d97706) !important;
   color: #1a0e2e !important;
 }
 
@@ -579,9 +595,8 @@ body {
 }
 
 /* ================================================================
-   GAMEPLAY CARD STYLES – Responsive Columns with auto-fit
+   GAMEPLAY CARD STYLES
    ================================================================ */
-
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1099,7 +1114,7 @@ body {
 }
 
 /* ================================================================
-   GAMEPLAY PAGES – Full-width responsive navbar
+   GAMEPLAY PAGES
    ================================================================ */
 .gameplay-overlay {
   position: absolute;
