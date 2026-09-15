@@ -4,67 +4,85 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Match Monster</title>
-  <link rel="icon" href="../Assets/top_icon.png" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Keania+One&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="../style/style.css" />
-  <link rel="icon"  href="Assets/top_icon.png">
+  <link rel="icon" href="../Assets/top_icon.png" />
 </head>
 <body>
 
   <div id="gameplayPage" class="page active-page">
     <div class="home-bg">
-      <div class="home-overlay gameplay-overlay">
+      <div class="gameplay-overlay">
 
-        <div class="gameplay-header w-100">
-          <div class="gameplay-nav">
+        <!-- ========================================================== -->
+        <!-- NAVBAR – full width, sticky, aligned to canvas             -->
+        <!-- ========================================================== -->
+        <header class="gameplay-navbar">
+          <div class="gameplay-navbar-inner">
+            <!-- Left: back button -->
             <a href="../Level.html?subject=computer" class="btn btn-back-top">
               <i class="fas fa-arrow-left me-2"></i> Levels
             </a>
-            <h1 class="gameplay-title">💻 Computer Science</h1>
+
+            <!-- Center: title -->
+            <h1 class="gameplay-title">💻 Computer</h1>
+
+            <!-- Right: stats -->
             <div class="gameplay-info">
-              <span>Level: <strong id="levelDisplay">1</strong></span>
-              <span>Moves: <strong id="movesDisplay">0</strong></span>
-              <span>Time: <strong id="timerDisplay">0s</strong></span>
+              <span class="info-item">
+                Level: <strong id="levelDisplay">1</strong>
+              </span>
+              <span class="info-item">
+                Moves: <strong id="movesDisplay">0</strong>
+              </span>
+              <span class="info-item">
+                Time: <strong id="timerDisplay">0s</strong>
+              </span>
             </div>
           </div>
-        </div>
+        </header>
 
-        <div class="gameplay-board">
+        <!-- ========================================================== -->
+        <!-- GAME BOARD                                                  -->
+        <!-- ========================================================== -->
+        <main class="gameplay-board">
           <div class="card-grid" id="cardGrid"></div>
-        </div>
+        </main>
 
-        <!-- WIN OVERLAY -->
+        <!-- ========================================================== -->
+        <!-- WIN OVERLAY                                                 -->
+        <!-- ========================================================== -->
         <div id="winOverlay" class="win-overlay">
-        <div class="win-box">
+          <div class="win-box">
             <span class="win-icon">🏆</span>
             <h2>Level Complete!</h2>
             <p>You matched all the cards!</p>
             <div class="win-stats">
-            <div>
+              <div>
                 <span class="num" id="winMoves">0</span>
                 <span class="label">Moves</span>
-            </div>
-            <div>
+              </div>
+              <div>
                 <span class="num" id="winTime">0s</span>
                 <span class="label">Time</span>
-            </div>
-            <div>
+              </div>
+              <div>
                 <span class="num">⭐</span>
                 <span class="label">Reward</span>
-            </div>
+              </div>
             </div>
             <div class="win-buttons">
-            <button class="btn-win-home" id="btnLevels">
+              <button class="btn-win-home" id="btnLevels">
                 <i class="fas fa-map me-1"></i> Levels
-            </button>
-            <button class="btn-win-play" id="btnNextLevel">
+              </button>
+              <button class="btn-win-play" id="btnNextLevel">
                 Next Level <i class="fas fa-arrow-right ms-1"></i>
-            </button>
+              </button>
             </div>
-        </div>
+          </div>
         </div>
 
       </div>
