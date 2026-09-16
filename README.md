@@ -8,3 +8,4 @@
 - Web based application
 - Puzzle
 - Educational
+- school project
