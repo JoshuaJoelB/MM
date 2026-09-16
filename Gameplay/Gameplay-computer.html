@@ -18,19 +18,20 @@
       <div class="gameplay-overlay">
 
         <!-- ========================================================== -->
-        <!-- NAVBAR – full width, sticky, aligned to canvas             -->
+        <!-- NAVBAR                                                     -->
         <!-- ========================================================== -->
         <header class="gameplay-navbar">
           <div class="gameplay-navbar-inner">
-            <!-- Left: back button -->
-            <a href="../Level.html?subject=computer" class="btn btn-back-top">
-              <i class="fas fa-arrow-left me-2"></i> Levels
-            </a>
 
-            <!-- Center: title -->
-            <h1 class="gameplay-title">💻 Computer</h1>
+            <!-- LEFT: back button + title -->
+            <div class="gameplay-left">
+              <a href="../Level.html?subject=computer" class="btn btn-back-top">
+                <i class="fas fa-arrow-left me-1"></i> Levels
+              </a>
+              <h1 class="gameplay-title">💻 Computer</h1>
+            </div>
 
-            <!-- Right: stats -->
+            <!-- RIGHT: stats -->
             <div class="gameplay-info">
               <span class="info-item">
                 Level: <strong id="levelDisplay">1</strong>
@@ -42,6 +43,7 @@
                 Time: <strong id="timerDisplay">0s</strong>
               </span>
             </div>
+
           </div>
         </header>
 
