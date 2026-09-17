@@ -1041,6 +1041,40 @@ body {
   margin-bottom: 12px;
 }
 
+.subject-icon-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.35));
+  transition: transform 0.3s ease;
+  
+  /* Remove white: makes it invisible where the image is white */
+  -webkit-mask-image: linear-gradient(#fff, #fff);
+  /* Not a true solution – CSS masks can't detect colors */
+}
+
+.subject-card:hover .subject-icon-img {
+  transform: scale(1.08) translateY(-2px);
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+  .subject-icon-img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .subject-icon-img {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 8px;
+  }
+}
+
 .subject-card h3 {
   font-family: 'Irish Grover', cursive;
   font-size: 1.4rem;
