@@ -1,13 +1,41 @@
-<!-- NAVIGATION BAR -->
+<!-- ============================================================= -->
+<!-- NAVIGATION BAR                                                -->
+<!-- ============================================================= -->
 <nav class="navbar-custom">
   <div class="nav-left">
-    <span class="game-title-nav">Match Monster</span>
+    <!-- Player Level Box (hangs below the navbar) -->
+    <div class="player-level-box">
+      <div class="player-level-top">
+        <div class="player-level-badge">
+          <span class="player-level-label">LVL</span>
+          <span class="player-level-number" id="playerLevelNum">1</span>
+        </div>
+        <div class="player-level-progress-text" id="playerProgressText">0 / 3</div>
+      </div>
+      <div class="player-progress-track">
+        <div class="player-progress-fill" id="playerProgressFill"></div>
+      </div>
+    </div>
   </div>
+
   <div class="nav-right">
+    <!-- Points: Stars -->
+    <div class="point-chip point-chip-star" title="Stars earned from matches">
+      <i class="fas fa-star"></i>
+      <span id="navStars">0</span>
+    </div>
+    <!-- Points: Coins -->
+    <div class="point-chip point-chip-coin" title="Coins earned from games">
+      <i class="fas fa-coins"></i>
+      <span id="navCoins">0</span>
+    </div>
+
+    <!-- Inbox -->
     <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#inboxModal" aria-label="Inbox">
       <i class="fas fa-inbox"></i>
       <span class="badge-notif">3</span>
     </button>
+    <!-- Settings -->
     <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Settings">
       <i class="fas fa-cog"></i>
     </button>
@@ -15,7 +43,7 @@
 </nav>
 
 <!-- ============================================================= -->
-<!-- INBOX MODAL (footer Close removed – only the X in header)     -->
+<!-- INBOX MODAL                                                   -->
 <!-- ============================================================= -->
 <div class="modal fade" id="inboxModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
