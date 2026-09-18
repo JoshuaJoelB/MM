@@ -72,7 +72,8 @@ body::before {
 }
 
 /* ================================================================
-   CLOUD CONTAINER (populated by JS)
+   /* ================================================================
+   CLOUD STYLES – GPU-accelerated, no filters
    ================================================================ */
 #cloudLayer {
   position: fixed;
@@ -80,33 +81,35 @@ body::before {
   pointer-events: none;
   overflow: hidden;
   z-index: 1;
+  contain: strict;              /* isolate layout + paint */
 }
 
 .cloud {
   position: absolute;
-  will-change: transform;
-  opacity: 0;
-  user-select: none;
+  top: 0;
+  left: 0;
+  transform: translate3d(var(--start-x, 0px), var(--start-y, 0px), 0);
+  backface-visibility: hidden;
   pointer-events: none;
-  image-rendering: -webkit-optimize-contrast;
-  filter: drop-shadow(0 4px 20px rgba(220, 115, 191, 0.15));
+  user-select: none;
+  /* No filters, no box-shadow – pure image + transform */
 }
 
-/* Animation triggered once cloud is placed */
 .cloud.drifting {
-  opacity: 1;
+  will-change: transform;
   animation-name: cloudFloat;
   animation-timing-function: linear;
-  animation-iteration-count: 1;
   animation-fill-mode: forwards;
+  animation-iteration-count: 1;
 }
 
 @keyframes cloudFloat {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(var(--drift-x), var(--drift-y), 0);
+  to {
+    transform: translate3d(
+      calc(var(--start-x, 0px) + var(--dx, 0px)),
+      calc(var(--start-y, 0px) + var(--dy, 0px)),
+      0
+    );
   }
 }
 

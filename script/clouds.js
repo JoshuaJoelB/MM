@@ -1,292 +1,253 @@
 /* ================================================================
-   CLOUDS.JS – Persistent clouds across pages (no reset on nav)
+   CLOUDS.JS – GPU-accelerated, filter-free, lightweight
    ================================================================ */
 
 (function () {
   'use strict';
 
-  // ---- Cloud images ----
-  const FRONT_CLOUDS = [
-    'Assets/cloud/cloud1.png',
-    'Assets/cloud/cloud2.png'
-  ];
-  const BACK_CLOUDS = [
-    'Assets/cloud/cloudpink.png'
+  // ---- Image sources ----
+  const CLOUD_SRCS = [
+    'Assets/cloud/cloud1.png',   // front
+    'Assets/cloud/cloud2.png',   // front
+    'Assets/cloud/cloudpink.png' // back
   ];
 
-  // ---- Size tiers ----
-  const SIZE_TIERS = [
-    { minSize: 120, maxSize: 200, minDur: 24, maxDur: 40, minOpac: 0.35, maxOpac: 0.55, blur: 1.4, weight: 3 },
-    { minSize: 200, maxSize: 300, minDur: 36, maxDur: 60, minOpac: 0.5,  maxOpac: 0.7,  blur: 0.8, weight: 4 },
-    { minSize: 300, maxSize: 460, minDur: 50, maxDur: 80, minOpac: 0.65, maxOpac: 0.85, blur: 0.4, weight: 4 },
-    { minSize: 460, maxSize: 640, minDur: 65, maxDur: 100, minOpac: 0.8, maxOpac: 0.95, blur: 0.2, weight: 3 },
-    { minSize: 640, maxSize: 900, minDur: 85, maxDur: 140, minOpac: 0.9, maxOpac: 1.0,  blur: 0,   weight: 2 }
-  ];
+  const inSubfolder = window.location.pathname.includes('/Gameplay/');
+  const resolveSrc = (p) => (inSubfolder ? '../' + p : p);
+  const RESOLVED = CLOUD_SRCS.map(resolveSrc);
 
+  // ---- Config ----
   const CONFIG = {
-    maxClouds: 22,
-    spawnInterval: 1400,
-    minStartY: 35,          // % – no clouds above this
-    maxStartY: 90,          // % – down to bottom
-    bottomBias: 0.55,       // < 1 pushes clouds to bottom
-    verticalDriftMax: 40,
-    stateKey: 'matchMonster_clouds_v1'  // sessionStorage key
+    maxClouds: 10,           // was 22 – fewer clouds = smoother
+    spawnInterval: 2600,     // was 1400 – less DOM churn
+    minStartY: 38,           // % – no clouds above this
+    maxStartY: 88,           // % – down to bottom
+    bottomBias: 0.55,        // < 1 pushes clouds toward the bottom
+
+    // [minSize, maxSize, minDur, maxDur, minOpac, maxOpac, weight]
+    tiers: [
+      { min: 130, max: 220, minDur: 30, maxDur: 50,  minOpac: 0.40, maxOpac: 0.60, weight: 3 },
+      { min: 220, max: 380, minDur: 48, maxDur: 75,  minOpac: 0.55, maxOpac: 0.75, weight: 4 },
+      { min: 380, max: 600, minDur: 75, maxDur: 105, minOpac: 0.70, maxOpac: 0.90, weight: 3 },
+      { min: 600, max: 820, minDur: 100, maxDur: 150, minOpac: 0.85, maxOpac: 1.00, weight: 1 }
+    ]
   };
 
-  // ---- Cloud layer ----
-  let cloudLayer = document.getElementById('cloudLayer');
-  if (!cloudLayer) {
-    cloudLayer = document.createElement('div');
-    cloudLayer.id = 'cloudLayer';
-    document.body.appendChild(cloudLayer);
+  // ---- Layer ----
+  let layer = document.getElementById('cloudLayer');
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.id = 'cloudLayer';
+    document.body.appendChild(layer);
   }
-
-  // ---- Detect if we're in a subfolder ----
-  const inSubfolder = window.location.pathname.includes('/Gameplay/');
-  function resolveSrc(relPath) {
-    return inSubfolder ? '../' + relPath : relPath;
-  }
-
-  // ---- Active cloud tracker ----
-  const activeClouds = [];
 
   // ---- Helpers ----
-  const rand = (min, max) => Math.random() * (max - min) + min;
-  const randInt = (min, max) => Math.floor(rand(min, max + 1));
-  const pick = (arr) => arr[randInt(0, arr.length - 1)];
+  const rand = (a, b) => Math.random() * (b - a) + a;
+  const randInt = (a, b) => Math.floor(rand(a, b + 1));
+
+  function pickTier() {
+    const total = CONFIG.tiers.reduce((s, t) => s + t.weight, 0);
+    let r = Math.random() * total;
+    for (const t of CONFIG.tiers) {
+      r -= t.weight;
+      if (r <= 0) return t;
+    }
+    return CONFIG.tiers[CONFIG.tiers.length - 1];
+  }
 
   function biasedY() {
     const r = Math.pow(Math.random(), CONFIG.bottomBias);
     return CONFIG.minStartY + (CONFIG.maxStartY - CONFIG.minStartY) * r;
   }
 
-  function pickTier() {
-    const total = SIZE_TIERS.reduce((s, t) => s + t.weight, 0);
-    let roll = Math.random() * total;
-    for (const tier of SIZE_TIERS) {
-      roll -= tier.weight;
-      if (roll <= 0) return tier;
-    }
-    return SIZE_TIERS[SIZE_TIERS.length - 1];
-  }
+  const active = [];
 
-  // ---- Build a cloud and start it ----
-  function buildCloud(goRight, imageList, zIndex) {
-    const tier = pickTier();
-    const size = randInt(tier.minSize, tier.maxSize);
-    const duration = rand(tier.minDur, tier.maxDur);
-    const opacity = rand(tier.minOpac, tier.maxOpac);
+  // ---- Create one cloud ----
+  function createCloud(goRight, srcIdx, zIndex) {
+    const tier  = pickTier();
+    const size  = randInt(tier.min, tier.max);
+    const dur   = rand(tier.minDur, tier.maxDur);
+    const opac  = rand(tier.minOpac, tier.maxOpac);
 
+    const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const startX = goRight ? -size - 60 : window.innerWidth + 60;
-    const startTopPx = (biasedY() / 100) * vh;
 
-    const driftX = goRight
-      ? window.innerWidth + size + 120
-      : -(window.innerWidth + size + 120);
-    const driftY = rand(-CONFIG.verticalDriftMax, CONFIG.verticalDriftMax);
-
-    const blurFilter = tier.blur > 0
-      ? `blur(${tier.blur}px) drop-shadow(0 4px 20px rgba(220, 115, 191, 0.15))`
-      : 'drop-shadow(0 6px 24px rgba(220, 115, 191, 0.2))';
+    const startX = goRight ? -size - 60 : vw + 60;
+    const startY = (biasedY() / 100) * vh;
+    const dx     = goRight ? (vw + size + 120) : -(vw + size + 120);
+    const dy     = rand(-30, 30);
 
     const img = document.createElement('img');
-    img.src = resolveSrc(pick(imageList));
+    img.src = RESOLVED[srcIdx];
     img.alt = '';
     img.className = 'cloud';
     img.draggable = false;
+    img.decoding = 'async';
+
+    // Inline style – no filters, no left/top, pure transform
     img.style.width = size + 'px';
     img.style.height = 'auto';
-    img.style.left = startX + 'px';
-    img.style.top = startTopPx + 'px';
+    img.style.opacity = opac;
     img.style.zIndex = zIndex;
-    img.style.opacity = opacity;
-    img.style.filter = blurFilter;
-    img.style.setProperty('--drift-x', driftX + 'px');
-    img.style.setProperty('--drift-y', driftY + 'px');
-    img.style.animationDuration = duration + 's';
+    img.style.animationDuration = dur + 's';
+    img.style.setProperty('--start-x', startX + 'px');
+    img.style.setProperty('--start-y', startY + 'px');
+    img.style.setProperty('--dx', dx + 'px');
+    img.style.setProperty('--dy', dy + 'px');
 
-    cloudLayer.appendChild(img);
+    layer.appendChild(img);
 
-    // Track for persistence
-    activeClouds.push({
-      el: img,
-      src: img.src,              // absolute URL after assignment
-      size,
-      startLeft: startX,
-      startTopPx,
-      driftX,
-      driftY,
-      duration,
-      startedAt: Date.now(),
-      opacity,
-      zIndex,
-      blurFilter,
-      finished: false
-    });
-
+    // Kick off animation on next frame
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        img.classList.add('drifting');
-      });
+      requestAnimationFrame(() => img.classList.add('drifting'));
     });
 
-    const finish = () => {
-      img.remove();
-      const found = activeClouds.find(c => c.el === img);
-      if (found) found.finished = true;
+    const entry = {
+      el: img,
+      startTime: performance.now(),
+      duration: dur * 1000,
+      startX, startY, dx, dy,
+      opacity: opac, srcIdx, size, zIndex,
+      removed: false
     };
-    img.addEventListener('animationend', finish, { once: true });
-    setTimeout(finish, duration * 1000 + 800);
+    active.push(entry);
+
+    // Self-cleanup
+    const t = setTimeout(() => removeEntry(entry), dur * 1000 + 500);
+    entry.timer = t;
   }
 
-  // ---- Spawn a pair (pink on back layer, blue/purple on front) ----
+  function removeEntry(entry) {
+    if (!entry || entry.removed) return;
+    entry.removed = true;
+    if (entry.timer) clearTimeout(entry.timer);
+    if (entry.el.parentNode) entry.el.parentNode.removeChild(entry.el);
+    const i = active.indexOf(entry);
+    if (i >= 0) active.splice(i, 1);
+  }
+
+  // ---- Spawn a pair ----
   function spawnPair() {
-    if (activeClouds.filter(c => !c.finished).length >= CONFIG.maxClouds - 1) return;
+    let alive = 0;
+    for (let i = 0; i < active.length; i++) if (!active[i].removed) alive++;
+    if (alive >= CONFIG.maxClouds) return;
 
-    buildCloud(true,  BACK_CLOUDS,  0);
-    buildCloud(false, BACK_CLOUDS,  0);
-    buildCloud(true,  FRONT_CLOUDS, 2);
-    buildCloud(false, FRONT_CLOUDS, 2);
+    // Pink back layer
+    createCloud(true,  2, 0);
+    createCloud(false, 2, 0);
+    // Blue/purple front layer
+    const frontA = Math.random() < 0.5 ? 0 : 1;
+    const frontB = Math.random() < 0.5 ? 0 : 1;
+    createCloud(true,  frontA, 2);
+    createCloud(false, frontB, 2);
+  }
+
+  function seedSky() {
+    for (let i = 0; i < 3; i++) spawnPair();
   }
 
   // ================================================================
-  //  PERSISTENCE – save & restore cloud state across page loads
+  //  State save / restore (only on page leave)
   // ================================================================
-
   function saveState() {
-    const now = Date.now();
-    const vh = window.innerHeight || 1;
+    const now = performance.now();
     const state = [];
-
-    for (const c of activeClouds) {
-      if (c.finished) continue;
-
-      const elapsed = (now - c.startedAt) / 1000;
-      const progress = Math.min(elapsed / c.duration, 1);
-      if (progress >= 1) continue;
-
-      // Current on-screen position
-      const currentLeft = c.startLeft + c.driftX * progress;
-      const currentTopPx = c.startTopPx + c.driftY * progress;
-
-      // Remaining values for the next page to continue from
+    for (const c of active) {
+      if (c.removed) continue;
+      const prog = Math.min((now - c.startTime) / c.duration, 1);
+      if (prog >= 0.98) continue;
       state.push({
-        src: c.src,
-        size: c.size,
-        currentLeft,
-        currentTopPx,
-        remainingDriftX: c.driftX * (1 - progress),
-        remainingDriftY: c.driftY * (1 - progress),
-        remainingDuration: c.duration * (1 - progress),
-        opacity: c.opacity,
-        zIndex: c.zIndex,
-        blurFilter: c.blurFilter
+        i: c.srcIdx,
+        s: c.size,
+        x: c.startX, y: c.startY,
+        dx: c.dx, dy: c.dy,
+        p: prog,
+        d: c.duration,
+        o: c.opacity,
+        z: c.zIndex
       });
     }
-
     try {
-      sessionStorage.setItem(CONFIG.stateKey, JSON.stringify(state));
-    } catch (e) { /* ignore quota errors */ }
+      sessionStorage.setItem('mm_clouds', JSON.stringify(state));
+    } catch (e) {}
   }
 
   function restoreState() {
     let state = [];
     try {
-      const raw = sessionStorage.getItem(CONFIG.stateKey);
+      const raw = sessionStorage.getItem('mm_clouds');
       if (raw) state = JSON.parse(raw);
-    } catch (e) { state = []; }
+    } catch (e) {}
 
     for (const s of state) {
-      if (!s.remainingDuration || s.remainingDuration <= 0.5) continue;
+      const remainMs = s.d * (1 - s.p);
+      if (remainMs < 500) continue;
+
+      const curX = s.x + s.dx * s.p;
+      const curY = s.y + s.dy * s.p;
 
       const img = document.createElement('img');
-      img.src = s.src;
+      img.src = RESOLVED[s.i];
       img.alt = '';
       img.className = 'cloud';
       img.draggable = false;
-      img.style.width = s.size + 'px';
+      img.decoding = 'async';
+      img.style.width = s.s + 'px';
       img.style.height = 'auto';
-      img.style.left = s.currentLeft + 'px';
-      img.style.top = s.currentTopPx + 'px';
-      img.style.zIndex = s.zIndex;
-      img.style.opacity = s.opacity;
-      img.style.filter = s.blurFilter || '';
-      img.style.setProperty('--drift-x', s.remainingDriftX + 'px');
-      img.style.setProperty('--drift-y', s.remainingDriftY + 'px');
-      img.style.animationDuration = s.remainingDuration + 's';
+      img.style.opacity = s.o;
+      img.style.zIndex = s.z;
+      img.style.animationDuration = (remainMs / 1000) + 's';
+      img.style.setProperty('--start-x', curX + 'px');
+      img.style.setProperty('--start-y', curY + 'px');
+      img.style.setProperty('--dx', (s.dx * (1 - s.p)) + 'px');
+      img.style.setProperty('--dy', (s.dy * (1 - s.p)) + 'px');
 
-      cloudLayer.appendChild(img);
-
-      activeClouds.push({
-        el: img,
-        src: s.src,
-        size: s.size,
-        startLeft: s.currentLeft,
-        startTopPx: s.currentTopPx,
-        driftX: s.remainingDriftX,
-        driftY: s.remainingDriftY,
-        duration: s.remainingDuration,
-        startedAt: Date.now(),
-        opacity: s.opacity,
-        zIndex: s.zIndex,
-        blurFilter: s.blurFilter,
-        finished: false
-      });
-
+      layer.appendChild(img);
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          img.classList.add('drifting');
-        });
+        requestAnimationFrame(() => img.classList.add('drifting'));
       });
 
-      const finish = () => {
-        img.remove();
-        const found = activeClouds.find(c => c.el === img);
-        if (found) found.finished = true;
+      const entry = {
+        el: img,
+        startTime: performance.now(),
+        duration: remainMs,
+        startX: curX, startY: curY,
+        dx: s.dx * (1 - s.p),
+        dy: s.dy * (1 - s.p),
+        opacity: s.o, srcIdx: s.i, size: s.s, zIndex: s.z,
+        removed: false
       };
-      img.addEventListener('animationend', finish, { once: true });
-      setTimeout(finish, s.remainingDuration * 1000 + 800);
+      const t = setTimeout(() => removeEntry(entry), remainMs + 500);
+      entry.timer = t;
+      active.push(entry);
     }
   }
 
   // ================================================================
-  //  BOOT
+  //  Boot
   // ================================================================
-
-  function seedSky() {
-    // Fill sky immediately if there aren't enough clouds from restore
-    const alive = activeClouds.filter(c => !c.finished).length;
-    if (alive < 8) {
-      const pairsToAdd = Math.ceil((8 - alive) / 4);
-      for (let i = 0; i < pairsToAdd; i++) spawnPair();
-    }
-  }
-
   function start() {
-    // 1. Restore from previous page (if any)
     restoreState();
-
-    // 2. Fill any gap so the sky isn't empty
     seedSky();
-
-    // 3. Continuous spawning
     setInterval(spawnPair, CONFIG.spawnInterval);
 
-    // 4. Save state frequently so navigation always has fresh data
-    setInterval(saveState, 400);
-
-    // 5. Save on page leave (covers all browsers)
-    window.addEventListener('beforeunload', saveState);
+    // Save ONLY when leaving (not every few hundred ms)
     window.addEventListener('pagehide', saveState);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') saveState();
-    });
+    window.addEventListener('beforeunload', saveState);
+  }
+
+  function boot() {
+    // Wait for preloader if available, otherwise start immediately
+    if (window.cloudsReadyPromise) {
+      window.cloudsReadyPromise.then(start);
+    } else {
+      start();
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
+    document.addEventListener('DOMContentLoaded', boot);
   } else {
-    start();
+    boot();
   }
 })();
