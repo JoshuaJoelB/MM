@@ -1,5 +1,6 @@
 /* ================================================================
    SCRIPT.JS – shared logic for all pages
+   Uses event delegation so it works with dynamically-loaded UI
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -27,9 +28,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ---- HOME PAGE ----
   if (isHome) {
-    initSettings();
     initHomePage();
   }
+
+  // ---- SETTINGS: initialize whenever the navbar is loaded ----
+  initSettings();
 
   // fallback: if no active page, set the first one
   if (!document.querySelector('.page.active-page')) {
@@ -40,81 +43,132 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // --------------------------------------------------------------
-// SETTINGS – load/save from localStorage (no dark mode)
+// SETTINGS – uses event delegation (works with dynamic navbar)
 // --------------------------------------------------------------
 function initSettings() {
-  // Load saved settings
-  const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
-  const musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
-  const difficulty   = localStorage.getItem('difficulty') || 'normal';
 
-  // Apply to UI
-  const soundToggle = document.getElementById('soundToggle');
-  const musicToggle = document.getElementById('musicToggle');
-  const diffSelect  = document.getElementById('difficultySelect');
+  // ---- Apply saved settings to UI whenever navbar gets injected ----
+  function applySettingsToUI() {
+    const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+    const musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
+    const difficulty   = localStorage.getItem('difficulty') || 'normal';
 
-  if (soundToggle) soundToggle.checked = soundEnabled;
-  if (musicToggle) musicToggle.checked = musicEnabled;
-  if (diffSelect)  diffSelect.value = difficulty;
+    const soundToggle = document.getElementById('soundToggle');
+    const musicToggle = document.getElementById('musicToggle');
+    const diffSelect  = document.getElementById('difficultySelect');
 
-  // ---- Event listeners for settings toggles ----
-  document.querySelectorAll('.settings-toggle').forEach(toggle => {
-    toggle.addEventListener('change', function () {
-      const key = this.dataset.key;
-      if (!key) return;
-      localStorage.setItem(key, this.checked);
+    if (soundToggle) soundToggle.checked = soundEnabled;
+    if (musicToggle) musicToggle.checked = musicEnabled;
+    if (diffSelect)  diffSelect.value = difficulty;
+  }
+
+  // Apply now (in case navbar is already there)
+  applySettingsToUI();
+
+  // Re-apply whenever the navbar loader finishes
+  window.addEventListener('navbarLoaded', applySettingsToUI);
+
+  // Fallback polling for the first 2 seconds (in case navbarLoaded never fires)
+  let tries = 0;
+  const pollInterval = setInterval(function () {
+    if (document.getElementById('resetProgressBtn') || tries++ > 20) {
+      clearInterval(pollInterval);
+      applySettingsToUI();
+    }
+  }, 100);
+
+  // ==============================================================
+  // EVENT DELEGATION – works for dynamically-injected elements
+  // ==============================================================
+
+  // ---- Click handler (Reset Progress) ----
+  document.addEventListener('click', function (e) {
+
+    // Check if the click was on (or inside) the Reset Progress button
+    const resetBtn = e.target.closest('#resetProgressBtn');
+    if (!resetBtn) return;
+
+    e.preventDefault();
+
+    const ok = confirm(
+      '⚠️ Reset all progress?\n\n' +
+      'This will erase:\n' +
+      '• All stats (games, matches, rewards, best time)\n' +
+      '• All unlocked & completed levels\n' +
+      '• Everything for Computer, Science, and AP\n\n' +
+      'This cannot be undone!'
+    );
+    if (!ok) return;
+
+    // ----- Clear GLOBAL STATS -----
+    localStorage.removeItem('gamesPlayed');
+    localStorage.removeItem('bestTime');
+    localStorage.removeItem('totalMatches');
+    localStorage.removeItem('rewardsCount');
+
+    // ----- Clear LEVEL PROGRESSION for ALL subjects -----
+    ['computer', 'science', 'ap'].forEach(function (sub) {
+      localStorage.removeItem('matchMonster_unlocked_' + sub);
+      localStorage.removeItem('matchMonster_completed_' + sub);
     });
+
+    // ----- Refresh the UI ----
+    if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
+    if (typeof window.updatePlayerStats === 'function') window.updatePlayerStats();
+
+    // Close the settings modal
+    const modalEl = document.getElementById('settingsModal');
+    if (modalEl && window.bootstrap) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+    }
+
+    // Quiet, non-blocking notification
+    const toast = document.createElement('div');
+    toast.textContent = ' Progress reset! Level 1 is unlocked.';
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #ef9886, #dc73bf);
+      color: #2a1a3a;
+      padding: 12px 28px;
+      border-radius: 100px;
+      font-family: 'Irish Grover', cursive;
+      font-size: 1rem;
+      box-shadow: 0 12px 40px rgba(220, 115, 191, 0.5);
+      z-index: 3000;
+      animation: fadeUp 0.4s ease;
+      pointer-events: none;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 2600);
+
+    // If on home page, reset the game board
+    const homeLobby      = document.getElementById('homeLobby');
+    const homeGameScreen = document.getElementById('homeGameScreen');
+    if (homeLobby)      homeLobby.style.display = 'block';
+    if (homeGameScreen) homeGameScreen.style.display = 'none';
+    if (typeof window.__quitGame === 'function') window.__quitGame();
   });
 
-  // Difficulty select
-  const diffSelect2 = document.getElementById('difficultySelect');
-  if (diffSelect2) {
-    diffSelect2.addEventListener('change', function () {
-      localStorage.setItem('difficulty', this.value);
-    });
-  }
+  // ---- Change handler for settings toggles + difficulty select ----
+  document.addEventListener('change', function (e) {
+    const target = e.target;
 
-  // ---- RESET PROGRESS BUTTON (clears ALL data) ----
-  const resetBtn = document.getElementById('resetProgressBtn');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      const ok = confirm('⚠️ Reset all progress? This will erase all stats, unlocked levels, and completed levels for all subjects. This cannot be undone!');
-      if (!ok) return;
+    // Settings toggles (sound / music)
+    if (target.classList && target.classList.contains('settings-toggle')) {
+      const key = target.dataset.key;
+      if (key) localStorage.setItem(key, target.checked);
+      return;
+    }
 
-      // ----- Clear GLOBAL STATS -----
-      localStorage.removeItem('gamesPlayed');
-      localStorage.removeItem('bestTime');
-      localStorage.removeItem('totalMatches');
-      localStorage.removeItem('rewardsCount');
-
-      // ----- Clear LEVEL PROGRESSION for ALL subjects -----
-      const subjects = ['computer', 'science', 'ap'];
-      subjects.forEach(sub => {
-        localStorage.removeItem(`matchMonster_unlocked_${sub}`);
-        localStorage.removeItem(`matchMonster_completed_${sub}`);
-      });
-
-      // ----- Reset UI displays -----
-      updateStatsDisplay();
-
-      // Close the settings modal
-      const modalEl = document.getElementById('settingsModal');
-      if (modalEl && window.bootstrap) {
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
-      }
-
-      alert('✅ All progress has been reset! Level 1 is now unlocked.');
-
-      // If on home page, reset the game board
-      const homeLobby      = document.getElementById('homeLobby');
-      const homeGameScreen = document.getElementById('homeGameScreen');
-      if (homeLobby)      homeLobby.style.display = 'block';
-      if (homeGameScreen) homeGameScreen.style.display = 'none';
-
-      if (window.__quitGame) window.__quitGame();
-    });
-  }
+    // Difficulty select
+    if (target.id === 'difficultySelect') {
+      localStorage.setItem('difficulty', target.value);
+    }
+  });
 }
 
 // --------------------------------------------------------------
@@ -156,7 +210,6 @@ function saveStats(stats) {
 function initHomePage() {
   if (!document.getElementById('homePage')) return;
 
-  // Load stats display
   updateStatsDisplay();
 
   const lobby        = document.getElementById('homeLobby');
