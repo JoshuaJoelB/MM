@@ -1,22 +1,22 @@
-<!-- Navigation Bar -->
+<!-- NAVIGATION BAR -->
 <nav class="navbar-custom">
   <div class="nav-left">
     <span class="game-title-nav">Match Monster</span>
   </div>
   <div class="nav-right">
-    <!-- Inbox Button -->
-    <button class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#inboxModal">
+    <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#inboxModal" aria-label="Inbox">
       <i class="fas fa-inbox"></i>
-      <span class="badge bg-danger badge-notif">3</span>
+      <span class="badge-notif">3</span>
     </button>
-    <!-- Settings Button -->
-    <button class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#settingsModal">
+    <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Settings">
       <i class="fas fa-cog"></i>
     </button>
   </div>
 </nav>
 
-<!-- INBOX MODAL                                                  -->
+<!-- ============================================================= -->
+<!-- INBOX MODAL (footer Close removed – only the X in header)     -->
+<!-- ============================================================= -->
 <div class="modal fade" id="inboxModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -25,33 +25,44 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <ul class="list-group inbox-list">
-          <li class="list-group-item">
-            <i class="fas fa-star text-warning me-2"></i>
-            <span><strong>Welcome!</strong> Start your monster matching adventure!</span>
+        <ul class="inbox-list">
+          <li class="inbox-item">
+            <div class="inbox-icon inbox-icon-star"><i class="fas fa-star"></i></div>
+            <div class="inbox-text">
+              <strong>Welcome!</strong>
+              <span>Start your monster matching adventure!</span>
+            </div>
           </li>
-          <li class="list-group-item">
-            <i class="fas fa-coins text-warning me-2"></i>
-            <span><strong>Reward!</strong> You earned 50 coins for your first match.</span>
+          <li class="inbox-item">
+            <div class="inbox-icon inbox-icon-coin"><i class="fas fa-coins"></i></div>
+            <div class="inbox-text">
+              <strong>Reward!</strong>
+              <span>You earned 50 coins for your first match.</span>
+            </div>
           </li>
-          <li class="list-group-item">
-            <i class="fas fa-unlock text-warning me-2"></i>
-            <span><strong>New Monster!</strong> You unlocked the <strong>Dragon</strong> skin.</span>
+          <li class="inbox-item">
+            <div class="inbox-icon inbox-icon-unlock"><i class="fas fa-unlock"></i></div>
+            <div class="inbox-text">
+              <strong>New Monster!</strong>
+              <span>You unlocked the <em>Dragon</em> skin.</span>
+            </div>
           </li>
-          <li class="list-group-item">
-            <i class="fas fa-gem text-warning me-2"></i>
-            <span><strong>Daily Bonus</strong> Log in tomorrow for a free reward.</span>
+          <li class="inbox-item">
+            <div class="inbox-icon inbox-icon-gem"><i class="fas fa-gem"></i></div>
+            <div class="inbox-text">
+              <strong>Daily Bonus</strong>
+              <span>Log in tomorrow for a free reward.</span>
+            </div>
           </li>
         </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SETTINGS MODAL                                               -->
+<!-- ============================================================= -->
+<!-- SETTINGS MODAL                                                -->
+<!-- ============================================================= -->
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -60,38 +71,28 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body settings-body">
-        <!-- Sound Effects -->
         <div class="settings-item">
           <span><i class="fas fa-volume-up me-2"></i>Sound Effects</span>
           <div class="form-check form-switch">
             <input class="form-check-input settings-toggle" type="checkbox" id="soundToggle" data-key="soundEnabled" checked>
           </div>
         </div>
-        <!-- Background Music -->
         <div class="settings-item">
           <span><i class="fas fa-music me-2"></i>Background Music</span>
           <div class="form-check form-switch">
             <input class="form-check-input settings-toggle" type="checkbox" id="musicToggle" data-key="musicEnabled" checked>
           </div>
         </div>
-        <!-- Dark Mode -->
-        <div class="settings-item">
-          <span><i class="fas fa-palette me-2"></i>Dark Mode</span>
-          <div class="form-check form-switch">
-            <input class="form-check-input settings-toggle" type="checkbox" id="darkModeToggle" data-key="darkMode">
-          </div>
-        </div>
-        <!-- Difficulty -->
         <div class="settings-item">
           <span><i class="fas fa-dragon me-2"></i>Difficulty</span>
-          <select class="form-select form-select-sm settings-select" id="difficultySelect" style="width: auto; background: transparent; color: #fff; border-color: rgba(139,92,246,0.3);">
+          <select class="form-select form-select-sm settings-select" id="difficultySelect">
             <option value="easy">Easy</option>
             <option value="normal" selected>Normal</option>
             <option value="hard">Hard</option>
           </select>
         </div>
-        <hr style="border-color: rgba(139,92,246,0.2);">
-        <button class="btn btn-danger btn-sm w-100" id="resetProgressBtn">
+        <hr class="settings-divider">
+        <button class="btn-reset-progress" id="resetProgressBtn">
           <i class="fas fa-trash-alt me-2"></i> Reset Progress
         </button>
       </div>

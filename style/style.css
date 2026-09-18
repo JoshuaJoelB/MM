@@ -1,5 +1,5 @@
 /* ================================================================
-   STYLE.CSS – complete styles (cloudy sky gradient background)
+   STYLE.CSS – complete styles (cloudy sky + polished modals)
    ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
@@ -40,7 +40,6 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background-image:
-    /* ================ STARS ================ */
     radial-gradient(1.5px 1.5px at 12% 18%, rgba(255, 255, 255, 0.9) 50%, transparent 52%),
     radial-gradient(1px 1px at 32% 8%, rgba(228, 202, 222, 0.8) 50%, transparent 52%),
     radial-gradient(2px 2px at 68% 22%, rgba(255, 255, 255, 0.7) 50%, transparent 52%),
@@ -56,23 +55,17 @@ body::before {
     radial-gradient(1px 1px at 5% 55%, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
     radial-gradient(1.5px 1.5px at 62% 5%, rgba(228, 202, 222, 0.7) 50%, transparent 52%),
     radial-gradient(1px 1px at 48% 88%, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
-
-    /* ================ MOON ================ */
     radial-gradient(circle 22px at 84% 11%, rgba(255, 250, 235, 0.95) 0%, rgba(255, 248, 220, 0.6) 60%, rgba(255, 245, 210, 0.15) 100%, transparent 110%),
     radial-gradient(circle 90px at 84% 11%, rgba(255, 245, 220, 0.18) 0%, rgba(255, 240, 200, 0.08) 50%, transparent 75%),
     radial-gradient(circle 180px at 84% 11%, rgba(255, 240, 210, 0.06) 0%, transparent 70%),
-
-    /* ================ COLOR GLOWS ================ */
     radial-gradient(circle at 15% 25%, rgba(220, 115, 191, 0.32) 0%, transparent 48%),
     radial-gradient(circle at 85% 75%, rgba(101, 165, 217, 0.28) 0%, transparent 48%),
     radial-gradient(circle at 70% 15%, rgba(239, 152, 134, 0.2) 0%, transparent 42%),
     radial-gradient(circle at 25% 85%, rgba(74, 88, 169, 0.32) 0%, transparent 48%);
-
   background-attachment: fixed;
 }
 
 /* ================================================================
-   /* ================================================================
    CLOUD STYLES – GPU-accelerated, no filters
    ================================================================ */
 #cloudLayer {
@@ -81,7 +74,7 @@ body::before {
   pointer-events: none;
   overflow: hidden;
   z-index: 1;
-  contain: strict;              /* isolate layout + paint */
+  contain: strict;
 }
 
 .cloud {
@@ -92,7 +85,6 @@ body::before {
   backface-visibility: hidden;
   pointer-events: none;
   user-select: none;
-  /* No filters, no box-shadow – pure image + transform */
 }
 
 .cloud.drifting {
@@ -330,54 +322,122 @@ body::before {
   overflow-y: auto;
 }
 
+/* ================================================================
+   NAVBAR CONTAINER – holds injected navbar.html
+   ================================================================ */
+#navbarContainer {
+  width: 100%;
+  display: block;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+}
+
+#navbarContainer > .navbar-custom {
+  width: 100%;
+  border-radius: 0;
+  margin: 0;
+}
+
+/* ================================================================
+   NAVBAR (stretches full width, title left / icons right)
+   ================================================================ */
 .navbar-custom {
-  background: rgba(26, 16, 53, 0.4);
+  background: rgba(26, 16, 53, 0.55);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(220, 115, 191, 0.18);
-  padding: 10px 0;
-  position: sticky;
-  top: 0;
-  z-index: 1050;
-  width: 100%;
-  flex-shrink: 0;
-  border-radius: 0 0 24px 24px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+
+  width: 100%;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  position: relative;
+  border-radius: 0;
+  box-sizing: border-box;
 }
 
-.navbar-custom .navbar-brand {
+/* LEFT: title */
+.nav-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.game-title-nav {
   font-family: 'Keania One', cursive;
-  color: #e4cade;
+  color: #f8ecf5;
   font-size: 1.5rem;
   letter-spacing: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* RIGHT: icon buttons */
+.nav-right {
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: opacity 0.3s ease;
+  flex-shrink: 0;
 }
-.navbar-custom .navbar-brand:hover { opacity: 0.85; }
-.navbar-custom .navbar-brand i { color: #dc73bf; font-size: 1.4rem; }
-.navbar-custom .navbar-brand span { color: #f8ecf5; }
 
-.navbar-custom .navbar-toggler {
-  border: 1px solid rgba(220, 115, 191, 0.3);
-  padding: 6px 10px;
-  border-radius: 12px;
+/* Icon buttons */
+.navbar-custom .btn-icon {
+  background: rgba(228, 202, 222, 0.06);
+  border: 1px solid rgba(220, 115, 191, 0.2);
+  color: #e4cade;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
+  position: relative;
+  font-size: 1.2rem;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
 }
-.navbar-custom .navbar-toggler:hover {
-  background: rgba(220, 115, 191, 0.1);
+.navbar-custom .btn-icon:hover {
+  background: rgba(220, 115, 191, 0.2);
   border-color: rgba(220, 115, 191, 0.5);
+  color: #fff;
+  transform: translateY(-2px);
 }
-.navbar-custom .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(228, 202, 222, 0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-  width: 24px;
-  height: 24px;
+.navbar-custom .btn-icon:active {
+  transform: scale(0.92);
 }
 
-.navbar-custom .navbar-nav { gap: 8px; }
-.navbar-custom .navbar-nav .nav-item { display: flex; align-items: center; }
+/* Notification badge */
+.navbar-custom .badge-notif {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ef9886, #dc73bf);
+  color: #2a1a3a;
+  border: 2px solid rgba(26, 16, 53, 0.95);
+  line-height: 1;
+  font-family: 'Irish Grover', cursive;
+}
 
+/* ----- Global fallback for btn-icon (used in gameplay navbar too) ----- */
 .btn-icon {
   background: rgba(228, 202, 222, 0.06);
   border: 1px solid rgba(220, 115, 191, 0.2);
@@ -392,10 +452,11 @@ body::before {
   position: relative;
   font-size: 1.2rem;
   padding: 0;
+  cursor: pointer;
 }
 .btn-icon:hover {
-  background: rgba(220, 115, 191, 0.18);
-  border-color: rgba(220, 115, 191, 0.45);
+  background: rgba(220, 115, 191, 0.2);
+  border-color: rgba(220, 115, 191, 0.5);
   color: #fff;
   transform: translateY(-2px);
 }
@@ -405,21 +466,24 @@ body::before {
   position: absolute;
   top: -4px;
   right: -4px;
-  font-size: 0.5rem;
-  padding: 3px 5px;
-  border-radius: 50%;
+  font-size: 0.6rem;
+  font-weight: 700;
   min-width: 18px;
-  min-height: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ef9886;
+  background: linear-gradient(135deg, #ef9886, #dc73bf);
   color: #2a1a3a;
-  font-weight: 700;
-  border: 2px solid rgba(26, 16, 53, 0.8);
+  border: 2px solid rgba(26, 16, 53, 0.9);
   line-height: 1;
 }
 
+/* ================================================================
+   HOME LOBBY
+   ================================================================ */
 .home-lobby {
   width: 100%;
   max-width: 720px;
@@ -444,6 +508,12 @@ body::before {
   display: block;
   animation: floatMonster 3s ease-in-out infinite;
   filter: drop-shadow(0 10px 40px rgba(220, 115, 191, 0.5));
+}
+.home-character img {
+  width: 140px;
+  height: auto;
+  max-height: 140px;
+  object-fit: contain;
 }
 @keyframes floatMonster {
   0%, 100% { transform: translateY(0px) rotate(-2deg); }
@@ -907,80 +977,231 @@ body::before {
 }
 
 /* ================================================================
-   MODALS
+   MODALS – cleaned up UI
    ================================================================ */
 .modal-content {
   background: linear-gradient(145deg, #2a2f5c, #1a1a3a);
   border: 1px solid rgba(220, 115, 191, 0.25);
   border-radius: 24px;
   color: #f8ecf5;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
-.modal-header { border-bottom: 1px solid rgba(220, 115, 191, 0.15); }
+
+.modal-header {
+  border-bottom: 1px solid rgba(220, 115, 191, 0.15);
+  padding: 16px 22px;
+}
+
 .modal-header .modal-title {
   font-family: 'Irish Grover', cursive;
   color: #e4cade;
-}
-.modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
-.modal-footer { border-top: 1px solid rgba(220, 115, 191, 0.15); }
-.modal-footer .btn-secondary {
-  background: rgba(228, 202, 222, 0.08);
-  border: 1px solid rgba(220, 115, 191, 0.25);
-  color: #e4cade;
-}
-.modal-footer .btn-secondary:hover { background: rgba(220, 115, 191, 0.2); }
-
-.inbox-list .list-group-item {
-  background: rgba(228, 202, 222, 0.05);
-  border: 1px solid rgba(220, 115, 191, 0.12);
-  color: #e4cade;
-  margin-bottom: 8px;
-  border-radius: 12px !important;
-  padding: 12px 16px;
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
+  letter-spacing: 1px;
 }
-.inbox-list .list-group-item i { font-size: 1.2rem; }
-.inbox-list .list-group-item strong { color: #f8ecf5; }
+
+.modal-header .modal-title i {
+  color: #dc73bf;
+  font-size: 1.1rem;
+}
+
+.modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.modal-header .btn-close:hover { opacity: 1; }
+
+.modal-body { padding: 18px 22px; }
+
+.modal-footer {
+  border-top: 1px solid rgba(220, 115, 191, 0.15);
+  padding: 14px 22px;
+}
+
+.btn-modal-close {
+  background: linear-gradient(135deg, #ef9886, #dc73bf);
+  border: none;
+  color: #2a1a3a;
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  padding: 9px 28px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 20px rgba(220, 115, 191, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-modal-close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(220, 115, 191, 0.5);
+}
+.btn-modal-close:active { transform: scale(0.96); }
+
+/* ================================================================
+   INBOX – polished list
+   ================================================================ */
+.inbox-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inbox-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: rgba(228, 202, 222, 0.05);
+  border: 1px solid rgba(220, 115, 191, 0.15);
+  border-radius: 14px;
+  transition: all 0.25s ease;
+}
+.inbox-item:hover {
+  background: rgba(220, 115, 191, 0.12);
+  border-color: rgba(220, 115, 191, 0.35);
+  transform: translateX(3px);
+}
+
+.inbox-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #2a1a3a;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.inbox-icon-star   { background: linear-gradient(135deg, #fcd34d, #ef9886); }
+.inbox-icon-coin   { background: linear-gradient(135deg, #ef9886, #dc73bf); }
+.inbox-icon-unlock { background: linear-gradient(135deg, #dc73bf, #65a5d9); }
+.inbox-icon-gem    { background: linear-gradient(135deg, #65a5d9, #4a58a9); color: #fff; }
+
+.inbox-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.inbox-text strong {
+  color: #f8ecf5;
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+.inbox-text span {
+  color: rgba(228, 202, 222, 0.7);
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+.inbox-text em {
+  color: #dc73bf;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ================================================================
+   SETTINGS – items
+   ================================================================ */
+.settings-body { padding: 8px 22px 18px; }
 
 .settings-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 14px 0;
   border-bottom: 1px solid rgba(220, 115, 191, 0.1);
 }
 .settings-item:last-of-type { border-bottom: none; }
-.settings-item span {
+.settings-item > span {
   font-family: 'Irish Grover', cursive;
   color: #e4cade;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.5px;
 }
+.settings-item > span i {
+  color: #dc73bf;
+  width: 18px;
+  text-align: center;
+}
+
 .settings-item .form-check-input {
   background-color: #2a2f5c;
   border-color: rgba(220, 115, 191, 0.35);
   cursor: pointer;
+  width: 42px;
+  height: 22px;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.settings-item .form-check-input:focus {
+  box-shadow: 0 0 0 3px rgba(220, 115, 191, 0.25);
 }
 .settings-item .form-check-input:checked {
   background-color: #dc73bf;
   border-color: #dc73bf;
 }
+
 .settings-item .form-select {
-  background-color: transparent;
+  background-color: rgba(228, 202, 222, 0.08);
   color: #f8ecf5;
-  border-color: rgba(220, 115, 191, 0.25);
+  border: 1px solid rgba(220, 115, 191, 0.3);
+  border-radius: 10px;
+  padding: 6px 30px 6px 14px;
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.85rem;
+  width: auto;
+  cursor: pointer;
 }
-.settings-item .form-select option { background-color: #2a2f5c; }
-#resetProgressBtn {
+.settings-item .form-select:focus {
+  border-color: #dc73bf;
+  box-shadow: 0 0 0 3px rgba(220, 115, 191, 0.25);
+}
+.settings-item .form-select option {
+  background: #2a2f5c;
+  color: #f8ecf5;
+}
+
+.settings-divider {
+  border-color: rgba(220, 115, 191, 0.2);
+  margin: 8px 0 14px;
+}
+
+.btn-reset-progress {
   background: rgba(239, 152, 134, 0.15);
-  border: 1px solid rgba(239, 152, 134, 0.35);
+  border: 1px solid rgba(239, 152, 134, 0.4);
   color: #ef9886;
-  transition: all 0.3s ease;
-  padding: 10px;
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  padding: 11px 20px;
+  border-radius: 12px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-#resetProgressBtn:hover {
+.btn-reset-progress:hover {
   background: rgba(239, 152, 134, 0.3);
-  border-color: rgba(239, 152, 134, 0.6);
+  border-color: rgba(239, 152, 134, 0.7);
   color: #fff;
 }
+.btn-reset-progress:active { transform: scale(0.97); }
 
 /* ================================================================
    SUBJECT PAGE
@@ -1188,10 +1409,12 @@ body::before {
 }
 
 @media (max-width: 768px) {
-  .navbar-custom .navbar-brand { font-size: 1.1rem; }
-  .navbar-custom .navbar-brand i { font-size: 1rem; }
+  .navbar-custom { padding: 10px 16px; }
+  .game-title-nav { font-size: 1.15rem; }
+  .navbar-custom .btn-icon { width: 36px; height: 36px; font-size: 1rem; }
   .btn-icon { width: 36px; height: 36px; font-size: 1rem; }
   .home-character { font-size: 4rem; }
+  .home-character img { width: 110px; max-height: 110px; }
   .home-main-title { font-size: 3.2rem; }
   .home-sub-title { font-size: 1.8rem; }
   .home-tagline { font-size: 0.75rem; letter-spacing: 4px; }
@@ -1222,15 +1445,6 @@ body::before {
   .card-emoji { font-size: 2.4rem; }
   .game-header { flex-direction: column; align-items: stretch; gap: 8px; }
   .game-stats { justify-content: center; }
-  .navbar-custom .navbar-collapse {
-    background: rgba(26, 16, 53, 0.9);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
-    padding: 12px 16px;
-    margin-top: 8px;
-    border: 1px solid rgba(220, 115, 191, 0.18);
-  }
-  .navbar-custom .navbar-nav { flex-direction: row; justify-content: flex-end; width: 100%; }
 }
 
 @media (max-width: 575px) {
@@ -1254,6 +1468,10 @@ body::before {
 }
 
 @media (max-width: 480px) {
+  .navbar-custom { padding: 8px 14px; }
+  .game-title-nav { font-size: 1.05rem; }
+  .navbar-custom .btn-icon { width: 34px; height: 34px; font-size: 0.95rem; }
+  .navbar-custom .badge-notif { font-size: 0.55rem; min-width: 16px; height: 16px; }
   .subject-overlay { padding: 80px 14px 30px !important; }
   .subject-main-title { font-size: 2rem; }
   .subject-tagline { font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 18px; }
@@ -1301,43 +1519,6 @@ body::before {
   .card-bonus { font-size: 0.3rem; }
   .card-footer { padding: 2px 4px; }
 }
-
-/* ================================================================
-   DARK MODE
-   ================================================================ */
-body.dark-mode {
-  background: linear-gradient(
-    to bottom,
-    #0f0a20 0%,
-    #1a1035 25%,
-    #251a45 50%,
-    #3a2a5c 75%,
-    #4a3a6c 100%
-  );
-}
-body.dark-mode::before {
-  opacity: 0.7;
-}
-body.dark-mode::after {
-  opacity: 0.5;
-}
-body.dark-mode .home-overlay { background: rgba(0, 0, 0, 0.3); }
-body.dark-mode .navbar-custom,
-body.dark-mode .gameplay-navbar {
-  background: rgba(0, 0, 0, 0.5);
-  border-bottom-color: rgba(228, 202, 222, 0.1);
-}
-body.dark-mode .stat-card { background: rgba(0, 0, 0, 0.35); }
-body.dark-mode .modal-content {
-  background: linear-gradient(145deg, #1f1f40, #15152a);
-  color: #e4cade;
-}
-body.dark-mode .settings-item span { color: #e4cade; }
-body.dark-mode .settings-item .form-select { color: #e4cade; }
-body.dark-mode .settings-item .form-select option { background: #1a1a3a; }
-body.dark-mode .inbox-list .list-group-item { background: rgba(228, 202, 222, 0.05); }
-body.dark-mode .card-face-back { background: linear-gradient(145deg, #2a2f5c, #1a1a3a); }
-body.dark-mode .card-face-front { background: linear-gradient(145deg, #4a58a9, #2a2f5c); }
 
 /* ================================================================
    SCROLLBAR

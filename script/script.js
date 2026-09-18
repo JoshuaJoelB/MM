@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const isIndex = document.getElementById('indexPage') !== null;
   const isStart = document.getElementById('startPage') !== null;
-  const isHome = document.getElementById('homePage') !== null;
+  const isHome  = document.getElementById('homePage') !== null;
 
   // ---- INDEX PAGE (auto-redirect to Start.html) ----
   if (isIndex) {
@@ -17,9 +17,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ---- START PAGE (button leads to Home.html) ----
   if (isStart) {
-    document.getElementById('letsStartBtn').addEventListener('click', function () {
-      window.location.href = 'Home.html';
-    });
+    const btn = document.getElementById('letsStartBtn');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        window.location.href = 'Home.html';
+      });
+    }
   }
 
   // ---- HOME PAGE ----
@@ -37,38 +40,29 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // --------------------------------------------------------------
-// SETTINGS – load/save from localStorage
+// SETTINGS – load/save from localStorage (no dark mode)
 // --------------------------------------------------------------
 function initSettings() {
-  // Load saved settings from localStorage
+  // Load saved settings
   const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
   const musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
-  const darkMode = localStorage.getItem('darkMode') === 'true';
-  const difficulty = localStorage.getItem('difficulty') || 'normal';
+  const difficulty   = localStorage.getItem('difficulty') || 'normal';
 
   // Apply to UI
   const soundToggle = document.getElementById('soundToggle');
   const musicToggle = document.getElementById('musicToggle');
-  const darkToggle = document.getElementById('darkModeToggle');
-  const diffSelect = document.getElementById('difficultySelect');
+  const diffSelect  = document.getElementById('difficultySelect');
 
   if (soundToggle) soundToggle.checked = soundEnabled;
   if (musicToggle) musicToggle.checked = musicEnabled;
-  if (darkToggle) darkToggle.checked = darkMode;
-  if (diffSelect) diffSelect.value = difficulty;
-
-  // Apply dark mode class
-  if (darkMode) document.body.classList.add('dark-mode');
+  if (diffSelect)  diffSelect.value = difficulty;
 
   // ---- Event listeners for settings toggles ----
   document.querySelectorAll('.settings-toggle').forEach(toggle => {
     toggle.addEventListener('change', function () {
       const key = this.dataset.key;
-      const value = this.checked;
-      localStorage.setItem(key, value);
-      if (key === 'darkMode') {
-        document.body.classList.toggle('dark-mode', value);
-      }
+      if (!key) return;
+      localStorage.setItem(key, this.checked);
     });
   });
 
@@ -84,39 +78,41 @@ function initSettings() {
   const resetBtn = document.getElementById('resetProgressBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', function () {
-      if (confirm('⚠️ Reset all progress? This will erase all stats, unlocked levels, and completed levels for all subjects. This cannot be undone!')) {
-        
-        // ----- Clear GLOBAL STATS -----
-        localStorage.removeItem('gamesPlayed');
-        localStorage.removeItem('bestTime');
-        localStorage.removeItem('totalMatches');
-        localStorage.removeItem('rewardsCount');
-        
-        // ----- Clear LEVEL PROGRESSION for ALL subjects -----
-        const subjects = ['computer', 'science', 'ap'];
-        subjects.forEach(sub => {
-          localStorage.removeItem(`matchMonster_unlocked_${sub}`);
-          localStorage.removeItem(`matchMonster_completed_${sub}`);
-        });
-        
-        // ----- Reset all UI displays -----
-        updateStatsDisplay();
-        
-        // Close the settings modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+      const ok = confirm('⚠️ Reset all progress? This will erase all stats, unlocked levels, and completed levels for all subjects. This cannot be undone!');
+      if (!ok) return;
+
+      // ----- Clear GLOBAL STATS -----
+      localStorage.removeItem('gamesPlayed');
+      localStorage.removeItem('bestTime');
+      localStorage.removeItem('totalMatches');
+      localStorage.removeItem('rewardsCount');
+
+      // ----- Clear LEVEL PROGRESSION for ALL subjects -----
+      const subjects = ['computer', 'science', 'ap'];
+      subjects.forEach(sub => {
+        localStorage.removeItem(`matchMonster_unlocked_${sub}`);
+        localStorage.removeItem(`matchMonster_completed_${sub}`);
+      });
+
+      // ----- Reset UI displays -----
+      updateStatsDisplay();
+
+      // Close the settings modal
+      const modalEl = document.getElementById('settingsModal');
+      if (modalEl && window.bootstrap) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
         if (modal) modal.hide();
-        
-        // Optional: show a brief confirmation
-        alert('✅ All progress has been reset! Level 1 is now unlocked.');
-        
-        // If on home page, also reset the game board if it's visible
-        const homeLobby = document.getElementById('homeLobby');
-        const homeGameScreen = document.getElementById('homeGameScreen');
-        if (homeLobby) homeLobby.style.display = 'block';
-        if (homeGameScreen) homeGameScreen.style.display = 'none';
-        // Reset any ongoing game state if needed
-        if (window.__quitGame) window.__quitGame();
       }
+
+      alert('✅ All progress has been reset! Level 1 is now unlocked.');
+
+      // If on home page, reset the game board
+      const homeLobby      = document.getElementById('homeLobby');
+      const homeGameScreen = document.getElementById('homeGameScreen');
+      if (homeLobby)      homeLobby.style.display = 'block';
+      if (homeGameScreen) homeGameScreen.style.display = 'none';
+
+      if (window.__quitGame) window.__quitGame();
     });
   }
 }
@@ -127,9 +123,9 @@ function initSettings() {
 function getStats() {
   return {
     gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-    bestTime: localStorage.getItem('bestTime') || null,
+    bestTime:    localStorage.getItem('bestTime') || null,
     totalMatches: parseInt(localStorage.getItem('totalMatches') || '0'),
-    rewards: parseInt(localStorage.getItem('rewardsCount') || '0')
+    rewards:      parseInt(localStorage.getItem('rewardsCount') || '0')
   };
 }
 
@@ -148,7 +144,7 @@ function updateStatsDisplay() {
 
 function saveStats(stats) {
   localStorage.setItem('gamesPlayed', stats.gamesPlayed);
-  localStorage.setItem('bestTime', stats.bestTime);
+  localStorage.setItem('bestTime',    stats.bestTime);
   localStorage.setItem('totalMatches', stats.totalMatches);
   localStorage.setItem('rewardsCount', stats.rewards);
   updateStatsDisplay();
@@ -163,17 +159,17 @@ function initHomePage() {
   // Load stats display
   updateStatsDisplay();
 
-  const lobby = document.getElementById('homeLobby');
-  const gameScreen = document.getElementById('homeGameScreen');
-  const startBtn = document.getElementById('homeStartBtn');
-  const quitBtn = document.getElementById('btnQuitGame');
-  const grid = document.getElementById('cardGrid');
-  const moveDisplay = document.getElementById('moveCount');
+  const lobby        = document.getElementById('homeLobby');
+  const gameScreen   = document.getElementById('homeGameScreen');
+  const startBtn     = document.getElementById('homeStartBtn');
+  const quitBtn      = document.getElementById('btnQuitGame');
+  const grid         = document.getElementById('cardGrid');
+  const moveDisplay  = document.getElementById('moveCount');
   const matchDisplay = document.getElementById('matchCount');
   const timerDisplay = document.getElementById('timerDisplay');
-  const winOverlay = document.getElementById('winOverlay');
-  const winMoves = document.getElementById('winMoves');
-  const winTime = document.getElementById('winTime');
+  const winOverlay   = document.getElementById('winOverlay');
+  const winMoves     = document.getElementById('winMoves');
+  const winTime      = document.getElementById('winTime');
 
   const MONSTERS = ['👾', '🧛', '🧟', '🧙', '🧝', '🧚', '🦄', '🐉'];
   const PAIR_COUNT = MONSTERS.length;
@@ -204,13 +200,17 @@ function initHomePage() {
       const div = document.createElement('div');
       div.className = 'card-item';
       div.dataset.index = index;
+
       const inner = document.createElement('div');
       inner.className = 'card-inner';
+
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
+
       const front = document.createElement('div');
       front.className = 'card-face card-face-front';
       front.textContent = card.emoji;
+
       inner.appendChild(back);
       inner.appendChild(front);
       div.appendChild(inner);
@@ -220,7 +220,7 @@ function initHomePage() {
   }
 
   function updateGameStats() {
-    if (moveDisplay) moveDisplay.textContent = moves;
+    if (moveDisplay)  moveDisplay.textContent  = moves;
     if (matchDisplay) matchDisplay.textContent = matchedPairs;
   }
 
@@ -248,12 +248,15 @@ function initHomePage() {
   function onCardClick(index) {
     if (isLocked) return;
     const card = cards[index];
-    const el = grid.children[index];
+    const el   = grid.children[index];
     if (!el) return;
     if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
+
     if (!gameStarted) { gameStarted = true; startTimer(); }
+
     el.classList.add('flipped');
     flippedCards.push({ index, el, card });
+
     if (flippedCards.length === 2) {
       moves++;
       updateGameStats();
@@ -264,6 +267,7 @@ function initHomePage() {
   function checkMatch() {
     isLocked = true;
     const [first, second] = flippedCards;
+
     if (first.card.id === second.card.id) {
       first.card.matched = true;
       second.card.matched = true;
@@ -273,6 +277,7 @@ function initHomePage() {
       updateGameStats();
       flippedCards = [];
       isLocked = false;
+
       if (matchedPairs === PAIR_COUNT) {
         stopTimer();
         setTimeout(showWin, 400);
@@ -289,7 +294,7 @@ function initHomePage() {
 
   function showWin() {
     if (winMoves) winMoves.textContent = moves;
-    if (winTime) winTime.textContent = seconds + 's';
+    if (winTime)  winTime.textContent  = seconds + 's';
     if (winOverlay) winOverlay.classList.add('show');
 
     const stats = getStats();
@@ -313,15 +318,16 @@ function initHomePage() {
     resetTimer();
     updateGameStats();
     renderCards();
-    if (lobby) lobby.style.display = 'none';
+    if (lobby)      lobby.style.display = 'none';
     if (gameScreen) gameScreen.style.display = 'block';
   }
 
   function quitGame() {
     stopTimer();
     if (winOverlay) winOverlay.classList.remove('show');
-    if (lobby) lobby.style.display = 'block';
+    if (lobby)      lobby.style.display = 'block';
     if (gameScreen) gameScreen.style.display = 'none';
+
     cards = [];
     flippedCards = [];
     matchedPairs = 0;
@@ -329,6 +335,7 @@ function initHomePage() {
     isLocked = false;
     gameStarted = false;
     resetTimer();
+
     if (grid) grid.innerHTML = '';
     updateGameStats();
     updateStatsDisplay();
@@ -336,10 +343,11 @@ function initHomePage() {
 
   // ---- Event listeners ----
   if (startBtn) startBtn.addEventListener('click', initGame);
-  if (quitBtn) quitBtn.addEventListener('click', quitGame);
+  if (quitBtn)  quitBtn.addEventListener('click', quitGame);
 
   const replayBtn = document.getElementById('btnWinReplay');
-  const homeBtn = document.getElementById('btnWinHome');
+  const homeBtn   = document.getElementById('btnWinHome');
+
   if (replayBtn) replayBtn.addEventListener('click', function () {
     if (winOverlay) winOverlay.classList.remove('show');
     initGame();
@@ -378,14 +386,8 @@ function initHomePage() {
   resetTimer();
   adjustGridColumns();
 
-  if (lobby) lobby.style.display = 'block';
+  if (lobby)      lobby.style.display = 'block';
   if (gameScreen) gameScreen.style.display = 'none';
 
   window.__quitGame = quitGame;
 }
-
-// ---- preload background ----
-document.addEventListener('DOMContentLoaded', function () {
-  const img = new Image();
-  img.src = 'Assets/background.png';
-});
