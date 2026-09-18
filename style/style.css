@@ -1,5 +1,5 @@
 /* ================================================================
-   STYLE.CSS – complete styles (cloudy sky + polished modals)
+   STYLE.CSS – complete styles (cloudy sky + level box + points)
    ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
@@ -12,7 +12,7 @@
 }
 
 /* ================================================================
-   GLOBAL SKY BACKGROUND (stars, moon, gradient – clouds via JS)
+   GLOBAL SKY BACKGROUND
    ================================================================ */
 body {
   font-family: 'Irish Grover', cursive;
@@ -32,7 +32,6 @@ body {
   background-attachment: fixed;
 }
 
-/* ----- SKY LAYER: stars, moon, color glows ----- */
 body::before {
   content: '';
   position: fixed;
@@ -66,7 +65,7 @@ body::before {
 }
 
 /* ================================================================
-   CLOUD STYLES – GPU-accelerated, no filters
+   CLOUD STYLES
    ================================================================ */
 #cloudLayer {
   position: fixed;
@@ -126,14 +125,9 @@ body::before {
   align-items: center;
   justify-content: center;
 }
-#indexPage.active-page {
-  display: flex;
-}
+#indexPage.active-page { display: flex; }
 
-.index-content {
-  text-align: center;
-  padding: 20px;
-}
+.index-content { text-align: center; padding: 20px; }
 
 .index-logo-wrapper {
   position: relative;
@@ -323,7 +317,7 @@ body::before {
 }
 
 /* ================================================================
-   NAVBAR CONTAINER – holds injected navbar.html
+   NAVBAR CONTAINER
    ================================================================ */
 #navbarContainer {
   width: 100%;
@@ -342,7 +336,7 @@ body::before {
 }
 
 /* ================================================================
-   NAVBAR (stretches full width, title left / icons right)
+   NAVBAR
    ================================================================ */
 .navbar-custom {
   background: rgba(26, 16, 53, 0.55);
@@ -359,28 +353,21 @@ body::before {
   gap: 16px;
 
   position: relative;
+  overflow: visible;
   border-radius: 0;
   box-sizing: border-box;
+  min-height: 66px;
 }
 
-/* LEFT: title */
+/* LEFT – placeholder for the absolutely-positioned level box */
 .nav-left {
-  display: flex;
-  align-items: center;
+  position: relative;
   min-width: 0;
+  flex: 1;
+  height: 1px;
 }
 
-.game-title-nav {
-  font-family: 'Keania One', cursive;
-  color: #f8ecf5;
-  font-size: 1.5rem;
-  letter-spacing: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* RIGHT: icon buttons */
+/* RIGHT – points + icon buttons */
 .nav-right {
   display: flex;
   align-items: center;
@@ -388,7 +375,121 @@ body::before {
   flex-shrink: 0;
 }
 
-/* Icon buttons */
+/* ================================================================
+   PLAYER LEVEL BOX – pushed further left (nearly flush)
+   ================================================================ */
+.player-level-box {
+  position: absolute;
+  top: calc(100% - 22px);
+  left: -20px;                  /* ← pushes the box past the navbar's 24px left padding */
+  z-index: 1060;
+  min-width: 300px;
+  padding: 16px 22px 18px;
+
+  background: linear-gradient(145deg, #2a2f5c, #1a1a3a);
+  border: 2px solid rgba(220, 115, 191, 0.4);
+  border-radius: 18px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    0 0 30px rgba(220, 115, 191, 0.25);
+
+  font-family: 'Irish Grover', cursive;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.player-level-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.player-level-badge {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.player-level-label {
+  font-size: 0.72rem;
+  color: rgba(228, 202, 222, 0.65);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.player-level-number {
+  font-family: 'Keania One', cursive;
+  font-size: 2.2rem;
+  color: #f8ecf5;
+  text-shadow: 0 0 20px rgba(220, 115, 191, 0.6);
+  line-height: 1;
+}
+
+.player-level-progress-text {
+  font-size: 0.9rem;
+  color: #dc73bf;
+  font-weight: 700;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.player-progress-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(42, 26, 58, 0.85);
+  border-radius: 100px;
+  overflow: hidden;
+  border: 1px solid rgba(220, 115, 191, 0.15);
+}
+
+.player-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ef9886, #dc73bf);
+  border-radius: 100px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 14px rgba(220, 115, 191, 0.7);
+}
+
+/* ================================================================
+   POINT CHIPS
+   ================================================================ */
+.point-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  height: 38px;
+  background: rgba(228, 202, 222, 0.06);
+  border: 1px solid rgba(220, 115, 191, 0.2);
+  border-radius: 100px;
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.9rem;
+  color: #f8ecf5;
+  transition: all 0.25s ease;
+  cursor: default;
+}
+.point-chip:hover {
+  background: rgba(220, 115, 191, 0.15);
+  border-color: rgba(220, 115, 191, 0.5);
+  transform: translateY(-1px);
+}
+.point-chip i { font-size: 1rem; }
+.point-chip span {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  min-width: 28px;
+  text-align: right;
+}
+.point-chip-star i { color: #fcd34d; }
+.point-chip-coin i { color: #ef9886; }
+
+/* ================================================================
+   NAVBAR ICON BUTTONS
+   ================================================================ */
 .navbar-custom .btn-icon {
   background: rgba(228, 202, 222, 0.06);
   border: 1px solid rgba(220, 115, 191, 0.2);
@@ -412,11 +513,8 @@ body::before {
   color: #fff;
   transform: translateY(-2px);
 }
-.navbar-custom .btn-icon:active {
-  transform: scale(0.92);
-}
+.navbar-custom .btn-icon:active { transform: scale(0.92); }
 
-/* Notification badge */
 .navbar-custom .badge-notif {
   position: absolute;
   top: -4px;
@@ -437,7 +535,7 @@ body::before {
   font-family: 'Irish Grover', cursive;
 }
 
-/* ----- Global fallback for btn-icon (used in gameplay navbar too) ----- */
+/* Fallback for other pages */
 .btn-icon {
   background: rgba(228, 202, 222, 0.06);
   border: 1px solid rgba(220, 115, 191, 0.2);
@@ -489,7 +587,7 @@ body::before {
   max-width: 720px;
   text-align: center;
   animation: fadeUp 0.8s ease;
-  padding: 20px 20px 40px;
+  padding: 90px 20px 40px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -548,11 +646,7 @@ body::before {
   word-spacing: 4px;
 }
 
-.stats-container {
-  width: 100%;
-  margin: 10px auto 0;
-  padding: 0 10px;
-}
+.stats-container { width: 100%; margin: 10px auto 0; padding: 0 10px; }
 .stat-card {
   background: rgba(228, 202, 222, 0.07);
   backdrop-filter: blur(12px);
@@ -568,12 +662,7 @@ body::before {
   border-color: rgba(220, 115, 191, 0.45);
   box-shadow: 0 8px 30px rgba(220, 115, 191, 0.25);
 }
-.stat-icon {
-  font-size: 1.6rem;
-  color: #ef9886;
-  display: block;
-  margin-bottom: 4px;
-}
+.stat-icon { font-size: 1.6rem; color: #ef9886; display: block; margin-bottom: 4px; }
 .stat-number {
   font-family: 'Irish Grover', cursive;
   font-size: 1.8rem;
@@ -715,7 +804,7 @@ body::before {
 }
 
 /* ================================================================
-   GAMEPLAY CARD STYLES
+   GAMEPLAY CARDS
    ================================================================ */
 .card-grid {
   display: grid;
@@ -748,9 +837,7 @@ body::before {
 }
 
 .card-item.flipped .card-inner,
-.card-item.matched .card-inner {
-  transform: rotateY(180deg);
-}
+.card-item.matched .card-inner { transform: rotateY(180deg); }
 
 .card-item.matched .card-face-front {
   border-color: rgba(239, 152, 134, 0.7);
@@ -977,7 +1064,7 @@ body::before {
 }
 
 /* ================================================================
-   MODALS – cleaned up UI
+   MODALS
    ================================================================ */
 .modal-content {
   background: linear-gradient(145deg, #2a2f5c, #1a1a3a);
@@ -986,12 +1073,10 @@ body::before {
   color: #f8ecf5;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
-
 .modal-header {
   border-bottom: 1px solid rgba(220, 115, 191, 0.15);
   padding: 16px 22px;
 }
-
 .modal-header .modal-title {
   font-family: 'Irish Grover', cursive;
   color: #e4cade;
@@ -1000,21 +1085,14 @@ body::before {
   align-items: center;
   letter-spacing: 1px;
 }
-
-.modal-header .modal-title i {
-  color: #dc73bf;
-  font-size: 1.1rem;
-}
-
+.modal-header .modal-title i { color: #dc73bf; font-size: 1.1rem; }
 .modal-header .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
   opacity: 0.7;
   transition: opacity 0.2s ease;
 }
 .modal-header .btn-close:hover { opacity: 1; }
-
 .modal-body { padding: 18px 22px; }
-
 .modal-footer {
   border-top: 1px solid rgba(220, 115, 191, 0.15);
   padding: 14px 22px;
@@ -1043,7 +1121,7 @@ body::before {
 .btn-modal-close:active { transform: scale(0.96); }
 
 /* ================================================================
-   INBOX – polished list
+   INBOX
    ================================================================ */
 .inbox-list {
   list-style: none;
@@ -1053,7 +1131,6 @@ body::before {
   flex-direction: column;
   gap: 10px;
 }
-
 .inbox-item {
   display: flex;
   align-items: center;
@@ -1069,7 +1146,6 @@ body::before {
   border-color: rgba(220, 115, 191, 0.35);
   transform: translateX(3px);
 }
-
 .inbox-icon {
   width: 40px;
   height: 40px;
@@ -1082,7 +1158,6 @@ body::before {
   color: #2a1a3a;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
-
 .inbox-icon-star   { background: linear-gradient(135deg, #fcd34d, #ef9886); }
 .inbox-icon-coin   { background: linear-gradient(135deg, #ef9886, #dc73bf); }
 .inbox-icon-unlock { background: linear-gradient(135deg, #dc73bf, #65a5d9); }
@@ -1113,10 +1188,9 @@ body::before {
 }
 
 /* ================================================================
-   SETTINGS – items
+   SETTINGS
    ================================================================ */
 .settings-body { padding: 8px 22px 18px; }
-
 .settings-item {
   display: flex;
   justify-content: space-between;
@@ -1138,7 +1212,6 @@ body::before {
   width: 18px;
   text-align: center;
 }
-
 .settings-item .form-check-input {
   background-color: #2a2f5c;
   border-color: rgba(220, 115, 191, 0.35);
@@ -1147,14 +1220,8 @@ body::before {
   height: 22px;
   transition: background 0.25s ease, border-color 0.25s ease;
 }
-.settings-item .form-check-input:focus {
-  box-shadow: 0 0 0 3px rgba(220, 115, 191, 0.25);
-}
-.settings-item .form-check-input:checked {
-  background-color: #dc73bf;
-  border-color: #dc73bf;
-}
-
+.settings-item .form-check-input:focus { box-shadow: 0 0 0 3px rgba(220, 115, 191, 0.25); }
+.settings-item .form-check-input:checked { background-color: #dc73bf; border-color: #dc73bf; }
 .settings-item .form-select {
   background-color: rgba(228, 202, 222, 0.08);
   color: #f8ecf5;
@@ -1170,15 +1237,8 @@ body::before {
   border-color: #dc73bf;
   box-shadow: 0 0 0 3px rgba(220, 115, 191, 0.25);
 }
-.settings-item .form-select option {
-  background: #2a2f5c;
-  color: #f8ecf5;
-}
-
-.settings-divider {
-  border-color: rgba(220, 115, 191, 0.2);
-  margin: 8px 0 14px;
-}
+.settings-item .form-select option { background: #2a2f5c; color: #f8ecf5; }
+.settings-divider { border-color: rgba(220, 115, 191, 0.2); margin: 8px 0 14px; }
 
 .btn-reset-progress {
   background: rgba(239, 152, 134, 0.15);
@@ -1409,15 +1469,33 @@ body::before {
 }
 
 @media (max-width: 768px) {
-  .navbar-custom { padding: 10px 16px; }
-  .game-title-nav { font-size: 1.15rem; }
+  .navbar-custom { padding: 10px 16px; min-height: 60px; }
   .navbar-custom .btn-icon { width: 36px; height: 36px; font-size: 1rem; }
   .btn-icon { width: 36px; height: 36px; font-size: 1rem; }
+
+  .player-level-box {
+    min-width: 220px;
+    padding: 12px 16px 14px;
+    left: -16px;
+    top: calc(100% - 18px);
+  }
+  .player-level-number { font-size: 1.8rem; }
+  .player-level-label { font-size: 0.62rem; }
+  .player-level-progress-text { font-size: 0.8rem; }
+  .player-progress-track { height: 8px; }
+
+  .point-chip {
+    height: 34px;
+    padding: 4px 12px;
+    font-size: 0.82rem;
+  }
+
   .home-character { font-size: 4rem; }
   .home-character img { width: 110px; max-height: 110px; }
   .home-main-title { font-size: 3.2rem; }
   .home-sub-title { font-size: 1.8rem; }
   .home-tagline { font-size: 0.75rem; letter-spacing: 4px; }
+  .home-lobby { padding: 100px 20px 40px; }
   .stat-number { font-size: 1.3rem; }
   .stat-label { font-size: 0.5rem; }
   .game-title-sm { font-size: 1rem; }
@@ -1448,8 +1526,32 @@ body::before {
 }
 
 @media (max-width: 575px) {
+  .navbar-custom { padding: 10px 12px; gap: 10px; }
   .btn-start-game { font-size: 1.2rem; padding: 14px 40px; }
   .btn-back-top { font-size: 0.8rem; padding: 6px 16px; top: 10px; left: 10px; }
+
+  .player-level-box {
+    min-width: 180px;
+    padding: 10px 14px 12px;
+    top: calc(100% - 16px);
+    left: -12px;
+    border-radius: 14px;
+  }
+  .player-level-number { font-size: 1.5rem; }
+  .player-level-label { font-size: 0.58rem; letter-spacing: 1.5px; }
+  .player-level-progress-text { font-size: 0.72rem; }
+  .player-progress-track { height: 7px; }
+
+  .point-chip {
+    height: 30px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+  .point-chip i { font-size: 0.85rem; }
+  .point-chip span { min-width: 22px; }
+  .nav-right { gap: 6px; }
+
   .gameplay-navbar-inner { padding: 9px 12px; gap: 8px; }
   .gameplay-left { gap: 8px; }
   .gameplay-title { font-size: 0.95rem; }
@@ -1468,10 +1570,27 @@ body::before {
 }
 
 @media (max-width: 480px) {
-  .navbar-custom { padding: 8px 14px; }
-  .game-title-nav { font-size: 1.05rem; }
+  .navbar-custom { padding: 8px 10px; }
   .navbar-custom .btn-icon { width: 34px; height: 34px; font-size: 0.95rem; }
   .navbar-custom .badge-notif { font-size: 0.55rem; min-width: 16px; height: 16px; }
+
+  .player-level-box {
+    min-width: 160px;
+    padding: 8px 12px 10px;
+    left: -8px;
+    top: calc(100% - 14px);
+  }
+  .player-level-number { font-size: 1.3rem; }
+  .player-level-progress-text { font-size: 0.68rem; }
+
+  .point-chip {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    height: 28px;
+  }
+  .point-chip span { min-width: 18px; }
+  .point-chip i { font-size: 0.8rem; }
+
   .subject-overlay { padding: 80px 14px 30px !important; }
   .subject-main-title { font-size: 2rem; }
   .subject-tagline { font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 18px; }
@@ -1503,6 +1622,8 @@ body::before {
 
 @media (max-width: 400px) {
   .gameplay-overlay { padding: 0 !important; }
+  .player-level-box { min-width: 150px; left: -6px; }
+  .point-chip { padding: 2px 6px; font-size: 0.65rem; height: 26px; }
 }
 
 @media (max-width: 360px) {
