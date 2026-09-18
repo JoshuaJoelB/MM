@@ -1741,47 +1741,66 @@ body::before {
 }
 
 /* ================================================================
-   FLOATING PLAYER LEVEL BOX – used on Level.html (top-right corner)
+   FLOATING POINT BOX – used on Level.html (top-right corner)
    ================================================================ */
-.player-level-box-floating {
+.point-box-floating {
   position: fixed;
   top: 20px;
   right: 20px;
   left: auto;
   z-index: 1000;
-  min-width: 220px;
+  min-width: unset;
+  width: auto;
+  padding: 8px 16px;
+  
+  /* Layout adjustments for horizontal chips */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+
+  /* Match the navbar styling */
+  background: rgba(26, 16, 53, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 2px solid rgba(220, 115, 191, 0.4);
+  border-radius: 100px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55), 0 0 30px rgba(220, 115, 191, 0.25);
   animation: fadeUp 0.5s ease;
 }
 
 @media (max-width: 768px) {
-  .player-level-box-floating {
+  .point-box-floating {
     top: 16px;
     right: 16px;
-    min-width: 190px;
-    padding: 12px 16px 14px;
+    padding: 8px 14px;
   }
 }
 
 @media (max-width: 575px) {
-  .player-level-box-floating {
+  .point-box-floating {
     top: 12px;
     right: 10px;
-    min-width: 160px;
-    padding: 10px 14px 12px;
-    border-radius: 14px;
+    padding: 6px 12px;
+    gap: 8px;
   }
-  .player-level-box-floating .player-level-number { font-size: 1.4rem; }
-  .player-level-box-floating .player-level-progress-text { font-size: 0.72rem; }
-  .player-level-box-floating .player-progress-track { height: 7px; }
+  .point-box-floating .point-chip {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    height: 32px;
+  }
 }
 
 @media (max-width: 400px) {
-  .player-level-box-floating {
-    min-width: 140px;
-    padding: 8px 12px 10px;
+  .point-box-floating {
+    padding: 5px 10px;
+    gap: 6px;
   }
-  .player-level-box-floating .player-level-number { font-size: 1.2rem; }
-  .player-level-box-floating .player-level-progress-text { font-size: 0.65rem; }
+  .point-box-floating .point-chip {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    height: 28px;
+  }
 }
 
 /* ================================================================
