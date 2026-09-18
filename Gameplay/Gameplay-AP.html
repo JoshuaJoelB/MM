@@ -20,30 +20,32 @@
         <!-- NAVBAR -->
         <header class="gameplay-navbar">
           <div class="gameplay-navbar-inner">
-
-            <div class="gameplay-left">
-              <a href="../Level.html?subject=ap" class="btn btn-back-top">
-                <i class="fas fa-arrow-left me-1"></i> Levels
-              </a>
-              <h1 class="gameplay-title">AP</h1>
-            </div>
-
-            <div class="gameplay-info">
-              <div class="point-chip point-chip-star" title="Stars earned">
-                <i class="fas fa-star"></i>
-                <span data-nav-stars>0</span>
-              </div>
-              <div class="point-chip point-chip-coin" title="Coins earned">
-                <i class="fas fa-coins"></i>
-                <span data-nav-coins>0</span>
-              </div>
-
-              <span class="info-item">Level: <strong id="levelDisplay">1</strong></span>
-              <span class="info-item">Moves: <strong id="movesDisplay">0</strong></span>
-              <span class="info-item">Time:  <strong id="timerDisplay">0s</strong></span>
-            </div>
-
-          </div>
+  <!-- Top row: Left (Back + Title) and Right (Points) -->
+  <div class="gameplay-top-row">
+    <div class="gameplay-left">
+      <a href="../Level.html?subject=ap" class="btn btn-back-top">
+        <i class="fas fa-arrow-left me-1"></i> Levels
+      </a>
+      <h1 class="gameplay-title">AP</h1>
+    </div>
+    <div class="gameplay-points">
+      <div class="point-chip point-chip-star" title="Stars earned">
+        <i class="fas fa-star"></i>
+        <span data-nav-stars>0</span>
+      </div>
+      <div class="point-chip point-chip-coin" title="Coins earned">
+        <i class="fas fa-coins"></i>
+        <span data-nav-coins>0</span>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom row: Info items -->
+  <div class="gameplay-bottom-row">
+    <span class="info-item">Level: <strong id="levelDisplay">1</strong></span>
+    <span class="info-item">Moves: <strong id="movesDisplay">0</strong></span>
+    <span class="info-item">Time:  <strong id="timerDisplay">0s</strong></span>
+  </div>
+</div>
         </header>
 
         <!-- GAME BOARD -->

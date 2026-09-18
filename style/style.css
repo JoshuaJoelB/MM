@@ -1437,12 +1437,27 @@ body::before {
   justify-content: space-between;
   gap: 16px;
 }
+
+/* FIX: Ensure points are pushed to the right */
+.gameplay-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Pushes left and points to opposite ends */
+  width: 100%;
+  gap: 16px;
+}
 .gameplay-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex: 1;
   min-width: 0;
+  flex: 1; /* Allows the left side to take available space, pushing points right */
+}
+.gameplay-points {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0; /* Prevents points from shrinking */
 }
 .gameplay-navbar .btn-back-top {
   position: static;
@@ -1478,10 +1493,14 @@ body::before {
   text-overflow: ellipsis;
   min-width: 0;
 }
-.gameplay-info { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.gameplay-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 /* ----- Point chips inside the gameplay navbar ----- */
-.gameplay-info .point-chip {
+.gameplay-points .point-chip {
   height: 34px;
   padding: 4px 12px;
   font-size: 0.82rem;
@@ -1497,20 +1516,20 @@ body::before {
   cursor: default;
   font-family: 'Irish Grover', cursive;
 }
-.gameplay-info .point-chip:hover {
+.gameplay-points .point-chip:hover {
   background: rgba(220, 115, 191, 0.15);
   border-color: rgba(220, 115, 191, 0.5);
   transform: translateY(-1px);
 }
-.gameplay-info .point-chip i { font-size: 0.95rem; }
-.gameplay-info .point-chip span {
+.gameplay-points .point-chip i { font-size: 0.95rem; }
+.gameplay-points .point-chip span {
   font-weight: 700;
   letter-spacing: 0.4px;
 }
-.gameplay-info .point-chip-star i { color: #fcd34d; }
-.gameplay-info .point-chip-coin i { color: #ef9886; }
+.gameplay-points .point-chip-star i { color: #fcd34d; }
+.gameplay-points .point-chip-coin i { color: #ef9886; }
 
-.gameplay-info .info-item {
+.gameplay-bottom-row .info-item {
   background: rgba(228, 202, 222, 0.06);
   border: 1px solid rgba(220, 115, 191, 0.2);
   border-radius: 100px;
@@ -1524,7 +1543,7 @@ body::before {
   white-space: nowrap;
   transition: all 0.3s ease;
 }
-.gameplay-info .info-item strong { color: #f8ecf5; font-weight: 700; }
+.gameplay-bottom-row .info-item strong { color: #f8ecf5; font-weight: 700; }
 
 .gameplay-board {
   width: 100%;
@@ -1597,13 +1616,28 @@ body::before {
   .subject-icon { font-size: 2.8rem; margin-bottom: 8px; }
   .subject-card h3 { font-size: 1.2rem; }
   .subject-card p { font-size: 0.75rem; }
-  .gameplay-navbar-inner { padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
-  .gameplay-left { flex: 1 1 100%; gap: 10px; }
+  
+  /* MOBILE LAYOUT FOR GAMEPLAY NAVBAR */
+  .gameplay-navbar-inner { 
+    flex-direction: column; 
+    align-items: stretch; 
+    padding: 10px 14px; 
+    gap: 10px; 
+  }
+  .gameplay-top-row {
+    width: 100%;
+    justify-content: space-between; /* Keeps title left, points right */
+  }
+  .gameplay-bottom-row {
+    width: 100%;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
   .gameplay-title { font-size: 1.05rem; }
-  .gameplay-info { flex: 1 1 100%; justify-content: center; gap: 6px; flex-wrap: wrap; }
-  .gameplay-info .info-item { font-size: 0.72rem; padding: 4px 11px; }
-  .gameplay-info .point-chip { height: 30px; padding: 3px 10px; font-size: 0.72rem; min-width: 58px; }
-  .gameplay-info .point-chip i { font-size: 0.85rem; }
+  .gameplay-bottom-row .info-item { font-size: 0.72rem; padding: 4px 11px; }
+  .gameplay-points .point-chip { height: 30px; padding: 3px 10px; font-size: 0.72rem; min-width: 58px; }
+  .gameplay-points .point-chip i { font-size: 0.85rem; }
   .gameplay-navbar .btn-back-top { padding: 6px 14px; font-size: 0.78rem; }
   .gameplay-board { padding: 16px 12px 28px; }
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; padding: 0 6px; }
@@ -1642,12 +1676,12 @@ body::before {
   .nav-right { gap: 6px; }
 
   .gameplay-navbar-inner { padding: 9px 12px; gap: 8px; }
-  .gameplay-left { gap: 8px; }
+  .gameplay-top-row { gap: 8px; }
   .gameplay-title { font-size: 0.95rem; }
   .gameplay-navbar .btn-back-top { padding: 5px 12px; font-size: 0.72rem; }
-  .gameplay-info { gap: 5px; }
-  .gameplay-info .info-item { font-size: 0.68rem; padding: 4px 9px; }
-  .gameplay-info .point-chip { height: 28px; padding: 3px 9px; font-size: 0.68rem; min-width: 52px; }
+  .gameplay-bottom-row { gap: 5px; }
+  .gameplay-bottom-row .info-item { font-size: 0.68rem; padding: 4px 9px; }
+  .gameplay-points .point-chip { height: 28px; padding: 3px 9px; font-size: 0.68rem; min-width: 52px; }
   .gameplay-board { padding: 14px 8px 24px; }
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; padding: 0 4px; }
   .card-item { max-width: 120px; }
@@ -1689,13 +1723,13 @@ body::before {
   .subject-card h3 { font-size: 1.1rem; }
   .subject-card p { font-size: 0.7rem; }
   .gameplay-navbar-inner { padding: 8px 10px; gap: 6px; }
-  .gameplay-left { gap: 6px; }
+  .gameplay-top-row { gap: 6px; }
   .gameplay-title { font-size: 0.88rem; }
   .gameplay-navbar .btn-back-top { padding: 4px 10px; font-size: 0.68rem; }
-  .gameplay-info { gap: 4px; }
-  .gameplay-info .info-item { font-size: 0.62rem; padding: 3px 8px; }
-  .gameplay-info .point-chip { height: 26px; padding: 2px 8px; font-size: 0.62rem; min-width: 46px; }
-  .gameplay-info .point-chip i { font-size: 0.72rem; }
+  .gameplay-bottom-row { gap: 4px; }
+  .gameplay-bottom-row .info-item { font-size: 0.62rem; padding: 3px 8px; }
+  .gameplay-points .point-chip { height: 26px; padding: 2px 8px; font-size: 0.62rem; min-width: 46px; }
+  .gameplay-points .point-chip i { font-size: 0.72rem; }
   .gameplay-board { padding: 12px 6px 20px; }
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; padding: 0 2px; }
   .card-item { max-width: 108px; }
@@ -1721,15 +1755,15 @@ body::before {
   .gameplay-overlay { padding: 0 !important; }
   .player-level-box { min-width: 150px; left: -6px; }
   .point-chip { padding: 2px 6px; font-size: 0.65rem; height: 26px; }
-  .gameplay-info .point-chip { padding: 2px 6px; font-size: 0.58rem; height: 24px; min-width: 42px; }
-  .gameplay-info .point-chip i { font-size: 0.68rem; }
+  .gameplay-points .point-chip { padding: 2px 6px; font-size: 0.58rem; height: 24px; min-width: 42px; }
+  .gameplay-points .point-chip i { font-size: 0.68rem; }
 }
 
 @media (max-width: 360px) {
   .gameplay-navbar-inner { padding: 7px 8px; gap: 5px; }
   .gameplay-title { font-size: 0.8rem; }
   .gameplay-navbar .btn-back-top { padding: 4px 8px; font-size: 0.62rem; }
-  .gameplay-info .info-item { font-size: 0.56rem; padding: 2px 6px; }
+  .gameplay-bottom-row .info-item { font-size: 0.56rem; padding: 2px 6px; }
   .gameplay-board { padding: 10px 4px 18px; }
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 6px; padding: 0; }
   .card-item { max-width: 96px; }
