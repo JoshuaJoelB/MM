@@ -4,10 +4,12 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ---- Get subject & level from URL ----
+  // ---- Get level & subject from URL (with filename fallback) ----
   const urlParams = new URLSearchParams(window.location.search);
-  const level = parseInt(urlParams.get('level')) || 1;
-  const subject = urlParams.get('subject') || 'computer';
+  const level   = parseInt(urlParams.get('level')) || 1;
+  const subject = urlParams.get('subject')
+                || (window.location.pathname.match(/Gameplay-(\w+)\.html/)?.[1])
+                || 'computer';
 
   // ---- PROGRESSION: verify level is unlocked ----
   const storageKey = `matchMonster_unlocked_${subject}`;
@@ -18,16 +20,22 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  // ---- Calculate cards based on level ----
+  // ---- Card math ----
   const totalCards = 4 + level * 2;
-  const pairs = totalCards / 2;
+  const pairs      = totalCards / 2;
+
+  // ---- Points calculation ----
+  const STARS_PER_MATCH = 5;                       // 5 stars per matched pair
+  const COINS_BASE      = 10;                      // base coins for completing a level
+  const COINS_PER_LEVEL = level * 5;               // +5 coins per level number
+  const starsEarned     = pairs * STARS_PER_MATCH;
+  const coinsEarned     = COINS_BASE + COINS_PER_LEVEL;
 
   // ---- Emoji pool ----
-  const emojiPool = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🦄', '🐧', '🐦', '🐤', '🐣', '🐥', '🦆', '🦅', '🦉', '🐴', '🦋', '🐞', '🐝', '🦀', '🐠', '🐟', '🐡', '🐙', '🦑', '🐬', '🐳', '🐋', '🦈', '🐊', '🐅', '🐆', '🦓', '🦍', '🐘', '🦏', '🐪', '🐫', '🦒', '🐃', '🐂', '🐄', '🐖', '🐏', '🐑', '🐐', '🦌', '🐕', '🐩', '🐈', '🐓', '🦃', '🦚', '🦜', '🦢', '🕊️', '🐇', '🦝', '🦡', '🦨', '🦔', '🦥', '🐿️'];
+  const emojiPool = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🦄','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉','🐴','🦋','🐞','🐝','🦀','🐠','🐟','🐡','🐙','🦑','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🐘','🦏','🐪','🐫','🦒','🐃','🐂','🐄','🐖','🐏','🐑','🐐','🦌','🐕','🐩','🐈','🐓','🦃','🦚','🦜','🦢','🕊️','🐇','🦝','🦡','🦨','🦔','🦥','🐿️'];
 
   const selectedEmojis = emojiPool.slice(0, pairs);
 
-  // ---- Build deck ----
   let deck = [...selectedEmojis, ...selectedEmojis];
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -38,17 +46,21 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   deck = shuffle(deck);
 
-  // ---- DOM refs ----
-  const grid = document.getElementById('cardGrid');
+  // ---- DOM ----
+  const grid         = document.getElementById('cardGrid');
   const levelDisplay = document.getElementById('levelDisplay');
   const movesDisplay = document.getElementById('movesDisplay');
   const timerDisplay = document.getElementById('timerDisplay');
-  const winOverlay = document.getElementById('winOverlay');
-  const winMoves = document.getElementById('winMoves');
-  const winTime = document.getElementById('winTime');
+  const winOverlay   = document.getElementById('winOverlay');
+  const winMoves     = document.getElementById('winMoves');
+  const winTime      = document.getElementById('winTime');
   const nextLevelBtn = document.getElementById('btnNextLevel');
 
-  // ---- Game state ----
+  // Win overlay reward fields (may be missing on old pages — safe-guarded)
+  const winStarsEarned = document.getElementById('winStarsEarned');
+  const winCoinsEarned = document.getElementById('winCoinsEarned');
+
+  // ---- State ----
   let flippedCards = [];
   let matchedPairs = 0;
   let moves = 0;
@@ -57,55 +69,11 @@ document.addEventListener('DOMContentLoaded', function() {
   let seconds = 0;
   let gameStarted = false;
 
-  // ---- Display level ----
   if (levelDisplay) levelDisplay.textContent = level;
 
-  // ---- Calculate the most balanced grid layout ----
-  function calculateGrid(totalCards) {
-    // Find the factor pair closest to sqrt (most balanced)
-    let bestCols = 1;
-    let bestRows = totalCards;
-    let bestDiff = Math.abs(1 - totalCards);
-    
-    for (let c = 1; c <= Math.ceil(Math.sqrt(totalCards)); c++) {
-      if (totalCards % c === 0) {
-        const r = totalCards / c;
-        const diff = Math.abs(c - r);
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          bestCols = c;
-          bestRows = r;
-        }
-      }
-    }
-    
-    // Ensure columns are the larger dimension for landscape display
-    // (makes better use of screen width on most devices)
-    if (bestCols < bestRows) {
-      [bestCols, bestRows] = [bestRows, bestCols];
-    }
-    
-    // Cap columns at 6 to prevent too many on smaller screens
-    if (bestCols > 6) {
-      bestCols = 6;
-      bestRows = Math.ceil(totalCards / bestCols);
-    }
-    
-    // For Level 1 (6 cards), explicitly use 3 columns × 2 rows
-    if (totalCards === 6) {
-      bestCols = 3;
-      bestRows = 2;
-    }
-    
-    return { cols: bestCols, rows: bestRows };
-  }
-
-    // ---- Render cards (CSS handles responsive columns) ----
+  // ---- Render ----
   function renderCards() {
     grid.innerHTML = '';
-    // The CSS grid with auto-fit + minmax handles all column changes
-    // No need to calculate columns in JavaScript!
-
     deck.forEach((emoji, index) => {
       const div = document.createElement('div');
       div.className = 'card-item';
@@ -114,28 +82,23 @@ document.addEventListener('DOMContentLoaded', function() {
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
-      // ---- BACK FACE ----
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
       inner.appendChild(back);
 
-      // ---- FRONT FACE (Blue Card) ----
       const front = document.createElement('div');
       front.className = 'card-face card-face-front';
 
-      // 1. Card Number (top-left)
       const number = document.createElement('span');
       number.className = 'card-number';
       number.textContent = String(index + 1).padStart(2, '0');
       front.appendChild(number);
 
-      // 2. Emoji (center)
       const emojiSpan = document.createElement('span');
       emojiSpan.className = 'card-emoji';
       emojiSpan.textContent = emoji;
       front.appendChild(emojiSpan);
 
-      // 3. Footer (bottom bar)
       const footer = document.createElement('div');
       footer.className = 'card-footer';
 
@@ -151,14 +114,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       front.appendChild(footer);
       inner.appendChild(front);
-
-      // ---- FINALIZE ----
       div.appendChild(inner);
       div.addEventListener('click', () => onCardClick(index));
       grid.appendChild(div);
     });
   }
-  // ---- Update stats ----
+
   function updateStats() {
     if (movesDisplay) movesDisplay.textContent = moves;
   }
@@ -172,12 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (timerDisplay) timerDisplay.textContent = seconds + 's';
     }, 1000);
   }
-
-  function stopTimer() {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-
+  function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
   function resetTimer() {
     stopTimer();
     seconds = 0;
@@ -189,14 +145,11 @@ document.addEventListener('DOMContentLoaded', function() {
   function onCardClick(index) {
     if (isLocked) return;
     const card = deck[index];
-    const el = grid.children[index];
+    const el   = grid.children[index];
     if (!el) return;
     if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
 
-    if (!gameStarted) {
-      gameStarted = true;
-      startTimer();
-    }
+    if (!gameStarted) { gameStarted = true; startTimer(); }
 
     el.classList.add('flipped');
     flippedCards.push({ index, el, card });
@@ -208,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // ---- Check match ----
   function checkMatch() {
     isLocked = true;
     const [first, second] = flippedCards;
@@ -234,11 +186,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // ---- Win – unlock next level, save completion ----
+  // ---- Win ----
   function showWin() {
     if (winMoves) winMoves.textContent = moves;
-    if (winTime) winTime.textContent = seconds + 's';
+    if (winTime)  winTime.textContent  = seconds + 's';
+
+    // Show points earned in the win modal
+    if (winStarsEarned) winStarsEarned.textContent = '+' + starsEarned;
+    if (winCoinsEarned) winCoinsEarned.textContent = '+' + coinsEarned;
+
     if (winOverlay) winOverlay.classList.add('show');
+
+    // ----- REGISTER GLOBAL PLAYER-LEVEL COMPLETION -----
+    if (typeof window.completeLevel === 'function') {
+      window.completeLevel(subject, level);
+    }
+
+    // ----- ADD REWARDS TO GLOBAL POINTS -----
+    // We store points in the same keys used by player-level.js:
+    //   totalMatches  → stars
+    //   gamesPlayed   → impacts coins (gamesPlayed * 10 + completions * 25)
+    // So we bump totalMatches by pairs and gamesPlayed by 1,
+    // which will make the star chip increase by (pairs * 5) — no wait.
+    // Simpler: keep a dedicated starsTotal / coinsTotal and layer it on top.
+    const currentStars = parseInt(localStorage.getItem('starsTotal') || '0');
+    const currentCoins = parseInt(localStorage.getItem('coinsTotal') || '0');
+    localStorage.setItem('starsTotal', currentStars + starsEarned);
+    localStorage.setItem('coinsTotal', currentCoins + coinsEarned);
+
+    // Refresh navbar chips using player-level.js
+    if (typeof window.updatePlayerLevelBox === 'function') {
+      window.updatePlayerLevelBox();
+    }
 
     // ----- UNLOCK NEXT LEVEL -----
     const nextLevel = level + 1;
@@ -247,24 +226,15 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!unlocked.includes(nextLevel)) {
         unlocked.push(nextLevel);
         localStorage.setItem(storageKey, JSON.stringify(unlocked));
-        console.log(`🎉 Unlocked Level ${nextLevel} for ${subject}!`);
       }
     }
 
-    // ----- MARK CURRENT LEVEL AS COMPLETED -----
-    const completedKey = `matchMonster_completed_${subject}`;
-    let completed = JSON.parse(localStorage.getItem(completedKey)) || [];
-    if (!completed.includes(level)) {
-      completed.push(level);
-      localStorage.setItem(completedKey, JSON.stringify(completed));
-    }
-
-    // ----- UPDATE NEXT LEVEL BUTTON -----
+    // ----- NEXT LEVEL BUTTON -----
     if (nextLevelBtn) {
       if (nextLevel <= 10) {
         nextLevelBtn.innerHTML = `<i class="fas fa-arrow-right me-2"></i> Next Level`;
         nextLevelBtn.onclick = function() {
-          window.location.href = `Gameplay-${subject}.html?level=${nextLevel}`;
+          window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
         };
         nextLevelBtn.style.display = 'inline-block';
       } else {
@@ -275,46 +245,39 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // ----- Save global stats -----
+    // ----- Global stats -----
     const stats = {
-      gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-      bestTime: localStorage.getItem('bestTime') || null,
+      gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0'),
+      bestTime:     localStorage.getItem('bestTime') || null,
       totalMatches: parseInt(localStorage.getItem('totalMatches') || '0'),
-      rewards: parseInt(localStorage.getItem('rewardsCount') || '0')
+      rewards:      parseInt(localStorage.getItem('rewardsCount') || '0')
     };
     stats.gamesPlayed += 1;
-    if (stats.bestTime === null || seconds < stats.bestTime) {
-      stats.bestTime = seconds;
-    }
+    if (stats.bestTime === null || seconds < stats.bestTime) stats.bestTime = seconds;
     stats.totalMatches += pairs;
     stats.rewards += 1;
-    localStorage.setItem('gamesPlayed', stats.gamesPlayed);
-    localStorage.setItem('bestTime', stats.bestTime);
+    localStorage.setItem('gamesPlayed',  stats.gamesPlayed);
+    localStorage.setItem('bestTime',     stats.bestTime);
     localStorage.setItem('totalMatches', stats.totalMatches);
     localStorage.setItem('rewardsCount', stats.rewards);
   }
 
-  // ---- Go back to Levels ----
   function goToLevels() {
     window.location.href = `../Level.html?subject=${subject}`;
   }
 
-  // ---- Event listeners ----
   document.getElementById('btnLevels')?.addEventListener('click', goToLevels);
 
-  // ---- Keyboard shortcut ----
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-      if (winOverlay.classList.contains('show')) {
+      if (winOverlay && winOverlay.classList.contains('show')) {
         winOverlay.classList.remove('show');
       }
       goToLevels();
     }
   });
 
-  // ---- Initialize ----
   renderCards();
   updateStats();
   resetTimer();
-
 });

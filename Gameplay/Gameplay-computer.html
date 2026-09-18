@@ -17,13 +17,11 @@
     <div class="home-bg">
       <div class="gameplay-overlay">
 
-        <!-- ========================================================== -->
-        <!-- NAVBAR                                                     -->
-        <!-- ========================================================== -->
+        <!-- NAVBAR -->
         <header class="gameplay-navbar">
           <div class="gameplay-navbar-inner">
 
-            <!-- LEFT: back button + title -->
+            <!-- LEFT: back button + title (no emoji) -->
             <div class="gameplay-left">
               <a href="../Level.html?subject=computer" class="btn btn-back-top">
                 <i class="fas fa-arrow-left me-1"></i> Levels
@@ -31,37 +29,37 @@
               <h1 class="gameplay-title">Computer</h1>
             </div>
 
-            <!-- RIGHT: stats -->
+            <!-- RIGHT: points + level info -->
             <div class="gameplay-info">
-              <span class="info-item">
-                Level: <strong id="levelDisplay">1</strong>
-              </span>
-              <span class="info-item">
-                Moves: <strong id="movesDisplay">0</strong>
-              </span>
-              <span class="info-item">
-                Time: <strong id="timerDisplay">0s</strong>
-              </span>
+              <div class="point-chip point-chip-star" title="Stars earned">
+                <i class="fas fa-star"></i>
+                <span data-nav-stars>0</span>
+              </div>
+              <div class="point-chip point-chip-coin" title="Coins earned">
+                <i class="fas fa-coins"></i>
+                <span data-nav-coins>0</span>
+              </div>
+
+              <span class="info-item">Level: <strong id="levelDisplay">1</strong></span>
+              <span class="info-item">Moves: <strong id="movesDisplay">0</strong></span>
+              <span class="info-item">Time:  <strong id="timerDisplay">0s</strong></span>
             </div>
 
           </div>
         </header>
 
-        <!-- ========================================================== -->
-        <!-- GAME BOARD                                                  -->
-        <!-- ========================================================== -->
+        <!-- GAME BOARD -->
         <main class="gameplay-board">
           <div class="card-grid" id="cardGrid"></div>
         </main>
 
-        <!-- ========================================================== -->
-        <!-- WIN OVERLAY                                                 -->
-        <!-- ========================================================== -->
+        <!-- WIN OVERLAY -->
         <div id="winOverlay" class="win-overlay">
           <div class="win-box">
             <span class="win-icon">🏆</span>
             <h2>Level Complete!</h2>
             <p>You matched all the cards!</p>
+
             <div class="win-stats">
               <div>
                 <span class="num" id="winMoves">0</span>
@@ -71,11 +69,23 @@
                 <span class="num" id="winTime">0s</span>
                 <span class="label">Time</span>
               </div>
-              <div>
-                <span class="num">⭐</span>
-                <span class="label">Reward</span>
+            </div>
+
+            <!-- REWARDS EARNED -->
+            <div class="win-rewards-title">Points Earned</div>
+            <div class="win-rewards">
+              <div class="win-reward-item win-reward-star">
+                <i class="fas fa-star"></i>
+                <span class="win-reward-value" id="winStarsEarned">+0</span>
+                <span class="win-reward-label">Stars</span>
+              </div>
+              <div class="win-reward-item win-reward-coin">
+                <i class="fas fa-coins"></i>
+                <span class="win-reward-value" id="winCoinsEarned">+0</span>
+                <span class="win-reward-label">Coins</span>
               </div>
             </div>
+
             <div class="win-buttons">
               <button class="btn-win-home" id="btnLevels">
                 <i class="fas fa-map me-1"></i> Levels
@@ -91,7 +101,9 @@
     </div>
   </div>
 
+  <script src="../script/player-level.js"></script>
   <script src="../script/gameplay.js"></script>
+  <script src="../script/cloud-loader.js"></script>
   <script src="../script/clouds.js"></script>
 </body>
 </html>

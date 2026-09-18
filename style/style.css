@@ -359,7 +359,6 @@ body::before {
   min-height: 66px;
 }
 
-/* LEFT – placeholder for the absolutely-positioned level box */
 .nav-left {
   position: relative;
   min-width: 0;
@@ -367,7 +366,6 @@ body::before {
   height: 1px;
 }
 
-/* RIGHT – points + icon buttons */
 .nav-right {
   display: flex;
   align-items: center;
@@ -376,12 +374,12 @@ body::before {
 }
 
 /* ================================================================
-   PLAYER LEVEL BOX – pushed further left (nearly flush)
+   PLAYER LEVEL BOX
    ================================================================ */
 .player-level-box {
   position: absolute;
   top: calc(100% - 22px);
-  left: -20px;                  /* ← pushes the box past the navbar's 24px left padding */
+  left: -20px;
   z-index: 1060;
   min-width: 300px;
   padding: 16px 22px 18px;
@@ -535,7 +533,6 @@ body::before {
   font-family: 'Irish Grover', cursive;
 }
 
-/* Fallback for other pages */
 .btn-icon {
   background: rgba(228, 202, 222, 0.06);
   border: 1px solid rgba(220, 115, 191, 0.2);
@@ -1006,6 +1003,67 @@ body::before {
   letter-spacing: 2px;
   text-transform: uppercase;
 }
+
+/* ----- Win modal – points earned block ----- */
+.win-rewards-title {
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.85rem;
+  color: #dc73bf;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 8px 0 10px;
+  text-shadow: 0 0 20px rgba(220, 115, 191, 0.4);
+}
+
+.win-rewards {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+.win-reward-item {
+  flex: 1 1 0;
+  max-width: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 10px;
+  background: rgba(228, 202, 222, 0.05);
+  border: 1px solid rgba(220, 115, 191, 0.18);
+  border-radius: 16px;
+  font-family: 'Irish Grover', cursive;
+  transition: all 0.25s ease;
+}
+
+.win-reward-item:hover {
+  background: rgba(220, 115, 191, 0.1);
+  border-color: rgba(220, 115, 191, 0.4);
+  transform: translateY(-2px);
+}
+
+.win-reward-item i { font-size: 1.4rem; }
+
+.win-reward-value {
+  font-family: 'Keania One', cursive;
+  font-size: 1.35rem;
+  color: #f8ecf5;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.win-reward-label {
+  font-size: 0.58rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(228, 202, 222, 0.55);
+}
+
+.win-reward-star i { color: #fcd34d; }
+.win-reward-coin i { color: #ef9886; }
+
 .btn-win-play {
   padding: 8px 24px;
   font-family: 'Irish Grover', cursive;
@@ -1424,6 +1482,37 @@ body::before {
   min-width: 0;
 }
 .gameplay-info { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* ----- Point chips inside the gameplay navbar ----- */
+.gameplay-info .point-chip {
+  height: 34px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  min-width: 66px;
+  gap: 5px;
+  background: rgba(228, 202, 222, 0.06);
+  border: 1px solid rgba(220, 115, 191, 0.2);
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  color: #f8ecf5;
+  transition: all 0.25s ease;
+  cursor: default;
+  font-family: 'Irish Grover', cursive;
+}
+.gameplay-info .point-chip:hover {
+  background: rgba(220, 115, 191, 0.15);
+  border-color: rgba(220, 115, 191, 0.5);
+  transform: translateY(-1px);
+}
+.gameplay-info .point-chip i { font-size: 0.95rem; }
+.gameplay-info .point-chip span {
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+.gameplay-info .point-chip-star i { color: #fcd34d; }
+.gameplay-info .point-chip-coin i { color: #ef9886; }
+
 .gameplay-info .info-item {
   background: rgba(228, 202, 222, 0.06);
   border: 1px solid rgba(220, 115, 191, 0.2);
@@ -1439,6 +1528,7 @@ body::before {
   transition: all 0.3s ease;
 }
 .gameplay-info .info-item strong { color: #f8ecf5; font-weight: 700; }
+
 .gameplay-board {
   width: 100%;
   max-width: 1100px;
@@ -1513,8 +1603,10 @@ body::before {
   .gameplay-navbar-inner { padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
   .gameplay-left { flex: 1 1 100%; gap: 10px; }
   .gameplay-title { font-size: 1.05rem; }
-  .gameplay-info { flex: 1 1 100%; justify-content: center; gap: 6px; }
+  .gameplay-info { flex: 1 1 100%; justify-content: center; gap: 6px; flex-wrap: wrap; }
   .gameplay-info .info-item { font-size: 0.72rem; padding: 4px 11px; }
+  .gameplay-info .point-chip { height: 30px; padding: 3px 10px; font-size: 0.72rem; min-width: 58px; }
+  .gameplay-info .point-chip i { font-size: 0.85rem; }
   .gameplay-navbar .btn-back-top { padding: 6px 14px; font-size: 0.78rem; }
   .gameplay-board { padding: 16px 12px 28px; }
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; padding: 0 6px; }
@@ -1558,6 +1650,7 @@ body::before {
   .gameplay-navbar .btn-back-top { padding: 5px 12px; font-size: 0.72rem; }
   .gameplay-info { gap: 5px; }
   .gameplay-info .info-item { font-size: 0.68rem; padding: 4px 9px; }
+  .gameplay-info .point-chip { height: 28px; padding: 3px 9px; font-size: 0.68rem; min-width: 52px; }
   .gameplay-board { padding: 14px 8px 24px; }
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; padding: 0 4px; }
   .card-item { max-width: 120px; }
@@ -1604,6 +1697,8 @@ body::before {
   .gameplay-navbar .btn-back-top { padding: 4px 10px; font-size: 0.68rem; }
   .gameplay-info { gap: 4px; }
   .gameplay-info .info-item { font-size: 0.62rem; padding: 3px 8px; }
+  .gameplay-info .point-chip { height: 26px; padding: 2px 8px; font-size: 0.62rem; min-width: 46px; }
+  .gameplay-info .point-chip i { font-size: 0.72rem; }
   .gameplay-board { padding: 12px 6px 20px; }
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; padding: 0 2px; }
   .card-item { max-width: 108px; }
@@ -1618,12 +1713,19 @@ body::before {
   .game-stats { gap: 6px; }
   .stat-item { font-size: 0.55rem; padding: 2px 10px; }
   .btn-back-top { top: 12px; left: 12px; padding: 6px 14px; font-size: 0.75rem; }
+
+  .win-reward-item { padding: 10px 6px; }
+  .win-reward-value { font-size: 1.1rem; }
+  .win-reward-label { font-size: 0.52rem; }
+  .win-rewards-title { font-size: 0.75rem; letter-spacing: 2px; }
 }
 
 @media (max-width: 400px) {
   .gameplay-overlay { padding: 0 !important; }
   .player-level-box { min-width: 150px; left: -6px; }
   .point-chip { padding: 2px 6px; font-size: 0.65rem; height: 26px; }
+  .gameplay-info .point-chip { padding: 2px 6px; font-size: 0.58rem; height: 24px; min-width: 42px; }
+  .gameplay-info .point-chip i { font-size: 0.68rem; }
 }
 
 @media (max-width: 360px) {
@@ -1639,6 +1741,50 @@ body::before {
   .card-number { font-size: 0.4rem; padding: 1px 5px; }
   .card-bonus { font-size: 0.3rem; }
   .card-footer { padding: 2px 4px; }
+}
+
+/* ================================================================
+   FLOATING PLAYER LEVEL BOX – used on Level.html (top-right corner)
+   ================================================================ */
+.player-level-box-floating {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  left: auto;
+  z-index: 1000;
+  min-width: 220px;
+  animation: fadeUp 0.5s ease;
+}
+
+@media (max-width: 768px) {
+  .player-level-box-floating {
+    top: 16px;
+    right: 16px;
+    min-width: 190px;
+    padding: 12px 16px 14px;
+  }
+}
+
+@media (max-width: 575px) {
+  .player-level-box-floating {
+    top: 12px;
+    right: 10px;
+    min-width: 160px;
+    padding: 10px 14px 12px;
+    border-radius: 14px;
+  }
+  .player-level-box-floating .player-level-number { font-size: 1.4rem; }
+  .player-level-box-floating .player-level-progress-text { font-size: 0.72rem; }
+  .player-level-box-floating .player-progress-track { height: 7px; }
+}
+
+@media (max-width: 400px) {
+  .player-level-box-floating {
+    min-width: 140px;
+    padding: 8px 12px 10px;
+  }
+  .player-level-box-floating .player-level-number { font-size: 1.2rem; }
+  .player-level-box-floating .player-level-progress-text { font-size: 0.65rem; }
 }
 
 /* ================================================================
