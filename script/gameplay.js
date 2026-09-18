@@ -1,21 +1,44 @@
 /* ================================================================
    GAMEPLAY.JS – shared logic for all subject gameplay pages
+   - Points earned on win
+   - Star currency to unlock next level
+   - Syncs chips on navbar + gameplay navbar
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ---- Get level & subject from URL (with filename fallback) ----
+  // ============================================================
+  // SYNC NAVBAR CHIPS ON PAGE LOAD
+  // ============================================================
+  function syncChips() {
+    if (typeof window.updatePlayerLevelBox === 'function') {
+      window.updatePlayerLevelBox();
+    } else {
+      let tries = 0;
+      const retry = setInterval(function () {
+        if (typeof window.updatePlayerLevelBox === 'function') {
+          window.updatePlayerLevelBox();
+          clearInterval(retry);
+        } else if (++tries > 10) {
+          clearInterval(retry);
+        }
+      }, 100);
+    }
+  }
+  syncChips();
+
+  // ---- Get level & subject from URL ----
   const urlParams = new URLSearchParams(window.location.search);
   const level   = parseInt(urlParams.get('level')) || 1;
   const subject = urlParams.get('subject')
                 || (window.location.pathname.match(/Gameplay-(\w+)\.html/)?.[1])
                 || 'computer';
 
-  // ---- PROGRESSION: verify level is unlocked ----
+  // ---- Verify level is unlocked ----
   const storageKey = `matchMonster_unlocked_${subject}`;
   let unlockedLevels = JSON.parse(localStorage.getItem(storageKey)) || [1];
   if (!unlockedLevels.includes(level)) {
-    alert('This level is locked! Complete previous levels first.');
+    alert('This level is locked! Complete previous levels or unlock it with stars.');
     window.location.href = `../Level.html?subject=${subject}`;
     return;
   }
@@ -25,9 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const pairs      = totalCards / 2;
 
   // ---- Points calculation ----
-  const STARS_PER_MATCH = 5;                       // 5 stars per matched pair
-  const COINS_BASE      = 10;                      // base coins for completing a level
-  const COINS_PER_LEVEL = level * 5;               // +5 coins per level number
+  const STARS_PER_MATCH = 5;
+  const COINS_BASE      = 10;
+  const COINS_PER_LEVEL = level * 5;
   const starsEarned     = pairs * STARS_PER_MATCH;
   const coinsEarned     = COINS_BASE + COINS_PER_LEVEL;
 
@@ -55,19 +78,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const winMoves     = document.getElementById('winMoves');
   const winTime      = document.getElementById('winTime');
   const nextLevelBtn = document.getElementById('btnNextLevel');
-
-  // Win overlay reward fields (may be missing on old pages — safe-guarded)
   const winStarsEarned = document.getElementById('winStarsEarned');
   const winCoinsEarned = document.getElementById('winCoinsEarned');
 
   // ---- State ----
-  let flippedCards = [];
-  let matchedPairs = 0;
-  let moves = 0;
-  let isLocked = false;
+  let flippedCards  = [];
+  let matchedPairs  = 0;
+  let moves         = 0;
+  let isLocked      = false;
   let timerInterval = null;
-  let seconds = 0;
-  let gameStarted = false;
+  let seconds       = 0;
+  let gameStarted   = false;
 
   if (levelDisplay) levelDisplay.textContent = level;
 
@@ -191,66 +212,77 @@ document.addEventListener('DOMContentLoaded', function() {
     if (winMoves) winMoves.textContent = moves;
     if (winTime)  winTime.textContent  = seconds + 's';
 
-    // Show points earned in the win modal
-    if (winStarsEarned) winStarsEarned.textContent = '+' + starsEarned;
-    if (winCoinsEarned) winCoinsEarned.textContent = '+' + coinsEarned;
+    // ----- 1. Add reward points to localStorage FIRST -----
+    const currentStars = parseInt(localStorage.getItem('starsTotal') || '0', 10);
+    const currentCoins = parseInt(localStorage.getItem('coinsTotal') || '0', 10);
 
+    const newStarsTotal = currentStars + starsEarned;
+    const newCoinsTotal = currentCoins + coinsEarned;
+
+    localStorage.setItem('starsTotal', newStarsTotal);
+    localStorage.setItem('coinsTotal', newCoinsTotal);
+
+    // ----- 2. Read the SAME totals the navbar will display -----
+    const displayStars = parseInt(localStorage.getItem('starsTotal') || '0', 10);
+    const displayCoins = parseInt(localStorage.getItem('coinsTotal') || '0', 10);
+
+    // ----- 3. Push the same values into the modal -----
+    if (winStarsEarned) winStarsEarned.textContent = displayStars;
+    if (winCoinsEarned) winCoinsEarned.textContent = displayCoins;
+
+    // ----- 4. Show the overlay -----
     if (winOverlay) winOverlay.classList.add('show');
 
-    // ----- REGISTER GLOBAL PLAYER-LEVEL COMPLETION -----
+    // ----- 5. Register completion -----
     if (typeof window.completeLevel === 'function') {
       window.completeLevel(subject, level);
     }
 
-    // ----- ADD REWARDS TO GLOBAL POINTS -----
-    // We store points in the same keys used by player-level.js:
-    //   totalMatches  → stars
-    //   gamesPlayed   → impacts coins (gamesPlayed * 10 + completions * 25)
-    // So we bump totalMatches by pairs and gamesPlayed by 1,
-    // which will make the star chip increase by (pairs * 5) — no wait.
-    // Simpler: keep a dedicated starsTotal / coinsTotal and layer it on top.
-    const currentStars = parseInt(localStorage.getItem('starsTotal') || '0');
-    const currentCoins = parseInt(localStorage.getItem('coinsTotal') || '0');
-    localStorage.setItem('starsTotal', currentStars + starsEarned);
-    localStorage.setItem('coinsTotal', currentCoins + coinsEarned);
-
-    // Refresh navbar chips using player-level.js
+    // ----- 6. Refresh the navbar chips (same data as modal) -----
     if (typeof window.updatePlayerLevelBox === 'function') {
       window.updatePlayerLevelBox();
     }
 
-    // ----- UNLOCK NEXT LEVEL -----
+    // ----- 7. Build Unlock Next Level button -----
     const nextLevel = level + 1;
-    if (nextLevel <= 10) {
-      let unlocked = JSON.parse(localStorage.getItem(storageKey)) || [1];
-      if (!unlocked.includes(nextLevel)) {
-        unlocked.push(nextLevel);
-        localStorage.setItem(storageKey, JSON.stringify(unlocked));
-      }
-    }
 
-    // ----- NEXT LEVEL BUTTON -----
     if (nextLevelBtn) {
       if (nextLevel <= 10) {
-        nextLevelBtn.innerHTML = `<i class="fas fa-arrow-right me-2"></i> Next Level`;
-        nextLevelBtn.onclick = function() {
-          window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
+        nextLevelBtn.innerHTML = `<i class="fas fa-unlock me-2"></i> Unlock Next Level`;
+        nextLevelBtn.onclick = function () {
+          if (typeof window.tryUnlockLevel !== 'function') {
+            window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
+            return;
+          }
+          const result = window.tryUnlockLevel(subject, nextLevel);
+          if (result.ok) {
+            window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
+          } else if (result.reason === 'not_enough_stars') {
+            alert(
+              `⭐ Not enough stars!\n\n` +
+              `Level ${nextLevel} costs ${result.cost} stars.\n` +
+              `You have ${result.stars} stars.\n\n` +
+              `Play more levels to earn stars!`
+            );
+          } else if (result.reason === 'previous_locked') {
+            alert(`Complete the previous level first!`);
+          }
         };
         nextLevelBtn.style.display = 'inline-block';
       } else {
         nextLevelBtn.innerHTML = `<i class="fas fa-trophy me-2"></i> All Done`;
-        nextLevelBtn.onclick = function() {
+        nextLevelBtn.onclick = function () {
           window.location.href = `../Level.html?subject=${subject}`;
         };
       }
     }
 
-    // ----- Global stats -----
+    // ----- 8. Global stats -----
     const stats = {
-      gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0'),
+      gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
       bestTime:     localStorage.getItem('bestTime') || null,
-      totalMatches: parseInt(localStorage.getItem('totalMatches') || '0'),
-      rewards:      parseInt(localStorage.getItem('rewardsCount') || '0')
+      totalMatches: parseInt(localStorage.getItem('totalMatches') || '0', 10),
+      rewards:      parseInt(localStorage.getItem('rewardsCount') || '0', 10)
     };
     stats.gamesPlayed += 1;
     if (stats.bestTime === null || seconds < stats.bestTime) stats.bestTime = seconds;

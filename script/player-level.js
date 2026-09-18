@@ -1,7 +1,5 @@
 /* ================================================================
-   PLAYER-LEVEL.JS – global player level & progress across subjects
-   Every level completed in ANY subject adds +1 to the global counter.
-   3 completions → level up.
+   PLAYER-LEVEL.JS – global player level, points, and star currency
    ================================================================ */
 
 (function () {
@@ -9,11 +7,16 @@
 
   const SUBJECTS = ['computer', 'science', 'ap'];
   const LEVELS_PER_LEVEL = 3;
+  const UNLOCK_BASE_COST = 5;
 
-  // --------------------------------------------------------------
-  // Compute the player's total progress
-  // --------------------------------------------------------------
-    function getPlayerLevel() {
+  function getStarsTotal() {
+    return parseInt(localStorage.getItem('starsTotal') || '0', 10);
+  }
+  function getCoinsTotal() {
+    return parseInt(localStorage.getItem('coinsTotal') || '0', 10);
+  }
+
+  function getPlayerLevel() {
     let totalCompleted = 0;
     SUBJECTS.forEach(function (sub) {
       try {
@@ -26,65 +29,89 @@
     const progressInLevel = totalCompleted % LEVELS_PER_LEVEL;
     const progressPercent = (progressInLevel / LEVELS_PER_LEVEL) * 100;
 
-    // Stars & Coins now come from dedicated totals set by gameplay.js
-    const stars = parseInt(localStorage.getItem('starsTotal') || '0');
-    const coins = parseInt(localStorage.getItem('coinsTotal') || '0');
-
     return {
       total:    totalCompleted,
       level:    playerLevel,
       progress: progressInLevel,
       percent:  progressPercent,
-      stars:    stars,
-      coins:    coins
+      stars:    getStarsTotal(),
+      coins:    getCoinsTotal()
     };
   }
 
-  // --------------------------------------------------------------
-  // Update every visible player-level box on the page
-  // --------------------------------------------------------------
   function updatePlayerLevelBox() {
     const data = getPlayerLevel();
 
-    // Level number
-    document.querySelectorAll('[data-player-level-num]').forEach(function (el) {
+    document.querySelectorAll('[data-player-level-num]').forEach(el => {
       el.textContent = data.level;
     });
-
-    // Progress text (n / 3)
-    document.querySelectorAll('[data-player-progress-text]').forEach(function (el) {
+    document.querySelectorAll('[data-player-progress-text]').forEach(el => {
       el.textContent = data.progress + ' / ' + LEVELS_PER_LEVEL;
     });
-
-    // Progress bar fill
-    document.querySelectorAll('[data-player-progress-fill]').forEach(function (el) {
+    document.querySelectorAll('[data-player-progress-fill]').forEach(el => {
       el.style.width = data.percent + '%';
     });
-
-    // Points chips
-    document.querySelectorAll('[data-nav-stars]').forEach(function (el) {
+    document.querySelectorAll('[data-nav-stars]').forEach(el => {
       el.textContent = data.stars;
     });
-    document.querySelectorAll('[data-nav-coins]').forEach(function (el) {
+    document.querySelectorAll('[data-nav-coins]').forEach(el => {
       el.textContent = data.coins;
     });
   }
 
-  // --------------------------------------------------------------
-  // Public: register a level completion (called after a win)
-  // Returns the updated player data.
-  // --------------------------------------------------------------
+  function getUnlockCost(level) {
+    if (level <= 1) return 0;
+    return level * UNLOCK_BASE_COST;
+  }
+
+  function spendStars(amount) {
+    const current = getStarsTotal();
+    if (current < amount) return false;
+    localStorage.setItem('starsTotal', current - amount);
+    return true;
+  }
+
+  function tryUnlockLevel(subject, level) {
+    if (!SUBJECTS.includes(subject)) return { ok: false, reason: 'bad_subject' };
+
+    const unlockedKey = 'matchMonster_unlocked_' + subject;
+    let unlocked = [];
+    try { unlocked = JSON.parse(localStorage.getItem(unlockedKey) || '[1]'); } catch (e) { unlocked = [1]; }
+    if (!Array.isArray(unlocked)) unlocked = [1];
+
+    if (unlocked.includes(level)) {
+      return { ok: true, alreadyUnlocked: true };
+    }
+
+    if (level > 1 && !unlocked.includes(level - 1)) {
+      return { ok: false, reason: 'previous_locked' };
+    }
+
+    const cost  = getUnlockCost(level);
+    const stars = getStarsTotal();
+
+    if (stars < cost) {
+      return { ok: false, reason: 'not_enough_stars', cost: cost, stars: stars };
+    }
+
+    if (!spendStars(cost)) {
+      return { ok: false, reason: 'spend_failed', cost: cost, stars: stars };
+    }
+
+    unlocked.push(level);
+    localStorage.setItem(unlockedKey, JSON.stringify(unlocked));
+    updatePlayerLevelBox();
+    return { ok: true, cost: cost };
+  }
+
   function completeLevel(subject, level) {
     if (!SUBJECTS.includes(subject)) return getPlayerLevel();
 
     const key = 'matchMonster_completed_' + subject;
     let completed = [];
-    try {
-      completed = JSON.parse(localStorage.getItem(key) || '[]');
-    } catch (e) { completed = []; }
+    try { completed = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { completed = []; }
     if (!Array.isArray(completed)) completed = [];
 
-    // Only register if not already completed (avoid double counting)
     if (!completed.includes(level)) {
       completed.push(level);
       localStorage.setItem(key, JSON.stringify(completed));
@@ -94,12 +121,7 @@
     return getPlayerLevel();
   }
 
-  // --------------------------------------------------------------
-  // Auto-run on page load + when navbar finishes loading
-  // --------------------------------------------------------------
-  function boot() {
-    updatePlayerLevelBox();
-  }
+  function boot() { updatePlayerLevelBox(); }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
@@ -107,14 +129,21 @@
     boot();
   }
 
-  // Also re-run whenever the navbar loader finishes
   window.addEventListener('navbarLoaded', updatePlayerLevelBox);
-  // And when we come back to a page (bfcache)
-  window.addEventListener('pageshow', updatePlayerLevelBox);
+  window.addEventListener('pageshow',     updatePlayerLevelBox);
+  window.addEventListener('focus',        updatePlayerLevelBox);
+  window.addEventListener('storage',      updatePlayerLevelBox);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') updatePlayerLevelBox();
+  });
 
-  // Expose globally
   window.getPlayerLevel       = getPlayerLevel;
   window.updatePlayerLevelBox = updatePlayerLevelBox;
   window.completeLevel        = completeLevel;
+  window.getStarsTotal        = getStarsTotal;
+  window.getCoinsTotal        = getCoinsTotal;
+  window.getUnlockCost        = getUnlockCost;
+  window.spendStars           = spendStars;
+  window.tryUnlockLevel       = tryUnlockLevel;
 
 })();

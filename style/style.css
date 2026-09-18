@@ -1065,7 +1065,7 @@ body::before {
 .win-reward-coin i { color: #ef9886; }
 
 .btn-win-play {
-  padding: 8px 24px;
+  padding: 10px 24px;
   font-family: 'Irish Grover', cursive;
   border-radius: 100px;
   border: none;
@@ -1079,14 +1079,14 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-width: 120px;
+  width: 100%; /* Make button occupy full width */
 }
 .btn-win-play:hover {
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 8px 30px rgba(220, 115, 191, 0.55);
 }
 .btn-win-home {
-  padding: 8px 24px;
+  padding: 10px 24px;
   font-family: 'Irish Grover', cursive;
   border-radius: 100px;
   border: 1px solid rgba(220, 115, 191, 0.3);
@@ -1100,25 +1100,22 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-width: 120px;
+  width: 100%; /* Make button occupy full width */
 }
 .btn-win-home:hover {
   background: rgba(220, 115, 191, 0.2);
   border-color: rgba(220, 115, 191, 0.5);
   color: #fff;
 }
+
+/* Stack the buttons vertically instead of side-by-side */
 .win-box .win-buttons {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column; /* Stacks them vertically */
+  align-items: center;    /* Centers them horizontally */
   gap: 10px;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 320px;
+  width: 100%;             /* Lets them occupy the full modal width */
   margin: 0 auto;
-}
-@media (max-width: 420px) {
-  .win-box .win-buttons { flex-direction: column; align-items: center; gap: 8px; }
-  .btn-win-play, .btn-win-home { width: 100%; min-width: unset; }
 }
 
 /* ================================================================
@@ -1787,6 +1784,40 @@ body::before {
   .player-level-box-floating .player-level-progress-text { font-size: 0.65rem; }
 }
 
+/* ================================================================
+   ISLAND – star unlock price tag on locked levels
+   ================================================================ */
+.island-unlock-tag {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  font-family: 'Irish Grover', cursive;
+  font-size: 0.72rem;
+  color: #2a1a3a;
+  background: linear-gradient(135deg, #fcd34d, #f59e0b);
+  padding: 3px 9px;
+  border-radius: 100px;
+  border: 2px solid rgba(26, 16, 53, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  z-index: 3;
+  pointer-events: none;
+  animation: unlockPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes unlockPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
+}
+
+@media (max-width: 600px) {
+  .island-unlock-tag {
+    font-size: 0.6rem;
+    padding: 2px 7px;
+    top: -12px;
+    right: -12px;
+  }
+}
 /* ================================================================
    SCROLLBAR
    ================================================================ */

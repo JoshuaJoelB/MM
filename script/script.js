@@ -28,6 +28,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ---- HOME PAGE ----
   if (isHome) {
+
+    // ==============================================================
+    // SYNC NAVBAR CHIPS (stars + coins + player level)
+    // Runs immediately, then retries for ~1s in case the navbar
+    // and player-level.js inject slightly later.
+    // ==============================================================
+    function syncChips() {
+      if (typeof window.updatePlayerLevelBox === 'function') {
+        window.updatePlayerLevelBox();
+      }
+    }
+
+    syncChips();
+
+    let chipTries = 0;
+    const chipRetry = setInterval(function () {
+      syncChips();
+      if (++chipTries >= 10) clearInterval(chipRetry);
+    }, 100);
+
+    // Also re-run after navbar finishes injecting
+    window.addEventListener('navbarLoaded', syncChips);
+
+    // And re-run whenever the tab regains focus (returning from a game)
+    window.addEventListener('focus', syncChips);
+    window.addEventListener('pageshow', syncChips);
+
     initHomePage();
   }
 
@@ -95,6 +122,7 @@ function initSettings() {
       'This will erase:\n' +
       '• All stats (games, matches, rewards, best time)\n' +
       '• All unlocked & completed levels\n' +
+      '• All stars and coins\n' +
       '• Everything for Computer, Science, and AP\n\n' +
       'This cannot be undone!'
     );
@@ -106,6 +134,10 @@ function initSettings() {
     localStorage.removeItem('totalMatches');
     localStorage.removeItem('rewardsCount');
 
+    // ----- Clear POINTS (stars + coins) -----
+    localStorage.removeItem('starsTotal');
+    localStorage.removeItem('coinsTotal');
+
     // ----- Clear LEVEL PROGRESSION for ALL subjects -----
     ['computer', 'science', 'ap'].forEach(function (sub) {
       localStorage.removeItem('matchMonster_unlocked_' + sub);
@@ -114,7 +146,9 @@ function initSettings() {
 
     // ----- Refresh the UI ----
     if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
-    if (typeof window.updatePlayerStats === 'function') window.updatePlayerStats();
+    if (typeof window.updatePlayerLevelBox === 'function') {
+      window.updatePlayerLevelBox();
+    }
 
     // Close the settings modal
     const modalEl = document.getElementById('settingsModal');
@@ -125,7 +159,7 @@ function initSettings() {
 
     // Quiet, non-blocking notification
     const toast = document.createElement('div');
-    toast.textContent = ' Progress reset! Level 1 is unlocked.';
+    toast.textContent = '✅ Progress reset! Level 1 is unlocked.';
     toast.style.cssText = `
       position: fixed;
       bottom: 24px;

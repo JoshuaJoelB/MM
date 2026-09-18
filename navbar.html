@@ -8,26 +8,29 @@
       <div class="player-level-top">
         <div class="player-level-badge">
           <span class="player-level-label">LVL</span>
-          <span class="player-level-number" id="playerLevelNum">1</span>
+          <span class="player-level-number" data-player-level-num>1</span>
         </div>
-        <div class="player-level-progress-text" id="playerProgressText">0 / 3</div>
+        <div class="player-level-progress-text" data-player-progress-text>0 / 3</div>
       </div>
       <div class="player-progress-track">
-        <div class="player-progress-fill" id="playerProgressFill"></div>
+        <div class="player-progress-fill" data-player-progress-fill></div>
       </div>
     </div>
   </div>
 
+  <!-- RIGHT: points + icon buttons -->
   <div class="nav-right">
-    <!-- Points: Stars -->
-    <div class="point-chip point-chip-star" title="Stars earned from matches">
+
+    <!-- Stars -->
+    <div class="point-chip point-chip-star" title="Stars earned">
       <i class="fas fa-star"></i>
-      <span id="navStars">0</span>
+      <span data-nav-stars>0</span>
     </div>
-    <!-- Points: Coins -->
-    <div class="point-chip point-chip-coin" title="Coins earned from games">
+
+    <!-- Coins -->
+    <div class="point-chip point-chip-coin" title="Coins earned">
       <i class="fas fa-coins"></i>
-      <span id="navCoins">0</span>
+      <span data-nav-coins>0</span>
     </div>
 
     <!-- Inbox -->
@@ -35,6 +38,7 @@
       <i class="fas fa-inbox"></i>
       <span class="badge-notif">3</span>
     </button>
+
     <!-- Settings -->
     <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Settings">
       <i class="fas fa-cog"></i>
@@ -43,7 +47,7 @@
 </nav>
 
 <!-- ============================================================= -->
-<!-- INBOX MODAL                                                   -->
+<!-- INBOX MODAL – must be OUTSIDE the <nav> for Bootstrap         -->
 <!-- ============================================================= -->
 <div class="modal fade" id="inboxModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -89,7 +93,7 @@
 </div>
 
 <!-- ============================================================= -->
-<!-- SETTINGS MODAL                                                -->
+<!-- SETTINGS MODAL – must be OUTSIDE the <nav>                    -->
 <!-- ============================================================= -->
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

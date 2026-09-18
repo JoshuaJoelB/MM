@@ -18,9 +18,24 @@
     <div class="level-bg">
       <div class="level-overlay">
 
+        <!-- BACK TO SUBJECTS -->
         <a href="Subject.html" class="btn btn-back-top">
           <i class="fas fa-arrow-left me-2"></i> Subjects
         </a>
+
+        <!-- FLOATING PLAYER LEVEL BOX (top-right corner) -->
+        <div class="player-level-box player-level-box-floating">
+          <div class="player-level-top">
+            <div class="player-level-badge">
+              <span class="player-level-label">LVL</span>
+              <span class="player-level-number" data-player-level-num>1</span>
+            </div>
+            <div class="player-level-progress-text" data-player-progress-text>0 / 3</div>
+          </div>
+          <div class="player-progress-track">
+            <div class="player-progress-fill" data-player-progress-fill></div>
+          </div>
+        </div>
 
         <div class="level-content text-center">
           <h1 class="level-main-title">Island Map</h1>
@@ -35,148 +50,195 @@
     </div>
   </div>
 
-  <script src="script/cloud-loader.js"></script>
-  <script src="script/clouds.js"></script>
+  <!-- ========================================================== -->
+  <!-- PLAYER-LEVEL SCRIPT (must load BEFORE the inline script)    -->
+  <!-- ========================================================== -->
+  <script src="script/player-level.js"></script>
+
+  <!-- ========================================================== -->
+  <!-- INLINE LEVEL MAP SCRIPT                                     -->
+  <!-- ========================================================== -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const subject = urlParams.get('subject') || 'computer';
 
       const subjectNames = {
-        computer: 'Computer Science',
+        computer: 'Computer',
         science: 'Science',
         ap: 'AP'
       };
-      document.getElementById('subjectDisplay').textContent = subjectNames[subject] || 'Select a level';
+      document.getElementById('subjectDisplay').textContent =
+        subjectNames[subject] || 'Select a level';
 
-      // ----- PROGRESSION: get unlocked levels from localStorage -----
-      const storageKey = `matchMonster_unlocked_${subject}`;
-      let unlockedLevels = JSON.parse(localStorage.getItem(storageKey)) || [1];
-      
-      if (!unlockedLevels.includes(1)) {
-        unlockedLevels.push(1);
-        localStorage.setItem(storageKey, JSON.stringify(unlockedLevels));
+      // ----- HELPERS -----
+      function getUnlocked() {
+        try {
+          const arr = JSON.parse(localStorage.getItem('matchMonster_unlocked_' + subject) || '[1]');
+          return Array.isArray(arr) ? arr : [1];
+        } catch (e) { return [1]; }
+      }
+      function getCompleted() {
+        try {
+          const arr = JSON.parse(localStorage.getItem('matchMonster_completed_' + subject) || '[]');
+          return Array.isArray(arr) ? arr : [];
+        } catch (e) { return []; }
+      }
+      function getStars() {
+        return parseInt(localStorage.getItem('starsTotal') || '0', 10);
       }
 
-      const completedKey = `matchMonster_completed_${subject}`;
-      let completedLevels = JSON.parse(localStorage.getItem(completedKey)) || [];
-
-      // ----- Build the map -----
+      // ----- BUILD THE MAP -----
       const mapContainer = document.getElementById('levelMap');
-      const totalLevels = 10;
+      const totalLevels  = 10;
 
       const row1 = [1, 2, 3, 4, 5];
       const row2 = [10, 9, 8, 7, 6];
       const allLevels = [...row1, ...row2];
 
-      const row1Wrapper = document.createElement('div');
-      row1Wrapper.className = 'map-row';
-      const row2Wrapper = document.createElement('div');
-      row2Wrapper.className = 'map-row';
+      function renderMap() {
+        mapContainer.innerHTML = '';
 
-      allLevels.forEach((level, index) => {
-        const island = document.createElement('div');
-        island.className = 'island-item';
-        if (level === 1) island.classList.add('start-island');
-        if (level === 10) island.classList.add('end-island');
+        const unlockedLevels  = getUnlocked();
+        const completedLevels = getCompleted();
+        const currentStars    = getStars();
 
-        const isUnlocked = unlockedLevels.includes(level);
-        const isCompleted = completedLevels.includes(level);
+        const row1Wrapper = document.createElement('div');
+        row1Wrapper.className = 'map-row';
+        const row2Wrapper = document.createElement('div');
+        row2Wrapper.className = 'map-row';
 
-        const link = document.createElement('a');
-        if (isUnlocked) {
-          link.href = `Gameplay/Gameplay-${subject}.html?level=${level}`;
+        allLevels.forEach((level, index) => {
+          const island = document.createElement('div');
+          island.className = 'island-item';
+          if (level === 1)  island.classList.add('start-island');
+          if (level === 10) island.classList.add('end-island');
+
+          const isUnlocked  = unlockedLevels.includes(level);
+          const isCompleted = completedLevels.includes(level);
+
+          const link = document.createElement('a');
           link.className = 'island-link';
-        } else {
-          link.href = '#';
-          link.className = 'island-link locked';
-          link.style.cursor = 'not-allowed';
-          link.style.opacity = '0.4';
-          link.style.filter = 'grayscale(0.8)';
-          link.style.pointerEvents = 'none';
-        }
+          link.style.cursor = 'pointer';
 
-        // Lock icon for locked levels
-        if (!isUnlocked) {
-          const lockIcon = document.createElement('span');
-          lockIcon.className = 'island-lock';
-          lockIcon.textContent = '🔒';
-          lockIcon.style.cssText = `
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 1.2rem;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-          `;
-          island.appendChild(lockIcon);
-        }
+          if (isUnlocked) {
+            link.href = `Gameplay/Gameplay-${subject}.html?level=${level}&subject=${subject}`;
+          } else {
+            link.href = 'javascript:void(0)';
+          }
 
-        // ✅ GREEN COMPLETION – no checkmark icon, just green styling
-        if (isCompleted && isUnlocked) {
-          // Make the island green
-          link.style.borderColor = '#4ade80';
-          link.style.boxShadow = '0 0 30px rgba(74, 222, 128, 0.4), inset 0 0 20px rgba(74, 222, 128, 0.1)';
-          link.style.background = 'radial-gradient(circle at 30% 30%, #1a4a2a, #0a2a1a)';
-          // Green number
-          const numSpan = link.querySelector('.island-number');
-          if (numSpan) numSpan.style.color = '#4ade80';
-          // Optional: add a subtle green glow to the island container
-          island.style.filter = 'drop-shadow(0 0 20px rgba(74, 222, 128, 0.2))';
-        }
+          // Completed → green
+          if (isCompleted && isUnlocked) {
+            link.style.borderColor = '#4ade80';
+            link.style.boxShadow   = '0 0 30px rgba(74, 222, 128, 0.4), inset 0 0 20px rgba(74, 222, 128, 0.1)';
+            link.style.background  = 'radial-gradient(circle at 30% 30%, #1a4a2a, #0a2a1a)';
+          }
 
-        const number = document.createElement('span');
-        number.className = 'island-number';
-        number.textContent = level;
+          const number = document.createElement('span');
+          number.className = 'island-number';
+          number.textContent = level;
+          if (isCompleted && isUnlocked) number.style.color = '#4ade80';
 
-        const label = document.createElement('span');
-        label.className = 'island-label';
-        label.textContent = `Level ${level}`;
+          const label = document.createElement('span');
+          label.className = 'island-label';
+          label.textContent = `Level ${level}`;
 
-        link.appendChild(number);
-        link.appendChild(label);
-        island.appendChild(link);
+          link.appendChild(number);
+          link.appendChild(label);
 
-        // Add bridges
-        if (index < row1.length - 1 && level < 5) {
-          const bridge = document.createElement('div');
-          bridge.className = 'bridge-horizontal';
-          island.appendChild(bridge);
-        }
-        if (index === row1.length - 1) {
-          const bridgeV = document.createElement('div');
-          bridgeV.className = 'bridge-vertical';
-          island.appendChild(bridgeV);
-        }
-        if (index >= row1.length && index < allLevels.length - 1) {
-          const bridge = document.createElement('div');
-          bridge.className = 'bridge-horizontal';
-          island.appendChild(bridge);
-        }
+          // ---- LOCKED → show lock + star cost ----
+          if (!isUnlocked) {
+            link.style.opacity = '0.6';
+            link.style.filter = 'grayscale(0.5)';
 
-        if (index < row1.length) {
-          row1Wrapper.appendChild(island);
-        } else {
-          row2Wrapper.appendChild(island);
-        }
-      });
+            const cost = (typeof window.getUnlockCost === 'function')
+                       ? window.getUnlockCost(level)
+                       : level * 5;
 
-      mapContainer.appendChild(row1Wrapper);
-      mapContainer.appendChild(row2Wrapper);
+            const lockTag = document.createElement('div');
+            lockTag.className = 'island-unlock-tag';
+            lockTag.innerHTML = `🔒 ${cost}⭐`;
+            island.appendChild(lockTag);
 
-      // ----- Progress info -----
-      const progressInfo = document.createElement('p');
-      progressInfo.className = 'progress-info mt-3';
-      progressInfo.style.cssText = `
-        font-family: 'Irish Grover', cursive;
-        color: rgba(196, 181, 253, 0.4);
-        font-size: 0.85rem;
-        letter-spacing: 2px;
-      `;
-      const completedCount = completedLevels.length;
-      progressInfo.textContent = `🏆 ${completedCount} / ${totalLevels} levels completed`;
-      document.querySelector('.level-content').appendChild(progressInfo);
+            link.addEventListener('click', function (e) {
+              e.preventDefault();
 
+              if (typeof window.tryUnlockLevel !== 'function') return;
+
+              const result = window.tryUnlockLevel(subject, level);
+
+              if (result.ok) {
+                alert(`🎉 Level ${level} unlocked for ${result.cost || 0}⭐!`);
+                renderMap();
+                if (typeof window.updatePlayerLevelBox === 'function') {
+                  window.updatePlayerLevelBox();
+                }
+              } else if (result.reason === 'not_enough_stars') {
+                alert(
+                  `⭐ Not enough stars!\n\n` +
+                  `Level ${level} costs ${result.cost} stars.\n` +
+                  `You have ${result.stars} stars.\n\n` +
+                  `Play more levels to earn stars!`
+                );
+              } else if (result.reason === 'previous_locked') {
+                alert(`Complete the previous level first!`);
+              }
+            });
+          }
+
+          island.appendChild(link);
+
+          // ---- Bridges ----
+          if (index < row1.length - 1 && level < 5) {
+            const bridge = document.createElement('div');
+            bridge.className = 'bridge-horizontal';
+            island.appendChild(bridge);
+          }
+          if (index === row1.length - 1) {
+            const bridgeV = document.createElement('div');
+            bridgeV.className = 'bridge-vertical';
+            island.appendChild(bridgeV);
+          }
+          if (index >= row1.length && index < allLevels.length - 1) {
+            const bridge = document.createElement('div');
+            bridge.className = 'bridge-horizontal';
+            island.appendChild(bridge);
+          }
+
+          if (index < row1.length) row1Wrapper.appendChild(island);
+          else row2Wrapper.appendChild(island);
+        });
+
+        mapContainer.appendChild(row1Wrapper);
+        mapContainer.appendChild(row2Wrapper);
+
+        // ----- Progress info -----
+        const oldInfo = document.querySelector('.progress-info');
+        if (oldInfo) oldInfo.remove();
+
+        const progressInfo = document.createElement('p');
+        progressInfo.className = 'progress-info mt-3';
+        progressInfo.style.cssText = `
+          font-family: 'Irish Grover', cursive;
+          color: rgba(228, 202, 222, 0.6);
+          font-size: 0.85rem;
+          letter-spacing: 2px;
+        `;
+        progressInfo.textContent =
+          `🏆 ${completedLevels.length} / ${totalLevels} levels completed  ·  ⭐ ${currentStars} stars`;
+        document.querySelector('.level-content').appendChild(progressInfo);
+      }
+
+      renderMap();
+
+      // Re-render whenever the level box refreshes
+      window.addEventListener('pageshow', renderMap);
+      window.addEventListener('focus',    renderMap);
     });
   </script>
+
+  <!-- Clouds (optional visual layer) -->
+  <script src="script/cloud-loader.js"></script>
+  <script src="script/clouds.js"></script>
 </body>
 </html>
