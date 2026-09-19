@@ -816,9 +816,9 @@ body::before {
 }
 
 .card-item {
-  aspect-ratio: 4 / 5;          /* ORIGINAL ratio */
+  aspect-ratio: 4 / 5;
   width: 100%;
-  max-width: 160px;             /* ORIGINAL size */
+  max-width: 160px;
   min-width: 0;
   perspective: 800px;
   cursor: pointer;
@@ -893,6 +893,7 @@ body::before {
   pointer-events: none;
 }
 
+/* Badge: padding is now a % of the badge's own size → scales with card */
 .card-subject-badge {
   position: relative;
   z-index: 2;
@@ -901,14 +902,16 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px;
+  padding: 6%;
   text-align: center;
   color: #f8ecf5;
   font-family: 'Irish Grover', cursive;
 }
 
+/* Icon: fixed 48% of badge content width, only capped on the largest cards.
+   No per-breakpoint overrides → proportion always stays the same. */
 .card-subject-icon {
-  width: 55%;
+  width: 48%;
   max-width: 70px;
   height: auto;
   aspect-ratio: 1 / 1;
@@ -920,8 +923,9 @@ body::before {
   -webkit-user-drag: none;
 }
 
+/* Text: fluid size using clamp() so it scales smoothly with viewport */
 .card-subject-name {
-  font-size: 0.85rem;
+  font-size: clamp(0.45rem, 0.9vw + 0.3rem, 0.85rem);
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #e4cade;
@@ -1741,11 +1745,9 @@ body::before {
   .gameplay-navbar .btn-back-top { padding: 6px 14px; font-size: 0.78rem; }
   .gameplay-board { padding: 16px 12px 28px; }
 
-  /* Card responsiveness — ORIGINAL sizes */
+  /* Card sizing — icon & text scale automatically (no overrides needed) */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; padding: 0 6px; }
   .card-item { max-width: 140px; }
-  .card-subject-icon { width: 55%; max-width: 60px; }
-  .card-subject-name { font-size: 0.75rem; letter-spacing: 2px; }
 
   .game-header { flex-direction: column; align-items: stretch; gap: 8px; }
   .game-stats { justify-content: center; }
@@ -1787,11 +1789,9 @@ body::before {
   .gameplay-points .point-chip { height: 28px; padding: 3px 9px; font-size: 0.68rem; min-width: 52px; }
   .gameplay-board { padding: 14px 8px 24px; }
 
-  /* Card responsiveness — ORIGINAL sizes */
+  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; padding: 0 4px; }
   .card-item { max-width: 120px; }
-  .card-subject-icon { width: 55%; max-width: 52px; }
-  .card-subject-name { font-size: 0.65rem; letter-spacing: 1.5px; }
   .card-number { font-size: 0.55rem; top: 4px; left: 6px; padding: 1px 7px; }
   .card-bonus { font-size: 0.42rem; }
   .card-text { font-size: 0.32rem; }
@@ -1837,13 +1837,11 @@ body::before {
   .gameplay-points .point-chip i { font-size: 0.72rem; }
   .gameplay-board { padding: 12px 6px 20px; }
 
-  /* Card responsiveness — ORIGINAL sizes */
+  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; padding: 0 2px; }
   .card-item { max-width: 108px; }
   .card-face { border-radius: 12px; }
   .card-item .card-inner { border-radius: 12px; }
-  .card-subject-icon { width: 58%; max-width: 45px; }
-  .card-subject-name { font-size: 0.55rem; letter-spacing: 1px; }
   .card-number { font-size: 0.48rem; top: 3px; left: 5px; padding: 1px 6px; }
   .card-bonus { font-size: 0.36rem; }
   .card-text { display: none; }
@@ -1867,7 +1865,7 @@ body::before {
   .gameplay-points .point-chip { padding: 2px 6px; font-size: 0.58rem; height: 24px; min-width: 42px; }
   .gameplay-points .point-chip i { font-size: 0.68rem; }
 
-  /* Card responsiveness — ORIGINAL sizes */
+  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 6px; padding: 0; }
   .card-item { max-width: 96px; }
 }
@@ -1879,11 +1877,9 @@ body::before {
   .gameplay-bottom-row .info-item { font-size: 0.56rem; padding: 2px 6px; }
   .gameplay-board { padding: 10px 4px 18px; }
 
-  /* Card responsiveness — ORIGINAL sizes */
+  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 6px; padding: 0; }
   .card-item { max-width: 96px; }
-  .card-subject-icon { width: 60%; max-width: 40px; }
-  .card-subject-name { font-size: 0.5rem; letter-spacing: 0.5px; }
   .card-number { font-size: 0.4rem; padding: 1px 5px; }
   .card-bonus { font-size: 0.3rem; }
 }
