@@ -23,9 +23,7 @@
           <i class="fas fa-arrow-left me-2"></i> Subjects
         </a>
 
-        <!-- ========================================================== -->
-        <!-- FLOATING POINT BOX (top-right corner)                      -->
-        <!-- ========================================================== -->
+        <!-- FLOATING POINT BOX -->
         <div class="player-level-box player-level-box-floating point-box-floating">
           <div class="point-chip point-chip-star" title="Total Stars">
             <i class="fas fa-star"></i>
@@ -37,15 +35,12 @@
           </div>
         </div>
 
-        <!-- ========================================================== -->
-        <!-- LEVEL MAP CONTENT (This was missing!)                      -->
-        <!-- ========================================================== -->
         <div class="level-content text-center">
           <h1 class="level-main-title">Island Map</h1>
           <p class="level-tagline" id="subjectDisplay">Select a level to start</p>
 
           <div class="level-map" id="levelMap">
-            <!-- Levels will be injected by JavaScript -->
+            <!-- Level markers + Jojoma character injected by JavaScript -->
           </div>
         </div>
 
@@ -53,14 +48,8 @@
     </div>
   </div>
 
-  <!-- ========================================================== -->
-  <!-- PLAYER-LEVEL SCRIPT (must load BEFORE the inline script)    -->
-  <!-- ========================================================== -->
   <script src="script/player-level.js"></script>
 
-  <!-- ========================================================== -->
-  <!-- INLINE LEVEL MAP SCRIPT                                     -->
-  <!-- ========================================================== -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -91,38 +80,87 @@
         return parseInt(localStorage.getItem('starsTotal') || '0', 10);
       }
 
-      // ----- BUILD THE MAP -----
+      // The level Jojoma should stand on:
+      // the lowest unlocked level that is NOT yet completed.
+      // If all levels are completed, Jojoma stands on the last one.
+      function getCurrentLevelForPlayer(unlocked, completed, total) {
+        for (let lvl = 1; lvl <= total; lvl++) {
+          if (unlocked.includes(lvl) && !completed.includes(lvl)) return lvl;
+        }
+        return total;
+      }
+
+      // ----- MAP SETUP -----
       const mapContainer = document.getElementById('levelMap');
       const totalLevels  = 10;
 
-      const row1 = [1, 2, 3, 4, 5];
-      const row2 = [10, 9, 8, 7, 6];
-      const allLevels = [...row1, ...row2];
+      // Positions match the 4 islands + 3 bridges in Platform_Island.png.
+      // Path is flipped: L1 starts bottom-right, L10 finishes top-left.
+      const LEVEL_POSITIONS = [
+        // ===== Island D (bottom-right) — Levels 1, 2 =====
+        { x: 63, y: 84 },  // 1
+        { x: 55, y: 79 },  // 2
+
+        // ===== Bridge 3 (bottom bridge) — Level 3 =====
+        { x: 43, y: 75 },  // 3
+
+        // ===== Island C (bottom-left) — Levels 4, 5 =====
+        { x: 35, y: 67 },  // 4
+        { x: 50, y: 62 },  // 5
+
+        // ===== Bridge 2 (diagonal middle) — Level 6 =====
+        { x: 67, y: 53 },  // 6
+
+        // ===== Island B (top-right) — Levels 7, 8 =====
+        { x: 49, y: 49 },  // 7
+        { x: 35, y: 42 },  // 8
+
+        // ===== Bridge 1 (top bridge) — Level 9 =====
+        { x: 50, y: 36 },  // 9
+
+        // ===== Island A (top-left) — Level 10 (finish) =====
+        { x: 61, y: 30 }   // 10
+      ];
 
       function renderMap() {
-        mapContainer.innerHTML = '';
+        // ---- Preserve jojoma across re-renders ----
+        const jojo = mapContainer.querySelector('.jojoma-character');
+
+        // Remove everything else (background, markers, lock tags)
+        Array.from(mapContainer.children).forEach(child => {
+          if (child !== jojo) child.remove();
+        });
+
+        // ---- Background island image ----
+        const bgImg = document.createElement('img');
+        bgImg.src = 'Assets/Platform_Island.png';
+        bgImg.alt = '';
+        bgImg.className = 'level-map-bg';
+        bgImg.draggable = false;
+        mapContainer.appendChild(bgImg);
 
         const unlockedLevels  = getUnlocked();
         const completedLevels = getCompleted();
         const currentStars    = getStars();
 
-        const row1Wrapper = document.createElement('div');
-        row1Wrapper.className = 'map-row';
-        const row2Wrapper = document.createElement('div');
-        row2Wrapper.className = 'map-row';
-
-        allLevels.forEach((level, index) => {
-          const island = document.createElement('div');
-          island.className = 'island-item';
-          if (level === 1)  island.classList.add('start-island');
-          if (level === 10) island.classList.add('end-island');
-
+        // ---- Level markers ----
+        LEVEL_POSITIONS.forEach((pos, i) => {
+          const level = i + 1;
           const isUnlocked  = unlockedLevels.includes(level);
           const isCompleted = completedLevels.includes(level);
 
+          const island = document.createElement('div');
+          island.className = 'island-item';
+          island.style.left = pos.x + '%';
+          island.style.top  = pos.y + '%';
+
+          if (level === 1)  island.classList.add('start-island');
+          if (level === 10) island.classList.add('end-island');
+          if (isUnlocked && isCompleted) island.classList.add('is-completed');
+          if (!isUnlocked) island.classList.add('is-locked');
+
           const link = document.createElement('a');
           link.className = 'island-link';
-          link.style.cursor = 'pointer';
 
           if (isUnlocked) {
             link.href = `Gameplay/Gameplay-${subject}.html?level=${level}&subject=${subject}`;
@@ -130,42 +168,31 @@
             link.href = 'javascript:void(0)';
           }
 
-          // Completed → green
-          if (isCompleted && isUnlocked) {
-            link.style.borderColor = '#4ade80';
-            link.style.boxShadow   = '0 0 30px rgba(74, 222, 128, 0.4), inset 0 0 20px rgba(74, 222, 128, 0.1)';
-            link.style.background  = 'radial-gradient(circle at 30% 30%, #1a4a2a, #0a2a1a)';
-          }
-
           const number = document.createElement('span');
           number.className = 'island-number';
           number.textContent = level;
-          if (isCompleted && isUnlocked) number.style.color = '#4ade80';
+          link.appendChild(number);
 
           const label = document.createElement('span');
           label.className = 'island-label';
-          label.textContent = `Level ${level}`;
-
-          link.appendChild(number);
+          label.textContent = `Lvl ${level}`;
           link.appendChild(label);
 
-          // ---- LOCKED → show lock + star cost ----
-          if (!isUnlocked) {
-            link.style.opacity = '0.6';
-            link.style.filter = 'grayscale(0.5)';
+          island.appendChild(link);
 
+          // ---- Locked → lock tag + unlock handler ----
+          if (!isUnlocked) {
             const cost = (typeof window.getUnlockCost === 'function')
                        ? window.getUnlockCost(level)
                        : level * 5;
 
             const lockTag = document.createElement('div');
             lockTag.className = 'island-unlock-tag';
-            lockTag.innerHTML = `🔒 ${cost}⭐`;
+            lockTag.textContent = `🔒 ${cost}⭐`;
             island.appendChild(lockTag);
 
             link.addEventListener('click', function (e) {
               e.preventDefault();
-
               if (typeof window.tryUnlockLevel !== 'function') return;
 
               const result = window.tryUnlockLevel(subject, level);
@@ -189,33 +216,40 @@
             });
           }
 
-          island.appendChild(link);
-
-          // ---- Bridges ----
-          if (index < row1.length - 1 && level < 5) {
-            const bridge = document.createElement('div');
-            bridge.className = 'bridge-horizontal';
-            island.appendChild(bridge);
-          }
-          if (index === row1.length - 1) {
-            const bridgeV = document.createElement('div');
-            bridgeV.className = 'bridge-vertical';
-            island.appendChild(bridgeV);
-          }
-          if (index >= row1.length && index < allLevels.length - 1) {
-            const bridge = document.createElement('div');
-            bridge.className = 'bridge-horizontal';
-            island.appendChild(bridge);
-          }
-
-          if (index < row1.length) row1Wrapper.appendChild(island);
-          else row2Wrapper.appendChild(island);
+          mapContainer.appendChild(island);
         });
 
-        mapContainer.appendChild(row1Wrapper);
-        mapContainer.appendChild(row2Wrapper);
+        // ================================================================
+        // JOJOMA CHARACTER — sits on the current level, animates when it changes
+        // ================================================================
+        const currentLevel = getCurrentLevelForPlayer(
+          unlockedLevels,
+          completedLevels,
+          totalLevels
+        );
+        const targetPos = LEVEL_POSITIONS[currentLevel - 1];
 
-        // ----- Progress info -----
+        if (jojo) {
+          // Existing jojoma — just move it. CSS transition animates the slide.
+          if (targetPos) {
+            jojo.style.left = targetPos.x + '%';
+            jojo.style.top  = targetPos.y + '%';
+            jojo.dataset.level = currentLevel;
+          }
+        } else if (targetPos) {
+          // First render — create and place without animating
+          const jojoEl = document.createElement('img');
+          jojoEl.src = 'Assets/jojoma.png';
+          jojoEl.alt = '';
+          jojoEl.className = 'jojoma-character';
+          jojoEl.draggable = false;
+          jojoEl.dataset.level = currentLevel;
+          jojoEl.style.left = targetPos.x + '%';
+          jojoEl.style.top  = targetPos.y + '%';
+          mapContainer.appendChild(jojoEl);
+        }
+
+        // ---- Progress info ----
         const oldInfo = document.querySelector('.progress-info');
         if (oldInfo) oldInfo.remove();
 
@@ -226,6 +260,7 @@
           color: rgba(228, 202, 222, 0.6);
           font-size: 0.85rem;
           letter-spacing: 2px;
+          margin-top: 16px;
         `;
         progressInfo.textContent =
           `🏆 ${completedLevels.length} / ${totalLevels} levels completed  ·  ⭐ ${currentStars} stars`;
@@ -234,13 +269,11 @@
 
       renderMap();
 
-      // Re-render whenever the level box refreshes
       window.addEventListener('pageshow', renderMap);
       window.addEventListener('focus',    renderMap);
     });
   </script>
 
-  <!-- Clouds (optional visual layer) -->
   <script src="script/cloud-loader.js"></script>
   <script src="script/clouds.js"></script>
 </body>
