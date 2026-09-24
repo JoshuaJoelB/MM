@@ -1966,6 +1966,54 @@ body::before {
   animation: unlockPulse 2.2s ease-in-out infinite;
 }
 
+/* ================================================================
+   SMOOTH SCENE TRANSITION
+   ================================================================ */
+
+/* Fade the whole page in on load */
+.page.active-page {
+  animation: pageFadeIn 0.55s ease-out;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Full-screen fade-out overlay used right before redirect */
+#sceneTransition {
+  position: fixed;
+  inset: 0;
+  background: #1a1035;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.55s ease;
+}
+
+#sceneTransition.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Optional: a soft pink glow pulse during the transition */
+#sceneTransition::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(220, 115, 191, 0.35) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.55s ease;
+}
+
+#sceneTransition.active::after {
+  opacity: 1;
+}
+
 @keyframes unlockPulse {
   0%, 100% { transform: scale(1); }
   50%      { transform: scale(1.08); }

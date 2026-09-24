@@ -342,12 +342,23 @@ document.addEventListener('DOMContentLoaded', function() {
         nextLevelBtn.innerHTML = `<i class="fas fa-unlock me-2"></i> Unlock Next Level`;
         nextLevelBtn.onclick = function () {
           if (typeof window.tryUnlockLevel !== 'function') {
-            window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
+            window.location.href = `../Level.html?subject=${subject}`;
             return;
           }
           const result = window.tryUnlockLevel(subject, nextLevel);
           if (result.ok) {
-            window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
+            // If it was a FRESH unlock (not already unlocked),
+            // store a flag so Level.html can play the unlock animation.
+            if (!result.alreadyUnlocked) {
+              try {
+                sessionStorage.setItem('mm_just_unlocked', JSON.stringify({
+                  subject: subject,
+                  level:   nextLevel
+                }));
+              } catch (e) {}
+            }
+            // Go to the map so the player watches Jojoma hop to the next level
+            window.location.href = `../Level.html?subject=${subject}`;
           } else if (result.reason === 'not_enough_stars') {
             alert(
               `★ Not enough stars!\n\n` +
@@ -367,7 +378,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
       }
     }
-
     const stats = {
       gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
       bestTime:     localStorage.getItem('bestTime') || null,
