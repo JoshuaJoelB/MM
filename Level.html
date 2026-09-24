@@ -49,6 +49,7 @@
   </div>
 
   <script src="script/player-level.js"></script>
+  <script src="script/platform-loader.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -56,7 +57,6 @@
       const subject = urlParams.get('subject') || 'computer';
 
       // ----- READ "just unlocked" FLAG from sessionStorage -----
-      // Set by gameplay.js when the player clicks "Unlock Next Level"
       let justUnlockedLevel = null;
       try {
         const raw = sessionStorage.getItem('mm_just_unlocked');
@@ -95,27 +95,21 @@
       }
 
       // ----- SMOOTH SCENE TRANSITION -----
-      // Creates (or reuses) a full-screen fade overlay, fades it in,
-      // then navigates. Duration matches the CSS transition (0.55s).
       function fadeAndNavigate(url) {
         let overlay = document.getElementById('sceneTransition');
         if (!overlay) {
           overlay = document.createElement('div');
           overlay.id = 'sceneTransition';
           document.body.appendChild(overlay);
-          // Force a reflow so the transition actually plays on first use
           void overlay.offsetWidth;
         }
         overlay.classList.add('active');
-
         setTimeout(() => {
           window.location.href = url;
         }, 550);
       }
 
-      // The level Jojoma should stand on:
-      // the lowest unlocked level that is NOT yet completed.
-      // If all levels are completed, Jojoma stands on the last one.
+      // The level Jojoma should stand on
       function getCurrentLevelForPlayer(unlocked, completed, total) {
         for (let lvl = 1; lvl <= total; lvl++) {
           if (unlocked.includes(lvl) && !completed.includes(lvl)) return lvl;
@@ -127,39 +121,22 @@
       const mapContainer = document.getElementById('levelMap');
       const totalLevels  = 10;
 
-      // Positions match the 4 islands + 3 bridges in Platform_Island.png.
-      // Path is flipped: L1 starts bottom-right, L10 finishes top-left.
       const LEVEL_POSITIONS = [
-        // ===== Island D (bottom-right) — Levels 1, 2 =====
         { x: 63, y: 84 },  // 1
         { x: 55, y: 79 },  // 2
-
-        // ===== Bridge 3 (bottom bridge) — Level 3 =====
         { x: 43, y: 75 },  // 3
-
-        // ===== Island C (bottom-left) — Levels 4, 5 =====
         { x: 35, y: 67 },  // 4
         { x: 50, y: 62 },  // 5
-
-        // ===== Bridge 2 (diagonal middle) — Level 6 =====
         { x: 67, y: 53 },  // 6
-
-        // ===== Island B (top-right) — Levels 7, 8 =====
         { x: 49, y: 49 },  // 7
         { x: 35, y: 42 },  // 8
-
-        // ===== Bridge 1 (top bridge) — Level 9 =====
         { x: 50, y: 36 },  // 9
-
-        // ===== Island A (top-left) — Level 10 (finish) =====
         { x: 61, y: 30 }   // 10
       ];
 
       function renderMap() {
-        // ---- Preserve jojoma across re-renders ----
         const jojo = mapContainer.querySelector('.jojoma-character');
 
-        // Remove everything else (background, markers, lock tags)
         Array.from(mapContainer.children).forEach(child => {
           if (child !== jojo) child.remove();
         });
@@ -198,8 +175,6 @@
 
           if (isUnlocked) {
             link.href = `Gameplay/Gameplay-${subject}.html?level=${level}&subject=${subject}`;
-
-            // Smooth fade-out when clicking an unlocked level
             link.addEventListener('click', function (e) {
               e.preventDefault();
               fadeAndNavigate(this.href);
@@ -220,7 +195,6 @@
 
           island.appendChild(link);
 
-          // ---- Locked → lock tag + unlock handler ----
           if (!isUnlocked) {
             const cost = (typeof window.getUnlockCost === 'function')
                        ? window.getUnlockCost(level)
@@ -234,13 +208,10 @@
             link.addEventListener('click', function (e) {
               e.preventDefault();
               if (typeof window.tryUnlockLevel !== 'function') return;
-
               const result = window.tryUnlockLevel(subject, level);
 
               if (result.ok) {
                 alert(`🎉 Level ${level} unlocked for ${result.cost || 0}⭐!`);
-
-                // Trigger the unlock animation on the next render
                 justUnlockedLevel = level;
                 renderMap();
                 if (typeof window.updatePlayerLevelBox === 'function') {
@@ -263,14 +234,10 @@
         });
 
         // ================================================================
-        // JOJOMA CHARACTER — slides to the newly unlocked level,
-        // then AUTO-REDIRECTS into that level's gameplay
-        // with a smooth fade transition.
+        // JOJOMA CHARACTER
         // ================================================================
         const currentLevel = getCurrentLevelForPlayer(
-          unlockedLevels,
-          completedLevels,
-          totalLevels
+          unlockedLevels, completedLevels, totalLevels
         );
         const targetPos = LEVEL_POSITIONS[currentLevel - 1];
 
@@ -280,14 +247,12 @@
         const startPos = LEVEL_POSITIONS[startLevelForJojo - 1];
 
         if (jojo) {
-          // Existing jojoma — just move it
           if (targetPos) {
             jojo.style.left = targetPos.x + '%';
             jojo.style.top  = targetPos.y + '%';
             jojo.dataset.level = currentLevel;
           }
         } else if (targetPos) {
-          // First render — create Jojoma at the starting position
           const jojoEl = document.createElement('img');
           jojoEl.src = 'Assets/jojoma.png';
           jojoEl.alt = '';
@@ -301,10 +266,7 @@
           mapContainer.appendChild(jojoEl);
 
           if (shouldAnimateUnlock) {
-            // ===== STEP 1: Let the player see Jojoma on the old level
             setTimeout(() => {
-
-              // ===== STEP 2: Fire the unlock burst on the target marker
               const targetMarker = mapContainer.querySelector(
                 `.island-item[data-level="${currentLevel}"]`
               );
@@ -313,21 +275,17 @@
                 setTimeout(() => targetMarker.classList.remove('just-unlocked'), 1600);
               }
 
-              // ===== STEP 3: Slide Jojoma to the new level
               jojoEl.style.left = targetPos.x + '%';
               jojoEl.style.top  = targetPos.y + '%';
               jojoEl.dataset.level = currentLevel;
 
-              // ===== STEP 4: After Jojoma arrives, fade out & redirect
               setTimeout(() => {
                 fadeAndNavigate(
                   `Gameplay/Gameplay-${subject}.html?level=${currentLevel}&subject=${subject}`
                 );
               }, 1400);
-
             }, 400);
 
-            // Consume the flag so it never fires again
             justUnlockedLevel = null;
           }
         }
@@ -350,10 +308,18 @@
         document.querySelector('.level-content').appendChild(progressInfo);
       }
 
-      renderMap();
+      // ---- Boot after the platform assets finish loading ----
+      function bootMap() {
+        renderMap();
+        window.addEventListener('pageshow', renderMap);
+        window.addEventListener('focus',    renderMap);
+      }
 
-      window.addEventListener('pageshow', renderMap);
-      window.addEventListener('focus',    renderMap);
+      if (window.platformReadyPromise) {
+        window.platformReadyPromise.then(bootMap);
+      } else {
+        bootMap();
+      }
     });
   </script>
 
