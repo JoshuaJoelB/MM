@@ -20,7 +20,6 @@
   overflow-y: auto;
 }
 
-/* Wider container — lets the map fill the screen */
 .level-content {
   width: 100%;
   max-width: 100%;
@@ -29,7 +28,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 0;
+  padding: 4px 0;
+  gap: 4px;
 }
 
 .level-main-title {
@@ -53,7 +53,7 @@
 }
 
 /* ================================================================
-   MAP CONTAINER — fills available width, up to 1600px
+   MAP CONTAINER
    ================================================================ */
 .level-map {
   position: relative;
@@ -61,6 +61,18 @@
   max-width: min(1600px, 98vw);
   aspect-ratio: 558 / 405;
   margin: 0 auto;
+
+  /* NEW: let the map grow to fill vertical space on tall screens */
+  max-height: calc(100vh - 220px);
+}
+
+/* Keep the map's aspect ratio while filling as much height as possible */
+@media (min-aspect-ratio: 558/405) {
+  .level-map {
+    width: auto;
+    height: 100%;
+    max-height: calc(100vh - 200px);
+  }
 }
 
 .level-map-bg {
@@ -76,7 +88,7 @@
 }
 
 /* ================================================================
-   LEVEL MARKERS — flat platforms, sized to fit inside islands
+   LEVEL MARKERS
    ================================================================ */
 .island-item {
   position: absolute;
@@ -87,34 +99,21 @@
   align-items: center;
 }
 
-/* Platform shape — proportional to map size (uses % of map) */
 .island-link {
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-
-  /* Sized relative to map width so they always fit the islands */
   width: clamp(72px, 8.5vw, 140px);
   height: clamp(38px, 4.2vw, 62px);
-
   border-radius: 50%;
-
-  background: linear-gradient(
-    180deg,
-    #5a68b9 0%,
-    #4a58a9 55%,
-    #3a4489 100%
-  );
-
+  background: linear-gradient(180deg, #5a68b9 0%, #4a58a9 55%, #3a4489 100%);
   border: 2.5px solid rgba(220, 115, 191, 0.55);
-
   box-shadow:
     0 5px 14px rgba(0, 0, 0, 0.5),
     0 0 10px rgba(74, 88, 169, 0.3),
     inset 0 2px 0 rgba(228, 202, 222, 0.25),
     inset 0 -3px 6px rgba(0, 0, 0, 0.35);
-
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   cursor: pointer;
   position: relative;
@@ -131,9 +130,7 @@
   background: linear-gradient(180deg, #6a78c9 0%, #5a68b9 55%, #4a5499 100%);
 }
 
-.island-link:active {
-  transform: translateY(-1px) scale(1);
-}
+.island-link:active { transform: translateY(-1px) scale(1); }
 
 .island-number {
   font-family: 'Irish Grover', cursive;
@@ -154,7 +151,7 @@
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
-/* ---------------- Start island (level 1) — orange platform ---------------- */
+/* ---------------- Start island (level 1) — orange ---------------- */
 .start-island .island-link {
   border-color: #ef9886;
   background: linear-gradient(180deg, #c97a68 0%, #b05a4a 55%, #8a3a2a 100%);
@@ -174,7 +171,7 @@
   background: linear-gradient(180deg, #d98a78 0%, #b05a4a 55%, #9a4a3a 100%);
 }
 
-/* ---------------- End island (level 10) — pink platform ---------------- */
+/* ---------------- End island (level 10) — pink ---------------- */
 .end-island .island-link {
   border-color: #dc73bf;
   background: linear-gradient(180deg, #c05ab0 0%, #a040a0 55%, #7a2080 100%);
@@ -194,7 +191,7 @@
   background: linear-gradient(180deg, #d080c0 0%, #a040a0 55%, #8a3090 100%);
 }
 
-/* ---------------- Completed levels — green platform ---------------- */
+/* ---------------- Completed levels — green ---------------- */
 .island-item.is-completed .island-link {
   border-color: #4ade80;
   background: linear-gradient(180deg, #3a9a5a 0%, #1a6a3a 55%, #0a4a2a 100%);
@@ -212,11 +209,9 @@
     inset 0 -3px 6px rgba(0, 0, 0, 0.35);
   background: linear-gradient(180deg, #4aaa6a 0%, #1a6a3a 55%, #1a5a3a 100%);
 }
-.island-item.is-completed .island-number {
-  color: #aaffc5;
-}
+.island-item.is-completed .island-number { color: #aaffc5; }
 
-/* ---------------- Locked levels — dimmed platform ---------------- */
+/* ---------------- Locked levels — dimmed ---------------- */
 .island-item.is-locked .island-link {
   opacity: 0.65;
   filter: grayscale(0.55);
@@ -251,8 +246,7 @@
 }
 
 /* ================================================================
-   JOJOMA — current-level character indicator
-   Sits right ON TOP of the platform marker
+   JOJOMA
    ================================================================ */
 .jojoma-character {
   position: absolute;
@@ -262,21 +256,13 @@
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-
-  /* Layered shadow + pink glow so the character pops on the map */
   filter:
     drop-shadow(0 6px 12px rgba(0, 0, 0, 0.65))
     drop-shadow(0 0 12px rgba(220, 115, 191, 0.45));
-
-  /* Smooth slide when the level changes */
   transition:
     left 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
     top  0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  /* Bottom of Jojoma sits ON the platform (tiny gap only) */
   transform: translate(-50%, calc(-100% - clamp(2px, 0.4vw, 6px)));
-
-  /* Gentle floating bounce */
   animation: jojoFloat 2.2s ease-in-out infinite;
   transform-origin: 50% 100%;
 }
@@ -291,7 +277,7 @@
 }
 
 /* ================================================================
-   UNLOCK BURST — pulse animation on a freshly unlocked level marker
+   UNLOCK BURST
    ================================================================ */
 .island-item.just-unlocked .island-link {
   border-color: #4ade80 !important;
@@ -335,7 +321,6 @@
   }
 }
 
-/* Optional: a subtle green glow ring on the marker while it's "fresh" */
 .island-item.just-unlocked .island-number {
   color: #c8ffd8;
   text-shadow:
@@ -344,28 +329,136 @@
 }
 
 /* ================================================================
-   RESPONSIVE
+   RESPONSIVE — Desktop / tablet base
    ================================================================ */
 @media (max-width: 1024px) {
   .level-map { max-width: 98vw; }
   .level-main-title { font-size: 2.8rem; }
 }
 
+/* ================================================================
+   RESPONSIVE — MOBILE-TUNED
+   Fills the screen better and enlarges the map on small devices.
+   ================================================================ */
+
+/* ---------- Large phone / small tablet (≤768px) ---------- */
 @media (max-width: 768px) {
-  .level-overlay { padding: 8px; }
-  .level-main-title { font-size: 2.4rem; }
-  .level-tagline { font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 12px; }
+  .level-overlay { padding: 4px; }
+  .level-content {
+    padding: 4px 0;
+    justify-content: flex-start;   /* pull the map up so it fills the screen */
+    gap: 4px;
+  }
+  .level-main-title { font-size: 2.1rem; margin-top: 4px; }
+  .level-tagline { font-size: 0.78rem; letter-spacing: 2px; margin-bottom: 6px; }
+
+  /* Make the map grow taller to fill vertical space */
+  .level-map {
+    max-width: 100vw;
+    max-height: calc(100vh - 170px);
+    margin: 0 auto;
+  }
+
+  /* Markers scale up a little because the map is bigger now */
+  .island-link {
+    width:  clamp(58px, 10vw, 96px);
+    height: clamp(30px, 5.2vw, 50px);
+    border-width: 2px;
+    box-shadow:
+      0 3px 10px rgba(0, 0, 0, 0.5),
+      0 0 8px rgba(74, 88, 169, 0.25),
+      inset 0 1.5px 0 rgba(228, 202, 222, 0.22),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.32);
+  }
+  .island-number { font-size: clamp(0.9rem, 2vw, 1.3rem); }
+  .island-label  { font-size: 0.52rem; letter-spacing: 0.5px; margin-top: 2px; }
+
+  .island-unlock-tag {
+    font-size: 0.58rem;
+    padding: 2px 6px;
+    top: -8px;
+    right: -4px;
+    border-width: 1.5px;
+  }
+
+  .jojoma-character { width: clamp(42px, 7.5vw, 68px); }
 }
 
+/* ---------- Standard phone portrait (≤600px) ---------- */
 @media (max-width: 600px) {
-  .level-main-title { font-size: 2rem; }
-  .level-tagline { font-size: 0.8rem; letter-spacing: 1px; }
-  .island-label { display: none; }
-  .jojoma-character { width: clamp(40px, 7vw, 56px); }
+  .level-overlay { padding: 2px; }
+  .level-content {
+    padding: 2px 0;
+    justify-content: flex-start;
+    gap: 2px;
+  }
+  .level-main-title { font-size: 1.85rem; margin-top: 2px; }
+  .level-tagline { font-size: 0.7rem; letter-spacing: 1.5px; margin-bottom: 4px; }
+
+  .level-map {
+    max-width: 100vw;
+    max-height: calc(100vh - 150px);
+  }
+
+  .island-link {
+    width:  clamp(52px, 12.5vw, 82px);
+    height: clamp(28px, 6.5vw, 42px);
+  }
+  .island-number { font-size: clamp(0.78rem, 2.6vw, 1.1rem); }
+  .island-label  { display: none; }
+
+  .island-unlock-tag {
+    font-size: 0.5rem;
+    padding: 2px 5px;
+    top: -6px;
+    right: -3px;
+  }
+
+  .jojoma-character { width: clamp(38px, 9vw, 58px); }
 }
 
-@media (max-width: 420px) {
-  .level-main-title { font-size: 1.7rem; }
-  .level-tagline { font-size: 0.7rem; letter-spacing: 1px; }
-  .island-unlock-tag { top: -6px; right: -4px; padding: 2px 6px; }
+/* ---------- Small phone (≤480px) ---------- */
+@media (max-width: 480px) {
+  .level-overlay { padding: 2px; }
+  .level-main-title { font-size: 1.65rem; }
+  .level-tagline { font-size: 0.64rem; letter-spacing: 1px; margin-bottom: 2px; }
+
+  .level-map {
+    max-width: 100vw;
+    max-height: calc(100vh - 135px);
+  }
+
+  .island-link {
+    width:  clamp(46px, 14vw, 70px);
+    height: clamp(24px, 7.2vw, 36px);
+    border-width: 1.5px;
+  }
+  .island-number { font-size: clamp(0.7rem, 3vw, 1rem); }
+
+  .island-unlock-tag {
+    font-size: 0.46rem;
+    padding: 1px 4px;
+    top: -5px;
+    right: -2px;
+  }
+
+  .jojoma-character { width: clamp(34px, 10vw, 50px); }
+}
+
+/* ---------- Very small phone (≤360px) ---------- */
+@media (max-width: 360px) {
+  .level-main-title { font-size: 1.45rem; }
+  .level-tagline { font-size: 0.58rem; }
+
+  .level-map {
+    max-height: calc(100vh - 120px);
+  }
+
+  .island-link {
+    width:  clamp(40px, 15vw, 60px);
+    height: clamp(20px, 8vw, 30px);
+  }
+  .island-number { font-size: clamp(0.62rem, 3.2vw, 0.86rem); }
+
+  .jojoma-character { width: clamp(30px, 11vw, 44px); }
 }
