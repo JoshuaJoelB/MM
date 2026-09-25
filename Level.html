@@ -18,28 +18,29 @@
     <div class="level-bg">
       <div class="level-overlay">
 
-        <!-- BACK TO SUBJECTS -->
-        <a href="Subject.html" class="btn btn-back-top">
-          <i class="fas fa-arrow-left me-2"></i> Subjects
-        </a>
+        <!-- NAVBAR: back button | title | point chips -->
+        <header class="level-navbar">
+          <a href="Subject.html" class="btn btn-back-top">
+            <i class="fas fa-arrow-left"></i>
+            <span class="btn-text">Subjects</span>
+          </a>
 
-        <!-- FLOATING POINT BOX -->
-        <div class="player-level-box player-level-box-floating point-box-floating">
-          <div class="point-chip point-chip-star" title="Total Stars">
-            <i class="fas fa-star"></i>
-            <span data-nav-stars>0</span>
+          <h1 class="level-main-title" id="subjectMapTitle">Computer Map</h1>
+
+          <div class="player-level-box point-box-floating">
+            <div class="point-chip point-chip-star" title="Total Stars">
+              <i class="fas fa-star"></i>
+              <span data-nav-stars>0</span>
+            </div>
+            <div class="point-chip point-chip-coin" title="Total Coins">
+              <i class="fas fa-coins"></i>
+              <span data-nav-coins>0</span>
+            </div>
           </div>
-          <div class="point-chip point-chip-coin" title="Total Coins">
-            <i class="fas fa-coins"></i>
-            <span data-nav-coins>0</span>
-          </div>
-        </div>
+        </header>
 
-        <div class="level-content text-center">
-                  <!-- SUBJECT MAP TITLE — sits at the top -->
-        <h1 class="level-main-title" id="subjectMapTitle">Computer Map</h1>
-
-        <div class="level-content text-center">
+        <!-- MAP CONTENT -->
+        <div class="level-content">
           <div class="level-map" id="levelMap">
             <!-- Level markers + Jojoma character injected by JavaScript -->
           </div>
@@ -76,7 +77,7 @@
         ap: 'AP'
       };
 
-      // NEW: dynamic title "Computer Map" / "Science Map" / "AP Map"
+      // Dynamic title: "Computer Map" / "Science Map" / "AP Map"
       document.getElementById('subjectMapTitle').textContent =
         (subjectNames[subject] || 'Subject') + ' Map';
 
@@ -124,17 +125,32 @@
       const mapContainer = document.getElementById('levelMap');
       const totalLevels  = 10;
 
+            // Positions tuned to sit on the 4 islands + 3 bridges.
+      // L1 = bottom-right island, L10 = top-left island.
       const LEVEL_POSITIONS = [
-        { x: 63, y: 84 },  // 1
-        { x: 55, y: 79 },  // 2
-        { x: 43, y: 75 },  // 3
-        { x: 35, y: 67 },  // 4
-        { x: 50, y: 62 },  // 5
-        { x: 67, y: 53 },  // 6
-        { x: 49, y: 49 },  // 7
-        { x: 35, y: 42 },  // 8
-        { x: 50, y: 36 },  // 9
-        { x: 61, y: 30 }   // 10
+        // Island D (bottom-right) — Levels 1, 2
+        { x: 66, y: 85 },  // 1
+        { x: 56, y: 81 },  // 2
+
+        // Bridge 3 (bottom) — Level 3
+        { x: 45, y: 78 },  // 3
+
+        // Island C (bottom-left) — Levels 4, 5
+        { x: 36, y: 70 },  // 4
+        { x: 50, y: 65 },  // 5
+
+        // Bridge 2 (diagonal middle) — Level 6
+        { x: 66, y: 55 },  // 6
+
+        // Island B (top-right) — Levels 7, 8
+        { x: 48, y: 51 },  // 7
+        { x: 36, y: 44 },  // 8
+
+        // Bridge 1 (top) — Level 9
+        { x: 50, y: 38 },  // 9
+
+        // Island A (top-left) — Level 10
+        { x: 60, y: 32 }   // 10
       ];
 
       function renderMap() {
@@ -154,7 +170,6 @@
 
         const unlockedLevels  = getUnlocked();
         const completedLevels = getCompleted();
-        const currentStars    = getStars();
 
         // ---- Level markers ----
         LEVEL_POSITIONS.forEach((pos, i) => {
@@ -292,9 +307,6 @@
             justUnlockedLevel = null;
           }
         }
-
-        // ---- Progress info (REMOVED — footer was removed by request) ----
-        // No longer appended to .level-content.
       }
 
       // ---- Boot after the platform assets finish loading ----
