@@ -36,9 +36,10 @@
         </div>
 
         <div class="level-content text-center">
-          <h1 class="level-main-title">Island Map</h1>
-          <p class="level-tagline" id="subjectDisplay">Select a level to start</p>
+                  <!-- SUBJECT MAP TITLE — sits at the top -->
+        <h1 class="level-main-title" id="subjectMapTitle">Computer Map</h1>
 
+        <div class="level-content text-center">
           <div class="level-map" id="levelMap">
             <!-- Level markers + Jojoma character injected by JavaScript -->
           </div>
@@ -74,8 +75,10 @@
         science: 'Science',
         ap: 'AP'
       };
-      document.getElementById('subjectDisplay').textContent =
-        subjectNames[subject] || 'Select a level';
+
+      // NEW: dynamic title "Computer Map" / "Science Map" / "AP Map"
+      document.getElementById('subjectMapTitle').textContent =
+        (subjectNames[subject] || 'Subject') + ' Map';
 
       // ----- HELPERS -----
       function getUnlocked() {
@@ -290,22 +293,8 @@
           }
         }
 
-        // ---- Progress info ----
-        const oldInfo = document.querySelector('.progress-info');
-        if (oldInfo) oldInfo.remove();
-
-        const progressInfo = document.createElement('p');
-        progressInfo.className = 'progress-info mt-3';
-        progressInfo.style.cssText = `
-          font-family: 'Irish Grover', cursive;
-          color: rgba(228, 202, 222, 0.6);
-          font-size: 0.85rem;
-          letter-spacing: 2px;
-          margin-top: 16px;
-        `;
-        progressInfo.textContent =
-          `🏆 ${completedLevels.length} / ${totalLevels} levels completed  ·  ⭐ ${currentStars} stars`;
-        document.querySelector('.level-content').appendChild(progressInfo);
+        // ---- Progress info (REMOVED — footer was removed by request) ----
+        // No longer appended to .level-content.
       }
 
       // ---- Boot after the platform assets finish loading ----
