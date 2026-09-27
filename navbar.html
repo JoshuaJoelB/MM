@@ -47,14 +47,16 @@
 </nav>
 
 <!-- ============================================================= -->
-<!-- INBOX MODAL – must be OUTSIDE the <nav> for Bootstrap         -->
+<!-- INBOX MODAL                                                   -->
 <!-- ============================================================= -->
 <div class="modal fade" id="inboxModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="fas fa-inbox me-2"></i>Inbox</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-modal-close" data-bs-dismiss="modal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
       <div class="modal-body">
         <ul class="inbox-list">
@@ -88,19 +90,26 @@
           </li>
         </ul>
       </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-close" data-bs-dismiss="modal">
+          <i class="fas fa-check me-2"></i> Got it!
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ============================================================= -->
-<!-- SETTINGS MODAL – must be OUTSIDE the <nav>                    -->
+<!-- SETTINGS MODAL                                                -->
 <!-- ============================================================= -->
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="fas fa-cog me-2"></i>Settings</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-modal-close" data-bs-dismiss="modal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
       <div class="modal-body settings-body">
         <div class="settings-item">
