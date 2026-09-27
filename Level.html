@@ -35,11 +35,11 @@
           <h1 class="level-main-title" id="subjectMapTitle">Computer Map</h1>
 
           <div class="player-level-box point-box-floating">
-            <div class="point-chip point-chip-star" title="Total Stars">
+            <div class="point-chip point-chip-star" title="Star Rating (best per level)">
               <i class="fas fa-star"></i>
               <span data-nav-stars>0</span>
             </div>
-            <div class="point-chip point-chip-coin" title="Total Coins">
+            <div class="point-chip point-chip-coin" title="Coins — used to unlock levels">
               <i class="fas fa-coins"></i>
               <span data-nav-coins>0</span>
             </div>
@@ -97,6 +97,13 @@
         const arr = JSON.parse(localStorage.getItem('matchMonster_completed_' + subject) || '[]');
         return Array.isArray(arr) ? arr : [];
       } catch (e) { return []; }
+    }
+    // NEW: read best star rating per level
+    function getBestStars(level) {
+      try {
+        const data = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}');
+        return Number(data[level]) || 0;
+      } catch (e) { return 0; }
     }
 
     // ----- SMOOTH SCENE TRANSITION -----
@@ -157,11 +164,12 @@
       const unlockedLevels  = getUnlocked();
       const completedLevels = getCompleted();
 
-      // ---- Level markers (number only) ----
+      // ---- Level markers ----
       LEVEL_POSITIONS.forEach((pos, i) => {
         const level       = i + 1;
         const isUnlocked  = unlockedLevels.includes(level);
         const isCompleted = completedLevels.includes(level);
+        const bestStars   = getBestStars(level);
 
         const island = document.createElement('div');
         island.className = 'island-item';
@@ -187,7 +195,7 @@
           link.href = 'javascript:void(0)';
         }
 
-        // Just the number
+        // Number
         const number = document.createElement('span');
         number.className = 'island-number';
         number.textContent = level;
@@ -195,7 +203,29 @@
 
         island.appendChild(link);
 
-        // Locked click → try to unlock
+        // ----------------------------------------------------------
+        // 3-STAR RATING ROW
+        // Show stars if level has been played (bestStars > 0) OR if it's
+        // the start level (so kids see the goal). Locked & unplayed
+        // levels show empty stars so the target is always visible.
+        // ----------------------------------------------------------
+               // ----------------------------------------------------------
+        // 3-STAR RATING ROW — sits on the bottom curve of the pill
+        // ----------------------------------------------------------
+        const starsRow = document.createElement('div');
+        starsRow.className = 'island-stars';
+
+        const showStars = bestStars > 0 || isCompleted || isUnlocked;
+        if (showStars) {
+          for (let s = 1; s <= 3; s++) {
+            const star = document.createElement('i');
+            star.className = 'fas fa-star' + (s <= bestStars ? ' filled' : '');
+            starsRow.appendChild(star);
+          }
+          // Append INSIDE the link so we can position it against the pill
+          link.appendChild(starsRow);
+        }
+        // Locked click → try to unlock (costs COINS)
         if (!isUnlocked) {
           link.addEventListener('click', function (e) {
             e.preventDefault();
@@ -208,12 +238,20 @@
               if (typeof window.updatePlayerLevelBox === 'function') {
                 window.updatePlayerLevelBox();
               }
-            } else if (result.reason === 'not_enough_stars') {
+            } else if (result.reason === 'not_enough_coins') {
               alert(
-                `⭐ Not enough stars!\n\n` +
-                `Level ${level} costs ${result.cost} stars.\n` +
-                `You have ${result.stars} stars.\n\n` +
-                `Play more levels to earn stars!`
+                `🪙 Not enough coins!\n\n` +
+                `Level ${level} costs ${result.cost} coins.\n` +
+                `You have ${result.coins} coins.\n\n` +
+                `Play more levels to earn coins!`
+              );
+            } else if (result.reason === 'not_enough_stars') {
+              // fallback for legacy reason name
+              alert(
+                `⭐ Not enough coins!\n\n` +
+                `Level ${level} costs ${result.cost}.\n` +
+                `You have ${result.stars}.\n\n` +
+                `Play more levels to earn more!`
               );
             } else if (result.reason === 'previous_locked') {
               alert(`Complete the previous level first!`);

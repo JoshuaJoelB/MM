@@ -493,3 +493,116 @@
 
   .jojoma-character { width: clamp(30px, 11vw, 44px); }
 }
+
+/* ================================================================
+   3-STAR RATING ROW UNDER EACH LEVEL MARKER
+   ================================================================ */
+.island-stars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+  font-size: clamp(0.7rem, 1.2vw, 1rem);
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
+}
+
+.island-stars i {
+  color: rgba(26, 15, 46, 0.55);
+  transition: color 0.2s ease;
+}
+
+/* Earned stars — bright gold with glow */
+.island-stars i.filled {
+  color: #FFD700;
+  filter:
+    drop-shadow(0 0 5px rgba(255, 215, 0, 0.95))
+    drop-shadow(0 1px 0 rgba(120, 70, 0, 0.6));
+}
+
+/* Locked levels — dimmer stars */
+.island-item.is-locked .island-stars i {
+  color: rgba(255, 215, 0, 0.35);
+}
+.island-item.is-locked .island-stars i.filled {
+  color: rgba(255, 215, 0, 0.55);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .island-stars { gap: 2px; margin-top: 3px; font-size: 0.72rem; }
+}
+@media (max-width: 480px) {
+  .island-stars { font-size: 0.66rem; gap: 1.5px; margin-top: 2px; }
+}
+@media (max-width: 360px) {
+  .island-stars { font-size: 0.6rem; gap: 1px; }
+}/* ================================================================
+   3-STAR RATING — sits on the bottom curve of the pill
+   ================================================================ */
+.island-stars {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;                       /* hangs below the pill, on the curve */
+  transform: translateX(-50%);
+  z-index: 5;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+
+  font-size: clamp(0.7rem, 1.2vw, 1rem);
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Each star — black outline + soft shadow */
+.island-stars i {
+  color: rgba(26, 15, 46, 0.55);      /* empty = dark navy */
+  -webkit-text-stroke: 1.5px #000;    /* black outline */
+  paint-order: stroke fill;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+  transition: color 0.2s ease, filter 0.2s ease;
+}
+
+/* Earned star — bright gold with black outline */
+.island-stars i.filled {
+  color: #FFD700;
+  -webkit-text-stroke: 1.5px #000;
+  filter:
+    drop-shadow(0 0 5px rgba(255, 215, 0, 0.9))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.75));
+}
+
+/* Locked levels — dim the empty stars */
+.island-item.is-locked .island-stars i {
+  color: rgba(255, 215, 0, 0.35);
+  -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.85);
+}
+.island-item.is-locked .island-stars i.filled {
+  color: rgba(255, 215, 0, 0.55);
+}
+
+/* Responsive — keep stars legible as the pill shrinks */
+@media (max-width: 768px) {
+  .island-stars { font-size: 0.75rem; gap: 2.5px; bottom: -5px; }
+  .island-stars i { -webkit-text-stroke-width: 1.2px; }
+}
+
+@media (max-width: 600px) {
+  .island-stars { font-size: 0.68rem; gap: 2px; bottom: -4px; }
+  .island-stars i { -webkit-text-stroke-width: 1px; }
+}
+
+@media (max-width: 480px) {
+  .island-stars { font-size: 0.6rem; gap: 1.5px; bottom: -3px; }
+  .island-stars i { -webkit-text-stroke-width: 1px; }
+}
+
+@media (max-width: 360px) {
+  .island-stars { font-size: 0.54rem; gap: 1px; bottom: -2px; }
+}
