@@ -1,9 +1,12 @@
 /* ================================================================
-   STYLE.CSS – complete styles (cloudy sky + level box + points)
+   STYLE.CSS – BLUE & YELLOW MATCH MONSTER THEME
+   Primary:   #1E90FF (Blue)
+   Secondary: #FFD700 (Yellow)
+   Cyan:      #00BFFF (Light Blue)
+   Khaki:     #F0E68C (Pale Yellow)
+   Steel:     #4682B4 (Grayish Blue)
    ================================================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Keania+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -12,7 +15,7 @@
 }
 
 /* ================================================================
-   GLOBAL SKY BACKGROUND
+   GLOBAL SKY BACKGROUND — deep blue night sky
    ================================================================ */
 body {
   font-family: 'Irish Grover', cursive;
@@ -21,13 +24,13 @@ body {
   position: relative;
   background: linear-gradient(
     to bottom,
-    #1a1035 0%,
-    #2a1a4a 20%,
-    #3a2a5c 42%,
-    #4d3d75 62%,
-    #6a5590 78%,
-    #8a7ab8 92%,
-    #a99bc8 100%
+    #0a1428 0%,
+    #122a4a 20%,
+    #1a3a5c 42%,
+    #234a7a 62%,
+    #2a5a9a 78%,
+    #3a7ab8 92%,
+    #5a9ad8 100%
   );
   background-attachment: fixed;
 }
@@ -40,27 +43,27 @@ body::before {
   z-index: 0;
   background-image:
     radial-gradient(1.5px 1.5px at 12% 18%, rgba(255, 255, 255, 0.9) 50%, transparent 52%),
-    radial-gradient(1px 1px at 32% 8%, rgba(228, 202, 222, 0.8) 50%, transparent 52%),
+    radial-gradient(1px 1px at 32% 8%, rgba(240, 230, 140, 0.8) 50%, transparent 52%),
     radial-gradient(2px 2px at 68% 22%, rgba(255, 255, 255, 0.7) 50%, transparent 52%),
-    radial-gradient(1px 1px at 82% 12%, rgba(239, 152, 134, 0.8) 50%, transparent 52%),
-    radial-gradient(1.5px 1.5px at 22% 42%, rgba(220, 115, 191, 0.8) 50%, transparent 52%),
+    radial-gradient(1px 1px at 82% 12%, rgba(255, 215, 0, 0.8) 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 22% 42%, rgba(30, 144, 255, 0.8) 50%, transparent 52%),
     radial-gradient(1px 1px at 88% 48%, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
-    radial-gradient(1.5px 1.5px at 45% 62%, rgba(101, 165, 217, 0.8) 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 45% 62%, rgba(0, 191, 255, 0.8) 50%, transparent 52%),
     radial-gradient(1px 1px at 72% 78%, rgba(255, 255, 255, 0.7) 50%, transparent 52%),
-    radial-gradient(2px 2px at 15% 82%, rgba(228, 202, 222, 0.7) 50%, transparent 52%),
-    radial-gradient(1px 1px at 92% 72%, rgba(220, 115, 191, 0.7) 50%, transparent 52%),
+    radial-gradient(2px 2px at 15% 82%, rgba(240, 230, 140, 0.7) 50%, transparent 52%),
+    radial-gradient(1px 1px at 92% 72%, rgba(30, 144, 255, 0.7) 50%, transparent 52%),
     radial-gradient(1px 1px at 55% 35%, rgba(255, 255, 255, 0.8) 50%, transparent 52%),
-    radial-gradient(1.5px 1.5px at 38% 92%, rgba(239, 152, 134, 0.7) 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 38% 92%, rgba(255, 215, 0, 0.7) 50%, transparent 52%),
     radial-gradient(1px 1px at 5% 55%, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
-    radial-gradient(1.5px 1.5px at 62% 5%, rgba(228, 202, 222, 0.7) 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 62% 5%, rgba(240, 230, 140, 0.7) 50%, transparent 52%),
     radial-gradient(1px 1px at 48% 88%, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
     radial-gradient(circle 22px at 84% 11%, rgba(255, 250, 235, 0.95) 0%, rgba(255, 248, 220, 0.6) 60%, rgba(255, 245, 210, 0.15) 100%, transparent 110%),
     radial-gradient(circle 90px at 84% 11%, rgba(255, 245, 220, 0.18) 0%, rgba(255, 240, 200, 0.08) 50%, transparent 75%),
     radial-gradient(circle 180px at 84% 11%, rgba(255, 240, 210, 0.06) 0%, transparent 70%),
-    radial-gradient(circle at 15% 25%, rgba(220, 115, 191, 0.32) 0%, transparent 48%),
-    radial-gradient(circle at 85% 75%, rgba(101, 165, 217, 0.28) 0%, transparent 48%),
-    radial-gradient(circle at 70% 15%, rgba(239, 152, 134, 0.2) 0%, transparent 42%),
-    radial-gradient(circle at 25% 85%, rgba(74, 88, 169, 0.32) 0%, transparent 48%);
+    radial-gradient(circle at 15% 25%, rgba(30, 144, 255, 0.32) 0%, transparent 48%),
+    radial-gradient(circle at 85% 75%, rgba(0, 191, 255, 0.28) 0%, transparent 48%),
+    radial-gradient(circle at 70% 15%, rgba(255, 215, 0, 0.2) 0%, transparent 42%),
+    radial-gradient(circle at 25% 85%, rgba(70, 130, 180, 0.32) 0%, transparent 48%);
   background-attachment: fixed;
 }
 
@@ -145,10 +148,10 @@ body::before {
   object-fit: contain;
   border-radius: 24px;
   animation: logoPulse 2s ease-in-out infinite;
-  filter: drop-shadow(0 8px 32px rgba(220, 115, 191, 0.55));
+  filter: drop-shadow(0 8px 32px rgba(30, 144, 255, 0.6));
   position: relative;
   z-index: 2;
-  background: rgba(228, 202, 222, 0.1);
+  background: rgba(240, 230, 140, 0.1);
   padding: 8px;
 }
 
@@ -157,10 +160,10 @@ body::before {
   inset: 0;
   border-radius: 50%;
   border: 4px solid transparent;
-  border-top-color: #dc73bf;
-  border-right-color: rgba(220, 115, 191, 0.4);
+  border-top-color: #1E90FF;
+  border-right-color: rgba(255, 215, 0, 0.6);
   border-bottom-color: transparent;
-  border-left-color: rgba(101, 165, 217, 0.6);
+  border-left-color: rgba(0, 191, 255, 0.6);
   animation: logoSpin 1.4s linear infinite;
   z-index: 1;
 }
@@ -173,26 +176,26 @@ body::before {
 @keyframes logoPulse {
   0%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 8px 32px rgba(220, 115, 191, 0.55));
+    filter: drop-shadow(0 8px 32px rgba(30, 144, 255, 0.6));
   }
   50% {
     transform: scale(1.05);
-    filter: drop-shadow(0 10px 42px rgba(239, 152, 134, 0.75));
+    filter: drop-shadow(0 10px 42px rgba(255, 215, 0, 0.8));
   }
 }
 
 .index-title {
   font-family: 'Keania One', cursive;
   font-size: 4rem;
-  color: #fff;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 40px rgba(220, 115, 191, 0.4);
+  color: #FFD700;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.6);
   letter-spacing: 2px;
   margin-bottom: 0;
 }
 
 .index-sub {
   font-family: 'Irish Grover', cursive;
-  color: rgba(228, 202, 222, 0.75);
+  color: #F0E68C;
   font-size: 1.1rem;
   letter-spacing: 6px;
   text-transform: uppercase;
@@ -200,7 +203,7 @@ body::before {
 
 .index-loading-text {
   margin-top: 24px;
-  color: rgba(228, 202, 222, 0.8);
+  color: #00BFFF;
   font-family: 'Irish Grover', cursive;
   letter-spacing: 3px;
   font-size: 1rem;
@@ -239,62 +242,63 @@ body::before {
 .start-carousel-wrapper {
   max-width: 700px;
   width: 100%;
-  background: rgba(228, 202, 222, 0.08);
+  background: rgba(30, 144, 255, 0.08);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-radius: 40px;
   padding: 30px 20px 20px;
-  border: 1px solid rgba(228, 202, 222, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.3);
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
 }
 .carousel-content { padding: 20px 10px 40px; }
 .carousel-icon { font-size: 4rem; display: block; margin-bottom: 12px; }
 .carousel-title {
   font-family: 'Irish Grover', cursive;
-  color: rgba(228, 202, 222, 0.75);
+  color: #F0E68C;
   font-size: 1.6rem;
   letter-spacing: 2px;
 }
 .carousel-main {
   font-family: 'Irish Grover', cursive;
   font-size: 3.2rem;
-  background: linear-gradient(135deg, #ef9886, #dc73bf);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #FFD700;
   margin: 4px 0 8px;
+  text-shadow: 0 0 24px rgba(255, 215, 0, 0.55);
 }
 .carousel-sub {
   font-family: 'Irish Grover', cursive;
-  color: rgba(228, 202, 222, 0.55);
+  color: #00BFFF;
   letter-spacing: 3px;
   font-size: 1rem;
 }
 .btn-lets-start {
-  background: linear-gradient(135deg, #ef9886, #dc73bf);
-  border: none;
+  background: #1E90FF;
+  border: 2px solid #FFD700;
   padding: 14px 48px;
   border-radius: 100px;
   font-family: 'Irish Grover', cursive;
   font-size: 1.3rem;
-  color: #2a1a3a;
+  color: #FFD700;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 40px rgba(220, 115, 191, 0.4);
+  box-shadow: 0 8px 40px rgba(30, 144, 255, 0.5);
   cursor: pointer;
 }
 .btn-lets-start:hover {
+  background: #FFD700;
+  color: #0a1428;
+  border-color: #1E90FF;
   transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 12px 60px rgba(220, 115, 191, 0.6);
+  box-shadow: 0 12px 60px rgba(255, 215, 0, 0.7);
 }
 .carousel-indicators [data-bs-target] {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   border: none;
-  background: rgba(228, 202, 222, 0.3);
+  background: rgba(240, 230, 140, 0.35);
   margin: 0 6px;
 }
-.carousel-indicators .active { background: #dc73bf; }
+.carousel-indicators .active { background: #FFD700; }
 
 /* ================================================================
    HOME PAGE
@@ -339,10 +343,10 @@ body::before {
    NAVBAR
    ================================================================ */
 .navbar-custom {
-  background: rgba(26, 16, 53, 0.55);
+  background: rgba(10, 20, 40, 0.6);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(220, 115, 191, 0.18);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 
   width: 100%;
@@ -384,12 +388,12 @@ body::before {
   min-width: 300px;
   padding: 16px 22px 18px;
 
-  background: linear-gradient(145deg, #2a2f5c, #1a1a3a);
-  border: 2px solid rgba(220, 115, 191, 0.4);
+  background: linear-gradient(145deg, #1a3a5c, #0a1428);
+  border: 2px solid rgba(255, 215, 0, 0.5);
   border-radius: 18px;
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.55),
-    0 0 30px rgba(220, 115, 191, 0.25);
+    0 0 30px rgba(30, 144, 255, 0.35);
 
   font-family: 'Irish Grover', cursive;
   display: flex;
@@ -413,7 +417,7 @@ body::before {
 
 .player-level-label {
   font-size: 0.72rem;
-  color: rgba(228, 202, 222, 0.65);
+  color: #F0E68C;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -421,14 +425,14 @@ body::before {
 .player-level-number {
   font-family: 'Keania One', cursive;
   font-size: 2.2rem;
-  color: #f8ecf5;
-  text-shadow: 0 0 20px rgba(220, 115, 191, 0.6);
+  color: #FFD700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
   line-height: 1;
 }
 
 .player-level-progress-text {
   font-size: 0.9rem;
-  color: #dc73bf;
+  color: #00BFFF;
   font-weight: 700;
   letter-spacing: 1px;
   white-space: nowrap;
@@ -437,19 +441,19 @@ body::before {
 .player-progress-track {
   width: 100%;
   height: 10px;
-  background: rgba(42, 26, 58, 0.85);
+  background: rgba(10, 20, 40, 0.85);
   border-radius: 100px;
   overflow: hidden;
-  border: 1px solid rgba(220, 115, 191, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
 .player-progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #ef9886, #dc73bf);
+  background: #FFD700;
   border-radius: 100px;
   transition: width 0.5s ease;
-  box-shadow: 0 0 14px rgba(220, 115, 191, 0.7);
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.7);
 }
 
 /* ================================================================
@@ -461,18 +465,18 @@ body::before {
   gap: 6px;
   padding: 6px 14px;
   height: 38px;
-  background: rgba(228, 202, 222, 0.06);
-  border: 1px solid rgba(220, 115, 191, 0.2);
+  background: rgba(30, 144, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 100px;
   font-family: 'Irish Grover', cursive;
   font-size: 0.9rem;
-  color: #f8ecf5;
+  color: #FFD700;
   transition: all 0.25s ease;
   cursor: default;
 }
 .point-chip:hover {
-  background: rgba(220, 115, 191, 0.15);
-  border-color: rgba(220, 115, 191, 0.5);
+  background: rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.75);
   transform: translateY(-1px);
 }
 .point-chip i { font-size: 1rem; }
@@ -482,16 +486,16 @@ body::before {
   min-width: 28px;
   text-align: right;
 }
-.point-chip-star i { color: #fcd34d; }
-.point-chip-coin i { color: #ef9886; }
+.point-chip-star i { color: #FFD700; }
+.point-chip-coin i { color: #00BFFF; }
 
 /* ================================================================
    NAVBAR ICON BUTTONS
    ================================================================ */
 .navbar-custom .btn-icon {
-  background: rgba(228, 202, 222, 0.06);
-  border: 1px solid rgba(220, 115, 191, 0.2);
-  color: #e4cade;
+  background: rgba(30, 144, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: #F0E68C;
   border-radius: 50%;
   width: 42px;
   height: 42px;
@@ -506,9 +510,9 @@ body::before {
   flex-shrink: 0;
 }
 .navbar-custom .btn-icon:hover {
-  background: rgba(220, 115, 191, 0.2);
-  border-color: rgba(220, 115, 191, 0.5);
-  color: #fff;
+  background: #FFD700;
+  border-color: #FFD700;
+  color: #0a1428;
   transform: translateY(-2px);
 }
 .navbar-custom .btn-icon:active { transform: scale(0.92); }
@@ -526,17 +530,17 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ef9886, #dc73bf);
-  color: #2a1a3a;
-  border: 2px solid rgba(26, 16, 53, 0.95);
+  background: #FFD700;
+  color: #0a1428;
+  border: 2px solid rgba(10, 20, 40, 0.95);
   line-height: 1;
   font-family: 'Irish Grover', cursive;
 }
 
 .btn-icon {
-  background: rgba(228, 202, 222, 0.06);
-  border: 1px solid rgba(220, 115, 191, 0.2);
-  color: #e4cade;
+  background: rgba(30, 144, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: #F0E68C;
   border-radius: 50%;
   width: 42px;
   height: 42px;
@@ -550,9 +554,9 @@ body::before {
   cursor: pointer;
 }
 .btn-icon:hover {
-  background: rgba(220, 115, 191, 0.2);
-  border-color: rgba(220, 115, 191, 0.5);
-  color: #fff;
+  background: #FFD700;
+  border-color: #FFD700;
+  color: #0a1428;
   transform: translateY(-2px);
 }
 .btn-icon:active { transform: scale(0.92); }
@@ -570,153 +574,248 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ef9886, #dc73bf);
-  color: #2a1a3a;
-  border: 2px solid rgba(26, 16, 53, 0.9);
+  background: #FFD700;
+  color: #0a1428;
+  border: 2px solid rgba(10, 20, 40, 0.9);
   line-height: 1;
 }
 
 /* ================================================================
-   HOME LOBBY
+   HOME LOBBY  (cleaner, game-like hero)
    ================================================================ */
 .home-lobby {
   width: 100%;
-  max-width: 720px;
-  text-align: center;
-  animation: fadeUp 0.8s ease;
-  padding: 90px 20px 40px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 70px 24px 48px;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  animation: fadeUp 0.8s ease;
+  position: relative;
+  z-index: 2;
 }
 
-.home-title-content { margin-bottom: 10px; }
-.home-character-wrapper {
+/* ---- HERO / MASCOT ---- */
+.home-hero {
   position: relative;
-  display: inline-block;
-  margin-bottom: 4px;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
 }
+
+.home-character-halo {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 45%,
+      rgba(255, 215, 0, 0.35) 0%,
+      rgba(30, 144, 255, 0.25) 40%,
+      transparent 70%);
+  filter: blur(8px);
+  z-index: -1;
+  animation: haloPulse 4s ease-in-out infinite;
+}
+
+@keyframes haloPulse {
+  0%, 100% { transform: scale(1);   opacity: 0.9; }
+  50%      { transform: scale(1.1); opacity: 1; }
+}
+
 .home-character {
-  font-size: 5.5rem;
   display: block;
   animation: floatMonster 3s ease-in-out infinite;
-  filter: drop-shadow(0 10px 40px rgba(220, 115, 191, 0.5));
+  filter: drop-shadow(0 12px 32px rgba(30, 144, 255, 0.55));
 }
+
 .home-character img {
-  width: 140px;
-  height: auto;
-  max-height: 140px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
-}
-@keyframes floatMonster {
-  0%, 100% { transform: translateY(0px) rotate(-2deg); }
-  50% { transform: translateY(-14px) rotate(2deg); }
-}
-.home-main-title {
-  font-family: 'Irish Grover', cursive;
-  font-size: 4.5rem;
-  background: linear-gradient(135deg, #e4cade, #dc73bf, #4a58a9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-  filter: drop-shadow(0 0 30px rgba(220, 115, 191, 0.35));
-  margin-bottom: -6px;
-}
-.home-sub-title {
-  font-family: 'Irish Grover', cursive;
-  font-size: 2.6rem;
-  color: #dc73bf;
-  letter-spacing: 4px;
-  margin-top: -4px;
-  text-shadow: 0 0 30px rgba(220, 115, 191, 0.4);
-}
-.home-tagline {
-  font-family: 'Irish Grover', cursive;
-  color: rgba(228, 202, 222, 0.65);
-  letter-spacing: 8px;
-  font-size: 1rem;
-  text-transform: uppercase;
-  margin-top: 2px;
-  word-spacing: 4px;
-}
-
-.stats-container { width: 100%; margin: 10px auto 0; padding: 0 10px; }
-.stat-card {
-  background: rgba(228, 202, 222, 0.07);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(220, 115, 191, 0.2);
-  border-radius: 16px;
-  padding: 16px 8px;
-  transition: all 0.3s ease;
-}
-.stat-card:hover {
-  background: rgba(220, 115, 191, 0.15);
-  transform: translateY(-4px);
-  border-color: rgba(220, 115, 191, 0.45);
-  box-shadow: 0 8px 30px rgba(220, 115, 191, 0.25);
-}
-.stat-icon { font-size: 1.6rem; color: #ef9886; display: block; margin-bottom: 4px; }
-.stat-number {
-  font-family: 'Irish Grover', cursive;
-  font-size: 1.8rem;
-  color: #f8ecf5;
   display: block;
-  line-height: 1.2;
-}
-.stat-label {
-  font-family: 'Irish Grover', cursive;
-  font-size: 0.6rem;
-  color: rgba(228, 202, 222, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-top: 2px;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
+@keyframes floatMonster {
+  0%, 100% { transform: translateY(0)     rotate(-2deg); }
+  50%      { transform: translateY(-12px) rotate(2deg);  }
+}
+
+/* ---- TITLE ---- */
+.home-title-content { margin: 4px 0 26px; }
+
+.home-main-title {
+  font-size: 4.2rem;
+  line-height: 0.95;
+  color: #FFD700;
+  margin: 0;
+  text-shadow:
+    0 0 30px rgba(255, 215, 0, 0.55),
+    0 4px 0 rgba(10, 20, 40, 0.45);
+  letter-spacing: 0.5px;
+}
+
+.home-sub-title {
+  font-size: 2.4rem;
+  line-height: 1;
+  color: #FFD700;
+  letter-spacing: 6px;
+  margin: 4px 0 0;
+  text-shadow:
+    0 0 24px rgba(255, 215, 0, 0.5),
+    0 3px 0 rgba(10, 20, 40, 0.45);
+}
+
+.home-tagline {
+  color: #00BFFF;
+  letter-spacing: 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  margin: 14px 0 0;
+  opacity: 0.9;
+}
+
+/* ================================================================
+   PRIMARY PLAY BUTTON  (gold, chunky, game-style)
+   ================================================================ */
 .btn-start-game {
-  background: linear-gradient(135deg, #ef9886, #dc73bf) !important;
-  border: none !important;
-  padding: 16px 60px;
-  border-radius: 100px !important;
-  font-family: 'Irish Grover', cursive;
-  font-size: 1.6rem;
-  color: #2a1a3a !important;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  box-shadow: 0 8px 40px rgba(220, 115, 191, 0.4);
-  letter-spacing: 2px;
-  z-index: 2;
-  margin-top: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
+
+  padding: 18px 56px;
+  min-width: 260px;
+  min-height: 72px;
+
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   text-decoration: none !important;
+
+  color: #1a0f2e;
+  background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
+  border: 3px solid #1a0f2e;
+  border-radius: 100px;
+
+  box-shadow:
+    0 8px 0 #7a4b00,
+    0 14px 40px rgba(255, 184, 0, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
+
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   cursor: pointer;
-  line-height: 1.2;
   -webkit-tap-highlight-color: transparent;
-}
-.btn-start-game:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 60px rgba(220, 115, 191, 0.6);
-  color: #2a1a3a !important;
-}
-.btn-start-game:active {
-  transform: scale(0.96);
-  background: linear-gradient(135deg, #e88a78, #c962a8) !important;
-  color: #2a1a3a !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
 }
 
+.btn-start-game i {
+  font-size: 1.25rem;
+  color: #1a0f2e;
+  transform: translateY(1px);
+}
+
+.btn-start-game:hover {
+  background: linear-gradient(180deg, #FFE97A 0%, #FFCB24 55%, #FFAB0F 100%);
+  transform: translateY(-3px);
+  box-shadow:
+    0 11px 0 #7a4b00,
+    0 20px 52px rgba(255, 184, 0, 0.6),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+.btn-start-game:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 3px 0 #7a4b00,
+    0 6px 18px rgba(255, 184, 0, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+.btn-start-game:focus-visible {
+  outline: 4px solid #00BFFF;
+  outline-offset: 4px;
+}
+
+/* ================================================================
+   QUICK ACTIONS  (glass chips below the CTA)
+   ================================================================ */
+.home-quick-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.home-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 20px;
+  min-height: 48px;
+
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+
+  color: #F0E68C;
+  background: rgba(30, 144, 255, 0.12);
+  border: 1.5px solid rgba(255, 215, 0, 0.35);
+  border-radius: 100px;
+
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.home-quick-btn i {
+  font-size: 1rem;
+  color: #FFD700;
+}
+
+.home-quick-btn:hover {
+  background: rgba(255, 215, 0, 0.18);
+  border-color: rgba(255, 215, 0, 0.75);
+  color: #FFD700;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
+}
+
+.home-quick-btn:active {
+  transform: translateY(0);
+  background: rgba(255, 215, 0, 0.28);
+}
+
+.home-quick-btn:focus-visible {
+  outline: 3px solid #00BFFF;
+  outline-offset: 3px;
+}
+
+/* ================================================================
+   BACK BUTTON (absolute / legacy)
+   ================================================================ */
 .btn-back-top {
   position: absolute;
   top: 20px;
   left: 20px;
   z-index: 10;
-  background: rgba(228, 202, 222, 0.1) !important;
-  border: 1px solid rgba(220, 115, 191, 0.3) !important;
-  color: #e4cade !important;
+  background: rgba(30, 144, 255, 0.2) !important;
+  border: 1px solid rgba(255, 215, 0, 0.55) !important;
+  color: #FFD700 !important;
   border-radius: 100px !important;
   padding: 8px 22px;
   font-family: 'Irish Grover', cursive;
@@ -733,17 +832,20 @@ body::before {
   -webkit-tap-highlight-color: transparent;
 }
 .btn-back-top:hover {
-  background: rgba(220, 115, 191, 0.25) !important;
-  border-color: rgba(220, 115, 191, 0.55) !important;
-  color: #fff !important;
+  background: #FFD700 !important;
+  border-color: #FFD700 !important;
+  color: #0a1428 !important;
   transform: translateY(-2px);
 }
 .btn-back-top:active {
   transform: scale(0.96);
-  background: rgba(220, 115, 191, 0.3) !important;
-  color: #fff !important;
+  background: #e0b800 !important;
+  color: #0a1428 !important;
 }
 
+/* ================================================================
+   LEGACY INLINE GAME SCREEN (Home page fallback)
+   ================================================================ */
 .home-game-screen {
   width: 100%;
   max-width: 720px;
@@ -758,35 +860,35 @@ body::before {
   flex-wrap: wrap;
   gap: 10px;
   padding: 10px 0 16px;
-  border-bottom: 1px solid rgba(220, 115, 191, 0.18);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
   margin-bottom: 18px;
 }
 .game-title-sm {
   font-family: 'Irish Grover', cursive;
   font-size: 1.3rem;
-  color: #e4cade;
+  color: #FFD700;
   letter-spacing: 2px;
 }
-.game-title-sm i { color: #dc73bf; margin-right: 6px; }
+.game-title-sm i { color: #FFD700; margin-right: 6px; }
 .game-stats { display: flex; gap: 14px; flex-wrap: wrap; }
 .stat-item {
-  background: rgba(228, 202, 222, 0.07);
+  background: rgba(30, 144, 255, 0.12);
   border-radius: 100px;
   padding: 6px 16px;
-  border: 1px solid rgba(220, 115, 191, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.3);
   font-size: 0.8rem;
-  color: #e4cade;
+  color: #FFD700;
   display: flex;
   align-items: center;
   gap: 6px;
   font-family: 'Irish Grover', cursive;
 }
-.stat-item i { color: #dc73bf; }
-.stat-value { color: #f8ecf5; font-weight: 700; }
+.stat-item i { color: #FFD700; }
+.stat-value { color: #FFD700; font-weight: 700; }
 .btn-back-home {
-  background: rgba(228, 202, 222, 0.08);
-  border: 1px solid rgba(220, 115, 191, 0.25);
-  color: #65a5d9;
+  background: rgba(30, 144, 255, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  color: #FFD700;
   border-radius: 100px;
   padding: 4px 16px;
   font-family: 'Irish Grover', cursive;
@@ -795,13 +897,13 @@ body::before {
   cursor: pointer;
 }
 .btn-back-home:hover {
-  background: rgba(220, 115, 191, 0.2);
-  border-color: rgba(220, 115, 191, 0.45);
-  color: #e4cade;
+  background: #FFD700;
+  border-color: #FFD700;
+  color: #0a1428;
 }
 
 /* ================================================================
-   GAMEPLAY CARDS — original size (4/5, 160px) + icon-image back
+   GAMEPLAY CARDS
    ================================================================ */
 .card-grid {
   display: grid;
@@ -838,7 +940,6 @@ body::before {
   transform: rotateY(180deg);
 }
 
-/* ---------- Shared face styling ---------- */
 .card-face {
   position: absolute;
   width: 100%;
@@ -851,18 +952,17 @@ body::before {
   transition: all 0.3s ease;
 }
 
-/* ---------- BACK (hidden side with subject icon image) ---------- */
 .card-face-back {
   background:
     repeating-linear-gradient(
       45deg,
-      rgba(220, 115, 191, 0.06) 0px,
-      rgba(220, 115, 191, 0.06) 8px,
+      rgba(255, 215, 0, 0.08) 0px,
+      rgba(255, 215, 0, 0.08) 8px,
       transparent 8px,
       transparent 16px
     ),
-    linear-gradient(145deg, #4a58a9 0%, #2a2f5c 55%, #1e2244 100%);
-  border: 2px solid rgba(220, 115, 191, 0.35);
+    linear-gradient(145deg, #4682B4 0%, #1a3a5c 55%, #0a1428 100%);
+  border: 2px solid rgba(255, 215, 0, 0.5);
   transform: rotateY(0deg);
   position: absolute;
   top: 0;
@@ -876,7 +976,7 @@ body::before {
   content: '';
   position: absolute;
   inset: 6px;
-  border: 1.5px dashed rgba(220, 115, 191, 0.3);
+  border: 1.5px dashed rgba(255, 215, 0, 0.4);
   border-radius: 9px;
   pointer-events: none;
 }
@@ -887,13 +987,12 @@ body::before {
   inset: 0;
   background: radial-gradient(
     circle at 50% 40%,
-    rgba(220, 115, 191, 0.15) 0%,
+    rgba(30, 144, 255, 0.22) 0%,
     transparent 60%
   );
   pointer-events: none;
 }
 
-/* Badge: padding is now a % of the badge's own size → scales with card */
 .card-subject-badge {
   position: relative;
   z-index: 2;
@@ -904,49 +1003,45 @@ body::before {
   gap: 6px;
   padding: 6%;
   text-align: center;
-  color: #f8ecf5;
+  color: #FFD700;
   font-family: 'Irish Grover', cursive;
 }
 
-/* Icon: fixed 48% of badge content width, only capped on the largest cards.
-   No per-breakpoint overrides → proportion always stays the same. */
 .card-subject-icon {
   width: 48%;
   max-width: 70px;
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: contain;
-  filter: drop-shadow(0 4px 14px rgba(220, 115, 191, 0.55));
+  filter: drop-shadow(0 4px 14px rgba(255, 215, 0, 0.65));
   margin-bottom: 4px;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
 }
 
-/* Text: fluid size using clamp() so it scales smoothly with viewport */
 .card-subject-name {
   font-size: clamp(0.45rem, 0.9vw + 0.3rem, 0.85rem);
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #e4cade;
+  color: #FFD700;
   font-weight: 700;
-  text-shadow: 0 0 12px rgba(220, 115, 191, 0.55);
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
   line-height: 1.1;
 }
 
-/* ---------- FRONT (revealed side with photo) ---------- */
 .card-face-front {
-  background: #0e0a1a;
+  background: #0a1428;
   transform: rotateY(180deg);
   position: absolute;
   top: 0;
   left: 0;
   display: block;
   padding: 0;
-  border: 2px solid rgba(228, 202, 222, 0.18);
+  border: 2px solid rgba(255, 215, 0, 0.4);
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+    inset 0 2px 0 rgba(255, 215, 0, 0.25);
 }
 
 .card-image {
@@ -956,12 +1051,11 @@ body::before {
   height: 100%;
   object-fit: cover;
   display: block;
-  background: linear-gradient(135deg, #1e2244, #2a2f5c);
+  background: linear-gradient(135deg, #1a3a5c, #0a1428);
   user-select: none;
   -webkit-user-drag: none;
 }
 
-/* Gradient overlay so number/footer stay readable */
 .card-face-front::after {
   content: '';
   position: absolute;
@@ -983,11 +1077,11 @@ body::before {
   left: 8px;
   font-family: 'Keania One', cursive;
   font-size: 0.65rem;
-  color: #fff;
-  background: rgba(42, 26, 58, 0.7);
+  color: #FFD700;
+  background: rgba(10, 20, 40, 0.8);
   padding: 2px 8px;
   border-radius: 10px;
-  border: 1px solid rgba(228, 202, 222, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.5);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 3;
@@ -999,8 +1093,8 @@ body::before {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(42, 26, 58, 0.75);
-  border-top: 1px solid rgba(228, 202, 222, 0.25);
+  background: rgba(10, 20, 40, 0.85);
+  border-top: 1px solid rgba(255, 215, 0, 0.4);
   padding: 5px 6px;
   text-align: center;
   z-index: 2;
@@ -1011,7 +1105,7 @@ body::before {
 .card-bonus {
   font-family: 'Irish Grover', cursive;
   font-size: 0.5rem;
-  color: #fcd34d;
+  color: #FFD700;
   letter-spacing: 0.5px;
   display: block;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
@@ -1021,7 +1115,7 @@ body::before {
 .card-text {
   font-family: 'Irish Grover', cursive;
   font-size: 0.38rem;
-  color: rgba(228, 202, 222, 0.6);
+  color: #F0E68C;
   display: block;
   white-space: nowrap;
   overflow: hidden;
@@ -1029,12 +1123,11 @@ body::before {
   margin-top: 1px;
 }
 
-/* Matched state — green glow */
 .card-item.matched .card-face-front {
-  border-color: rgba(74, 222, 128, 0.8);
+  border-color: #00BFFF;
   box-shadow:
-    0 0 30px rgba(74, 222, 128, 0.5),
-    0 0 60px rgba(74, 222, 128, 0.2),
+    0 0 30px rgba(0, 191, 255, 0.7),
+    0 0 60px rgba(0, 191, 255, 0.35),
     0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
@@ -1045,7 +1138,7 @@ body::before {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(13, 10, 26, 0.85);
+  background: rgba(10, 20, 40, 0.9);
   backdrop-filter: blur(8px);
   z-index: 2000;
   align-items: center;
@@ -1056,8 +1149,8 @@ body::before {
 #winOverlay.show { display: flex; }
 
 .win-box {
-  background: linear-gradient(145deg, #2a2f5c, #1a1a3a);
-  border: 1px solid rgba(239, 152, 134, 0.3);
+  background: linear-gradient(145deg, #1a3a5c, #0a1428);
+  border: 1px solid rgba(255, 215, 0, 0.45);
   border-radius: 28px;
   padding: 24px 20px 28px;
   max-width: 400px;
@@ -1075,15 +1168,13 @@ body::before {
 .win-box h2 {
   font-family: 'Irish Grover', cursive;
   font-size: 1.8rem;
-  background: linear-gradient(135deg, #ef9886, #dc73bf);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #FFD700;
+  text-shadow: 0 0 24px rgba(255, 215, 0, 0.6);
   margin: 4px 0 2px;
   line-height: 1.2;
 }
 .win-box p {
-  color: rgba(228, 202, 222, 0.7);
+  color: #F0E68C;
   font-family: 'Irish Grover', cursive;
   font-size: 0.85rem;
   margin-bottom: 12px;
@@ -1098,7 +1189,7 @@ body::before {
 .win-stats .num {
   font-family: 'Irish Grover', cursive;
   font-size: 1.4rem;
-  color: #f8ecf5;
+  color: #FFD700;
   font-weight: 700;
   display: block;
   line-height: 1.2;
@@ -1106,21 +1197,20 @@ body::before {
 .win-stats .label {
   font-family: 'Irish Grover', cursive;
   font-size: 0.55rem;
-  color: rgba(228, 202, 222, 0.55);
+  color: #00BFFF;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
 
-/* ----- Win modal – points earned block ----- */
 .win-rewards-title {
   font-family: 'Irish Grover', cursive;
   font-size: 0.85rem;
-  color: #dc73bf;
+  color: #FFD700;
   letter-spacing: 3px;
   text-transform: uppercase;
   text-align: center;
   margin: 8px 0 10px;
-  text-shadow: 0 0 20px rgba(220, 115, 191, 0.4);
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
 }
 
 .win-rewards {
@@ -1138,16 +1228,16 @@ body::before {
   align-items: center;
   gap: 2px;
   padding: 12px 10px;
-  background: rgba(228, 202, 222, 0.05);
-  border: 1px solid rgba(220, 115, 191, 0.18);
+  background: rgba(30, 144, 255, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
   border-radius: 16px;
   font-family: 'Irish Grover', cursive;
   transition: all 0.25s ease;
 }
 
 .win-reward-item:hover {
-  background: rgba(220, 115, 191, 0.1);
-  border-color: rgba(220, 115, 191, 0.4);
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.65);
   transform: translateY(-2px);
 }
 
@@ -1156,7 +1246,7 @@ body::before {
 .win-reward-value {
   font-family: 'Keania One', cursive;
   font-size: 1.35rem;
-  color: #f8ecf5;
+  color: #FFD700;
   line-height: 1;
   margin-top: 2px;
 }
@@ -1165,19 +1255,19 @@ body::before {
   font-size: 0.58rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: rgba(228, 202, 222, 0.55);
+  color: #F0E68C;
 }
 
-.win-reward-star i { color: #fcd34d; }
-.win-reward-coin i { color: #ef9886; }
+.win-reward-star i { color: #FFD700; }
+.win-reward-coin i { color: #00BFFF; }
 
 .btn-win-play {
   padding: 10px 24px;
   font-family: 'Irish Grover', cursive;
   border-radius: 100px;
-  border: none;
-  background: linear-gradient(135deg, #ef9886, #dc73bf);
-  color: #2a1a3a;
+  border: 2px solid #FFD700;
+  background: #1E90FF;
+  color: #FFD700;
   font-size: 1rem;
   transition: all 0.3s ease;
   letter-spacing: 1px;
@@ -1189,16 +1279,19 @@ body::before {
   width: 100%;
 }
 .btn-win-play:hover {
+  background: #FFD700;
+  color: #0a1428;
+  border-color: #1E90FF;
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 30px rgba(220, 115, 191, 0.55);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.65);
 }
 .btn-win-home {
   padding: 10px 24px;
   font-family: 'Irish Grover', cursive;
   border-radius: 100px;
-  border: 1px solid rgba(220, 115, 191, 0.3);
-  background: rgba(228, 202, 222, 0.06);
-  color: #e4cade;
+  border: 2px solid rgba(255, 215, 0, 0.55);
+  background: rgba(30, 144, 255, 0.15);
+  color: #FFD700;
   font-size: 1rem;
   transition: all 0.3s ease;
   letter-spacing: 1px;
@@ -1210,9 +1303,9 @@ body::before {
   width: 100%;
 }
 .btn-win-home:hover {
-  background: rgba(220, 115, 191, 0.2);
-  border-color: rgba(220, 115, 191, 0.5);
-  color: #fff;
+  background: #FFD700;
+  color: #0a1428;
+  border-color: #FFD700;
 }
 
 .win-box .win-buttons {
@@ -1228,25 +1321,25 @@ body::before {
    MODALS
    ================================================================ */
 .modal-content {
-  background: linear-gradient(145deg, #2a2f5c, #1a1a3a);
-  border: 1px solid rgba(220, 115, 191, 0.25);
+  background: linear-gradient(145deg, #1a3a5c, #0a1428);
+  border: 1px solid rgba(255, 215, 0, 0.4);
   border-radius: 24px;
-  color: #f8ecf5;
+  color: #FFD700;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 .modal-header {
-  border-bottom: 1px solid rgba(220, 115, 191, 0.15);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.25);
   padding: 16px 22px;
 }
 .modal-header .modal-title {
   font-family: 'Irish Grover', cursive;
-  color: #e4cade;
+  color: #FFD700;
   font-size: 1.25rem;
   display: flex;
   align-items: center;
   letter-spacing: 1px;
 }
-.modal-header .modal-title i { color: #dc73bf; font-size: 1.1rem; }
+.modal-header .modal-title i { color: #FFD700; font-size: 1.1rem; }
 .modal-header .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
   opacity: 0.7;
@@ -1255,29 +1348,32 @@ body::before {
 .modal-header .btn-close:hover { opacity: 1; }
 .modal-body { padding: 18px 22px; }
 .modal-footer {
-  border-top: 1px solid rgba(220, 115, 191, 0.15);
+  border-top: 1px solid rgba(255, 215, 0, 0.25);
   padding: 14px 22px;
 }
 
 .btn-modal-close {
-  background: linear-gradient(135deg, #ef9886, #dc73bf);
-  border: none;
-  color: #2a1a3a;
+  background: #1E90FF;
+  border: 2px solid #FFD700;
+  color: #FFD700;
   font-family: 'Irish Grover', cursive;
   font-size: 0.95rem;
   letter-spacing: 1px;
   padding: 9px 28px;
   border-radius: 100px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 6px 20px rgba(220, 115, 191, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 6px 20px rgba(30, 144, 255, 0.45);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 .btn-modal-close:hover {
+  background: #FFD700;
+  color: #0a1428;
+  border-color: #1E90FF;
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(220, 115, 191, 0.5);
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
 }
 .btn-modal-close:active { transform: scale(0.96); }
 
@@ -1297,14 +1393,14 @@ body::before {
   align-items: center;
   gap: 14px;
   padding: 12px 14px;
-  background: rgba(228, 202, 222, 0.05);
-  border: 1px solid rgba(220, 115, 191, 0.15);
+  background: rgba(30, 144, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
   border-radius: 14px;
   transition: all 0.25s ease;
 }
 .inbox-item:hover {
-  background: rgba(220, 115, 191, 0.12);
-  border-color: rgba(220, 115, 191, 0.35);
+  background: rgba(255, 215, 0, 0.12);
+  border-color: rgba(255, 215, 0, 0.55);
   transform: translateX(3px);
 }
 .inbox-icon {
@@ -1316,13 +1412,13 @@ body::before {
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  color: #2a1a3a;
+  color: #0a1428;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
-.inbox-icon-star   { background: linear-gradient(135deg, #fcd34d, #ef9886); }
-.inbox-icon-coin   { background: linear-gradient(135deg, #ef9886, #dc73bf); }
-.inbox-icon-unlock { background: linear-gradient(135deg, #dc73bf, #65a5d9); }
-.inbox-icon-gem    { background: linear-gradient(135deg, #65a5d9, #4a58a9); color: #fff; }
+.inbox-icon-star   { background: #FFD700; }
+.inbox-icon-coin   { background: #00BFFF; }
+.inbox-icon-unlock { background: #1E90FF; color: #FFD700; }
+.inbox-icon-gem    { background: #4682B4; color: #FFD700; }
 
 .inbox-text {
   display: flex;
@@ -1331,19 +1427,19 @@ body::before {
   min-width: 0;
 }
 .inbox-text strong {
-  color: #f8ecf5;
+  color: #FFD700;
   font-family: 'Irish Grover', cursive;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
 }
 .inbox-text span {
-  color: rgba(228, 202, 222, 0.7);
+  color: #F0E68C;
   font-family: 'Irish Grover', cursive;
   font-size: 0.8rem;
   line-height: 1.3;
 }
 .inbox-text em {
-  color: #dc73bf;
+  color: #00BFFF;
   font-style: normal;
   font-weight: 600;
 }
@@ -1357,36 +1453,36 @@ body::before {
   justify-content: space-between;
   align-items: center;
   padding: 14px 0;
-  border-bottom: 1px solid rgba(220, 115, 191, 0.1);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
 }
 .settings-item:last-of-type { border-bottom: none; }
 .settings-item > span {
   font-family: 'Irish Grover', cursive;
-  color: #e4cade;
+  color: #FFD700;
   font-size: 0.95rem;
   display: flex;
   align-items: center;
   letter-spacing: 0.5px;
 }
 .settings-item > span i {
-  color: #dc73bf;
+  color: #FFD700;
   width: 18px;
   text-align: center;
 }
 .settings-item .form-check-input {
-  background-color: #2a2f5c;
-  border-color: rgba(220, 115, 191, 0.35);
+  background-color: #1a3a5c;
+  border-color: rgba(255, 215, 0, 0.5);
   cursor: pointer;
   width: 42px;
   height: 22px;
   transition: background 0.25s ease, border-color 0.25s ease;
 }
-.settings-item .form-check-input:focus { box-shadow: 0 0 0 3px rgba(220, 115, 191, 0.25); }
-.settings-item .form-check-input:checked { background-color: #dc73bf; border-color: #dc73bf; }
+.settings-item .form-check-input:focus { box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3); }
+.settings-item .form-check-input:checked { background-color: #1E90FF; border-color: #FFD700; }
 .settings-item .form-select {
-  background-color: rgba(228, 202, 222, 0.08);
-  color: #f8ecf5;
-  border: 1px solid rgba(220, 115, 191, 0.3);
+  background-color: rgba(30, 144, 255, 0.12);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.45);
   border-radius: 10px;
   padding: 6px 30px 6px 14px;
   font-family: 'Irish Grover', cursive;
@@ -1395,16 +1491,16 @@ body::before {
   cursor: pointer;
 }
 .settings-item .form-select:focus {
-  border-color: #dc73bf;
-  box-shadow: 0 0 0 3px rgba(220, 115, 191, 0.25);
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
 }
-.settings-item .form-select option { background: #2a2f5c; color: #f8ecf5; }
-.settings-divider { border-color: rgba(220, 115, 191, 0.2); margin: 8px 0 14px; }
+.settings-item .form-select option { background: #1a3a5c; color: #FFD700; }
+.settings-divider { border-color: rgba(255, 215, 0, 0.3); margin: 8px 0 14px; }
 
 .btn-reset-progress {
-  background: rgba(239, 152, 134, 0.15);
-  border: 1px solid rgba(239, 152, 134, 0.4);
-  color: #ef9886;
+  background: rgba(255, 215, 0, 0.15);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  color: #FFD700;
   font-family: 'Irish Grover', cursive;
   font-size: 0.9rem;
   letter-spacing: 1px;
@@ -1418,9 +1514,9 @@ body::before {
   justify-content: center;
 }
 .btn-reset-progress:hover {
-  background: rgba(239, 152, 134, 0.3);
-  border-color: rgba(239, 152, 134, 0.7);
-  color: #fff;
+  background: #FFD700;
+  border-color: #FFD700;
+  color: #0a1428;
 }
 .btn-reset-progress:active { transform: scale(0.97); }
 
@@ -1438,15 +1534,12 @@ body::before {
 .subject-main-title {
   font-family: 'Irish Grover', cursive;
   font-size: 3.5rem;
-  background: linear-gradient(135deg, #e4cade, #dc73bf, #4a58a9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 40px rgba(220, 115, 191, 0.35));
+  color: #FFD700;
+  text-shadow: 0 0 40px rgba(255, 215, 0, 0.55);
 }
 .subject-tagline {
   font-family: 'Irish Grover', cursive;
-  color: rgba(228, 202, 222, 0.65);
+  color: #00BFFF;
   font-size: 1.1rem;
   letter-spacing: 4px;
   margin-bottom: 30px;
@@ -1458,14 +1551,14 @@ body::before {
   margin-top: 10px;
 }
 .subject-card {
-  background: rgba(228, 202, 222, 0.07);
+  background: rgba(30, 144, 255, 0.1);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(220, 115, 191, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 24px;
   padding: 30px 20px;
   text-decoration: none;
-  color: #f8ecf5;
+  color: #FFD700;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -1474,9 +1567,9 @@ body::before {
 }
 .subject-card:hover {
   transform: translateY(-8px);
-  background: rgba(220, 115, 191, 0.15);
-  border-color: rgba(220, 115, 191, 0.5);
-  box-shadow: 0 12px 60px rgba(220, 115, 191, 0.3);
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.75);
+  box-shadow: 0 12px 60px rgba(255, 215, 0, 0.45);
 }
 .subject-icon { font-size: 3.5rem; margin-bottom: 12px; }
 .subject-icon-img {
@@ -1497,13 +1590,13 @@ body::before {
 .subject-card h3 {
   font-family: 'Irish Grover', cursive;
   font-size: 1.4rem;
-  color: #e4cade;
+  color: #FFD700;
   margin-bottom: 4px;
 }
 .subject-card p {
   font-family: 'Irish Grover', cursive;
   font-size: 0.8rem;
-  color: rgba(228, 202, 222, 0.55);
+  color: #F0E68C;
   margin: 0;
 }
 
@@ -1526,10 +1619,10 @@ body::before {
   left: 0;
   right: 0;
   width: 100%;
-  background: rgba(26, 16, 53, 0.4);
+  background: rgba(10, 20, 40, 0.5);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(220, 115, 191, 0.18);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   z-index: 1050;
   flex-shrink: 0;
@@ -1566,9 +1659,9 @@ body::before {
 }
 .gameplay-navbar .btn-back-top {
   position: static;
-  background: rgba(228, 202, 222, 0.06);
-  border: 1px solid rgba(220, 115, 191, 0.25);
-  color: #e4cade;
+  background: rgba(30, 144, 255, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  color: #FFD700;
   border-radius: 100px;
   padding: 7px 18px;
   font-family: 'Irish Grover', cursive;
@@ -1582,15 +1675,15 @@ body::before {
   flex-shrink: 0;
 }
 .gameplay-navbar .btn-back-top:hover {
-  background: rgba(220, 115, 191, 0.2);
-  border-color: rgba(220, 115, 191, 0.5);
-  color: #fff;
+  background: #FFD700;
+  border-color: #FFD700;
+  color: #0a1428;
   transform: translateY(-1px);
 }
 .gameplay-title {
   font-family: 'Irish Grover', cursive;
   font-size: 1.25rem;
-  color: #e4cade;
+  color: #FFD700;
   margin: 0;
   letter-spacing: 1px;
   white-space: nowrap;
@@ -1610,19 +1703,19 @@ body::before {
   font-size: 0.82rem;
   min-width: 66px;
   gap: 5px;
-  background: rgba(228, 202, 222, 0.06);
-  border: 1px solid rgba(220, 115, 191, 0.2);
+  background: rgba(30, 144, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 100px;
   display: inline-flex;
   align-items: center;
-  color: #f8ecf5;
+  color: #FFD700;
   transition: all 0.25s ease;
   cursor: default;
   font-family: 'Irish Grover', cursive;
 }
 .gameplay-points .point-chip:hover {
-  background: rgba(220, 115, 191, 0.15);
-  border-color: rgba(220, 115, 191, 0.5);
+  background: rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.75);
   transform: translateY(-1px);
 }
 .gameplay-points .point-chip i { font-size: 0.95rem; }
@@ -1630,24 +1723,24 @@ body::before {
   font-weight: 700;
   letter-spacing: 0.4px;
 }
-.gameplay-points .point-chip-star i { color: #fcd34d; }
-.gameplay-points .point-chip-coin i { color: #ef9886; }
+.gameplay-points .point-chip-star i { color: #FFD700; }
+.gameplay-points .point-chip-coin i { color: #00BFFF; }
 
 .gameplay-bottom-row .info-item {
-  background: rgba(228, 202, 222, 0.06);
-  border: 1px solid rgba(220, 115, 191, 0.2);
+  background: rgba(30, 144, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 100px;
   padding: 5px 14px;
   font-family: 'Irish Grover', cursive;
   font-size: 0.78rem;
-  color: rgba(228, 202, 222, 0.85);
+  color: #F0E68C;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   white-space: nowrap;
   transition: all 0.3s ease;
 }
-.gameplay-bottom-row .info-item strong { color: #f8ecf5; font-weight: 700; }
+.gameplay-bottom-row .info-item strong { color: #FFD700; font-weight: 700; }
 
 .gameplay-board {
   width: 100%;
@@ -1660,7 +1753,7 @@ body::before {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(13, 10, 26, 0.85);
+  background: rgba(10, 20, 40, 0.9);
   backdrop-filter: blur(8px);
   z-index: 2000;
   align-items: center;
@@ -1700,14 +1793,15 @@ body::before {
     font-size: 0.82rem;
   }
 
-  .home-character { font-size: 4rem; }
-  .home-character img { width: 110px; max-height: 110px; }
-  .home-main-title { font-size: 3.2rem; }
-  .home-sub-title { font-size: 1.8rem; }
+  /* Home lobby responsive */
+  .home-lobby { padding: 60px 20px 40px; }
+  .home-hero { width: 170px; height: 170px; }
+  .home-character img { width: 140px; height: 140px; }
+  .home-main-title { font-size: 3.4rem; }
+  .home-sub-title { font-size: 1.9rem; letter-spacing: 4px; }
   .home-tagline { font-size: 0.75rem; letter-spacing: 4px; }
-  .home-lobby { padding: 100px 20px 40px; }
-  .stat-number { font-size: 1.3rem; }
-  .stat-label { font-size: 0.5rem; }
+  .btn-start-game { font-size: 1.4rem; padding: 16px 44px; min-width: 220px; }
+
   .game-title-sm { font-size: 1rem; }
   .stat-item { font-size: 0.65rem; padding: 4px 12px; }
   .win-box { padding: 28px 18px; }
@@ -1721,7 +1815,6 @@ body::before {
   .subject-card h3 { font-size: 1.2rem; }
   .subject-card p { font-size: 0.75rem; }
   
-  /* MOBILE LAYOUT FOR GAMEPLAY NAVBAR */
   .gameplay-navbar-inner { 
     flex-direction: column; 
     align-items: stretch; 
@@ -1745,7 +1838,6 @@ body::before {
   .gameplay-navbar .btn-back-top { padding: 6px 14px; font-size: 0.78rem; }
   .gameplay-board { padding: 16px 12px 28px; }
 
-  /* Card sizing — icon & text scale automatically (no overrides needed) */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; padding: 0 6px; }
   .card-item { max-width: 140px; }
 
@@ -1755,7 +1847,6 @@ body::before {
 
 @media (max-width: 575px) {
   .navbar-custom { padding: 10px 12px; gap: 10px; }
-  .btn-start-game { font-size: 1.2rem; padding: 14px 40px; }
   .btn-back-top { font-size: 0.8rem; padding: 6px 16px; top: 10px; left: 10px; }
 
   .player-level-box {
@@ -1789,7 +1880,6 @@ body::before {
   .gameplay-points .point-chip { height: 28px; padding: 3px 9px; font-size: 0.68rem; min-width: 52px; }
   .gameplay-board { padding: 14px 8px 24px; }
 
-  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; padding: 0 4px; }
   .card-item { max-width: 120px; }
   .card-number { font-size: 0.55rem; top: 4px; left: 6px; padding: 1px 7px; }
@@ -1820,6 +1910,27 @@ body::before {
   .point-chip span { min-width: 18px; }
   .point-chip i { font-size: 0.8rem; }
 
+  /* Home lobby responsive */
+  .home-lobby { padding: 50px 16px 32px; }
+  .home-hero { width: 140px; height: 140px; }
+  .home-character img { width: 116px; height: 116px; }
+  .home-main-title { font-size: 2.8rem; }
+  .home-sub-title { font-size: 1.5rem; letter-spacing: 3px; }
+  .home-tagline { font-size: 0.68rem; letter-spacing: 3px; margin-top: 10px; }
+  .btn-start-game {
+    font-size: 1.2rem;
+    padding: 14px 36px;
+    min-width: 200px;
+    min-height: 64px;
+    gap: 8px;
+  }
+  .btn-start-game i { font-size: 1rem; }
+  .home-quick-actions { gap: 8px; margin-top: 22px; }
+  .home-quick-btn { font-size: 0.78rem; padding: 8px 14px; min-height: 42px; }
+  .home-quick-btn span { display: none; }
+  .home-quick-btn { padding: 10px 14px; }
+  .home-quick-btn i { font-size: 1.1rem; }
+
   .subject-overlay { padding: 80px 14px 30px !important; }
   .subject-main-title { font-size: 2rem; }
   .subject-tagline { font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 18px; }
@@ -1837,7 +1948,6 @@ body::before {
   .gameplay-points .point-chip i { font-size: 0.72rem; }
   .gameplay-board { padding: 12px 6px 20px; }
 
-  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; padding: 0 2px; }
   .card-item { max-width: 108px; }
   .card-face { border-radius: 12px; }
@@ -1865,7 +1975,6 @@ body::before {
   .gameplay-points .point-chip { padding: 2px 6px; font-size: 0.58rem; height: 24px; min-width: 42px; }
   .gameplay-points .point-chip i { font-size: 0.68rem; }
 
-  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 6px; padding: 0; }
   .card-item { max-width: 96px; }
 }
@@ -1877,7 +1986,6 @@ body::before {
   .gameplay-bottom-row .info-item { font-size: 0.56rem; padding: 2px 6px; }
   .gameplay-board { padding: 10px 4px 18px; }
 
-  /* Card sizing */
   .card-grid { grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 6px; padding: 0; }
   .card-item { max-width: 96px; }
   .card-number { font-size: 0.4rem; padding: 1px 5px; }
@@ -1885,7 +1993,7 @@ body::before {
 }
 
 /* ================================================================
-   FLOATING POINT BOX – used on Level.html (top-right corner)
+   FLOATING POINT BOX
    ================================================================ */
 .point-box-floating {
   position: fixed;
@@ -1902,12 +2010,12 @@ body::before {
   align-items: center;
   gap: 10px;
 
-  background: rgba(26, 16, 53, 0.75);
+  background: rgba(10, 20, 40, 0.8);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 2px solid rgba(220, 115, 191, 0.4);
+  border: 2px solid rgba(255, 215, 0, 0.55);
   border-radius: 100px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55), 0 0 30px rgba(220, 115, 191, 0.25);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55), 0 0 30px rgba(30, 144, 255, 0.4);
   animation: fadeUp 0.5s ease;
 }
 
@@ -1946,7 +2054,7 @@ body::before {
 }
 
 /* ================================================================
-   ISLAND – star unlock price tag on locked levels
+   ISLAND – star unlock price tag
    ================================================================ */
 .island-unlock-tag {
   position: absolute;
@@ -1954,11 +2062,11 @@ body::before {
   right: -14px;
   font-family: 'Irish Grover', cursive;
   font-size: 0.72rem;
-  color: #2a1a3a;
-  background: linear-gradient(135deg, #fcd34d, #f59e0b);
+  color: #0a1428;
+  background: #FFD700;
   padding: 3px 9px;
   border-radius: 100px;
-  border: 2px solid rgba(26, 16, 53, 0.9);
+  border: 2px solid rgba(10, 20, 40, 0.9);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   white-space: nowrap;
   z-index: 3;
@@ -1969,8 +2077,6 @@ body::before {
 /* ================================================================
    SMOOTH SCENE TRANSITION
    ================================================================ */
-
-/* Fade the whole page in on load */
 .page.active-page {
   animation: pageFadeIn 0.55s ease-out;
 }
@@ -1980,11 +2086,10 @@ body::before {
   to   { opacity: 1; }
 }
 
-/* Full-screen fade-out overlay used right before redirect */
 #sceneTransition {
   position: fixed;
   inset: 0;
-  background: #1a1035;
+  background: #0a1428;
   z-index: 9999;
   pointer-events: none;
   opacity: 0;
@@ -1996,14 +2101,13 @@ body::before {
   pointer-events: auto;
 }
 
-/* Optional: a soft pink glow pulse during the transition */
 #sceneTransition::after {
   content: '';
   position: absolute;
   inset: 0;
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(220, 115, 191, 0.35) 0%,
+    rgba(30, 144, 255, 0.4) 0%,
     transparent 60%
   );
   opacity: 0;
@@ -2029,9 +2133,367 @@ body::before {
 }
 
 /* ================================================================
+   DYNAPUFF — BUBBLY KID-FRIENDLY FONT (weight 700)
+   ================================================================ */
+body,
+button,
+input,
+select,
+textarea,
+p,
+span,
+div,
+a,
+li,
+h1, h2, h3, h4, h5, h6,
+.player-level-number,
+.win-stats .num,
+.win-reward-value,
+.card-subject-name,
+.island-number,
+.island-label,
+.gameplay-title,
+.game-title-sm,
+.level-main-title,
+.subject-main-title,
+.carousel-main,
+.carousel-title,
+.carousel-sub,
+.index-title,
+.index-sub,
+.home-main-title,
+.home-sub-title,
+.home-tagline,
+.win-box h2,
+.win-box p,
+.modal-title,
+.point-chip,
+.stat-item,
+.info-item,
+.btn-lets-start,
+.btn-start-game,
+.btn-win-play,
+.btn-win-home,
+.btn-back-top,
+.btn-back-home,
+.btn-modal-close,
+.btn-icon,
+.badge-notif {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* Reduce letter spacing a touch — DynaPuff is already wide */
+.home-main-title,
+.home-sub-title,
+.carousel-main,
+.index-title,
+.subject-main-title,
+.level-main-title,
+.win-box h2 {
+  letter-spacing: 0.5px;
+}
+
+/* Keep small labels from getting too loud */
+.card-text,
+.card-bonus,
+.win-stats .label,
+.win-reward-label,
+.player-level-label,
+.island-unlock-tag {
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+}
+
+/* Ensure emoji/icons stay their own font */
+.home-character,
+.win-box .win-icon,
+.btn-start-game i,
+.home-quick-btn i {
+  font-family: inherit;
+}
+
+/* ================================================================
+   QUICK ACTION MODALS (Rewards / Monsters / How to Play)
+   ================================================================ */
+.quick-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.quick-modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.quick-modal {
+  position: relative;
+  background: linear-gradient(145deg, #1a3a5c, #0a1428);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  border-radius: 24px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.65),
+    0 0 40px rgba(30, 144, 255, 0.35);
+  max-width: 420px;
+  width: 100%;
+  padding: 26px 24px 22px;
+  text-align: center;
+  color: #FFD700;
+  animation: quickModalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes quickModalIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.quick-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  background: rgba(30, 144, 255, 0.12);
+  color: #FFD700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+.quick-modal-close:hover {
+  background: #FFD700;
+  color: #0a1428;
+  border-color: #FFD700;
+}
+
+.quick-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.quick-modal-icon {
+  font-size: 2.4rem;
+  color: #FFD700;
+  filter: drop-shadow(0 4px 16px rgba(255, 215, 0, 0.6));
+}
+
+.quick-modal-title {
+  font-size: 1.5rem;
+  color: #FFD700;
+  letter-spacing: 2px;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.55);
+}
+
+.quick-modal-body {
+  color: #F0E68C;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.quick-modal-note {
+  color: #00BFFF;
+  font-size: 0.82rem;
+  margin: 12px 0 0;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+
+/* Rewards */
+.quick-modal-stats {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.quick-modal-stat {
+  flex: 1 1 0;
+  min-width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  background: rgba(30, 144, 255, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 14px;
+}
+.quick-modal-stat i { font-size: 1.4rem; }
+.quick-modal-value {
+  font-family: 'DynaPuff', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #FFD700;
+  line-height: 1;
+}
+.quick-modal-label {
+  font-size: 0.58rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #F0E68C;
+}
+
+/* Monster grid */
+.quick-modal-monsters {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.quick-modal-monster {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  background: rgba(30, 144, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+.quick-modal-monster.unlocked {
+  background: rgba(255, 215, 0, 0.12);
+  border-color: rgba(255, 215, 0, 0.55);
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+}
+.quick-modal-monster.locked {
+  color: rgba(255, 215, 0, 0.35);
+  font-size: 1.2rem;
+}
+
+/* How-to steps */
+.quick-modal-steps {
+  text-align: left;
+  padding-left: 22px;
+  margin: 0;
+  color: #F0E68C;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.quick-modal-steps li { margin-bottom: 6px; }
+.quick-modal-steps strong { color: #FFD700; }
+
+/* OK button */
+.quick-modal-ok {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 12px 32px;
+  font-family: 'DynaPuff', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: #1a0f2e;
+  background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
+  border: 2px solid #1a0f2e;
+  border-radius: 100px;
+  box-shadow:
+    0 5px 0 #7a4b00,
+    0 8px 22px rgba(255, 184, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  width: 100%;
+}
+.quick-modal-ok:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 7px 0 #7a4b00,
+    0 12px 30px rgba(255, 184, 0, 0.5);
+}
+.quick-modal-ok:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 1px 0 #7a4b00,
+    0 3px 10px rgba(255, 184, 0, 0.35);
+}
+
+@media (max-width: 480px) {
+  .quick-modal { padding: 22px 18px 18px; }
+  .quick-modal-title { font-size: 1.25rem; }
+  .quick-modal-icon { font-size: 2rem; }
+  .quick-modal-monsters { gap: 6px; }
+  .quick-modal-monster { font-size: 1.3rem; }
+}
+
+
+/* ================================================================
+   MIDDLE ISLAND
+   Static floating island that sits between cloud layers.
+   ================================================================ */
+#middleIsland {
+  position: absolute;
+  left: 50%;
+  top: 58%;                        /* slightly below middle so clouds drift above */
+  transform: translate(-50%, -50%);
+
+  width: clamp(320px, 42vw, 620px);
+  height: auto;
+  max-height: 62vh;
+  object-fit: contain;
+
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  /* Soft glow so it sits naturally in the sky */
+  filter:
+    drop-shadow(0 24px 60px rgba(30, 144, 255, 0.35))
+    drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
+
+  /* NOT animated — stays perfectly still */
+  will-change: auto;
+}
+
+/* ---- Tablet ---- */
+@media (max-width: 768px) {
+  #middleIsland {
+    width: 68vw;
+    max-height: 52vh;
+    top: 58%;
+  }
+}
+
+/* ---- Phone ---- */
+@media (max-width: 480px) {
+  #middleIsland {
+    width: 78vw;
+    max-height: 46vh;
+    top: 60%;
+  }
+}
+
+/* ---- Very small phone ---- */
+@media (max-width: 360px) {
+  #middleIsland {
+    width: 84vw;
+    max-height: 42vh;
+  }
+}
+
+/* ================================================================
    SCROLLBAR
    ================================================================ */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1a1035; }
-::-webkit-scrollbar-thumb { background: #4a58a9; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #dc73bf; }
+::-webkit-scrollbar-track { background: #0a1428; }
+::-webkit-scrollbar-thumb { background: #4682B4; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #FFD700; }

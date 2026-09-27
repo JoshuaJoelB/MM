@@ -1,13 +1,14 @@
 /* ================================================================
    SCRIPT.JS – shared logic for all pages
-   Uses event delegation so it works with dynamically-loaded UI
+   Works with dynamically-loaded navbar + new home quick actions.
+   Every DOM lookup is null-safe so this file is safe on any page.
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
 
   const isIndex = document.getElementById('indexPage') !== null;
   const isStart = document.getElementById('startPage') !== null;
-  const isHome  = document.getElementById('homePage') !== null;
+  const isHome  = document.getElementById('homePage')  !== null;
 
   // ---- INDEX PAGE (auto-redirect to Start.html) ----
   if (isIndex) {
@@ -48,14 +49,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (++chipTries >= 10) clearInterval(chipRetry);
     }, 100);
 
-    // Also re-run after navbar finishes injecting
     window.addEventListener('navbarLoaded', syncChips);
-
-    // And re-run whenever the tab regains focus (returning from a game)
     window.addEventListener('focus', syncChips);
     window.addEventListener('pageshow', syncChips);
 
     initHomePage();
+    initQuickActions();
   }
 
   // ---- SETTINGS: initialize whenever the navbar is loaded ----
@@ -69,12 +68,156 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// --------------------------------------------------------------
-// SETTINGS – uses event delegation (works with dynamic navbar)
-// --------------------------------------------------------------
+/* ================================================================
+   QUICK ACTIONS — Rewards / Monsters / How to Play
+   Builds a lightweight modal on the fly (no HTML changes needed).
+   ================================================================ */
+function initQuickActions() {
+
+  function getStats() {
+    return {
+      gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
+      totalMatches: parseInt(localStorage.getItem('totalMatches') || '0', 10),
+      rewards:      parseInt(localStorage.getItem('rewardsCount') || '0', 10),
+      bestTime:     localStorage.getItem('bestTime') || null,
+    };
+  }
+
+  const QUICK_CONTENT = {
+    rewards: {
+      title: 'Rewards',
+      icon:  'fa-trophy',
+      body: function () {
+        const s = getStats();
+        return `
+          <div class="quick-modal-stats">
+            <div class="quick-modal-stat">
+              <i class="fas fa-star" style="color:#FFD700"></i>
+              <span class="quick-modal-value">${s.rewards}</span>
+              <span class="quick-modal-label">Stars Earned</span>
+            </div>
+            <div class="quick-modal-stat">
+              <i class="fas fa-check-double" style="color:#00BFFF"></i>
+              <span class="quick-modal-value">${s.totalMatches}</span>
+              <span class="quick-modal-label">Matches Made</span>
+            </div>
+            <div class="quick-modal-stat">
+              <i class="fas fa-gamepad" style="color:#FFD700"></i>
+              <span class="quick-modal-value">${s.gamesPlayed}</span>
+              <span class="quick-modal-label">Games Played</span>
+            </div>
+          </div>
+          <p class="quick-modal-note">Clear more boards to earn stars and unlock new rewards!</p>
+        `;
+      },
+    },
+
+    monsters: {
+      title: 'Your Monsters',
+      icon:  'fa-dragon',
+      body: function () {
+        const s = getStats();
+        const unlockedCount = Math.min(s.gamesPlayed, 10);
+        const roster = ['🐲','👾','🐸','🦖','👻','🐙','🦄','🐝','🦋','🐢'];
+        const grid = roster.map(function (emoji, i) {
+          const unlocked = i < unlockedCount;
+          return `<div class="quick-modal-monster ${unlocked ? 'unlocked' : 'locked'}">
+                    ${unlocked ? emoji : '?'}
+                  </div>`;
+        }).join('');
+
+        return `
+          <div class="quick-modal-monsters">${grid}</div>
+          <p class="quick-modal-note">
+            ${unlockedCount} / 10 monsters collected.
+            Keep playing to fill your Monster Book!
+          </p>
+        `;
+      },
+    },
+
+    howto: {
+      title: 'How to Play',
+      icon:  'fa-circle-question',
+      body: function () {
+        return `
+          <ol class="quick-modal-steps">
+            <li><strong>Flip</strong> two cards by tapping them.</li>
+            <li><strong>Match</strong> the pairs — numbers, letters, or words.</li>
+            <li><strong>Win</strong> when every pair is found.</li>
+          </ol>
+          <p class="quick-modal-note">
+            Tip: Remember where each card is. No timers. No losing. Just fun!
+          </p>
+        `;
+      },
+    },
+  };
+
+  function openQuickModal(key) {
+    const data = QUICK_CONTENT[key];
+    if (!data) return;
+
+    // Reuse existing modal
+    let modal = document.getElementById('quickActionModal');
+
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'quickActionModal';
+      modal.className = 'quick-modal-backdrop';
+      modal.innerHTML = `
+        <div class="quick-modal" role="dialog" aria-modal="true" aria-labelledby="quickModalTitle">
+          <button class="quick-modal-close" type="button" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="quick-modal-header">
+            <i class="fas quick-modal-icon" id="quickModalIcon"></i>
+            <h2 class="quick-modal-title" id="quickModalTitle"></h2>
+          </div>
+          <div class="quick-modal-body" id="quickModalBody"></div>
+          <button class="quick-modal-ok" type="button">
+            <i class="fas fa-check me-2"></i> Got it!
+          </button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      function close() { modal.classList.remove('show'); }
+
+      modal.querySelector('.quick-modal-close').addEventListener('click', close);
+      modal.querySelector('.quick-modal-ok').addEventListener('click', close);
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) close();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') close();
+      });
+    }
+
+    // Populate
+    modal.querySelector('#quickModalIcon').className = 'fas ' + data.icon + ' quick-modal-icon';
+    modal.querySelector('#quickModalTitle').textContent = data.title;
+    modal.querySelector('#quickModalBody').innerHTML = data.body();
+
+    // Show
+    requestAnimationFrame(function () { modal.classList.add('show'); });
+  }
+
+  // Wire the three home-page buttons
+  const rewardsBtn  = document.getElementById('btnQuickRewards');
+  const monstersBtn = document.getElementById('btnQuickMonsters');
+  const howtoBtn    = document.getElementById('btnQuickHowTo');
+
+  if (rewardsBtn)  rewardsBtn.addEventListener('click',  function () { openQuickModal('rewards');  });
+  if (monstersBtn) monstersBtn.addEventListener('click', function () { openQuickModal('monsters'); });
+  if (howtoBtn)    howtoBtn.addEventListener('click',    function () { openQuickModal('howto');    });
+}
+
+/* ================================================================
+   SETTINGS – uses event delegation (works with dynamic navbar)
+   ================================================================ */
 function initSettings() {
 
-  // ---- Apply saved settings to UI whenever navbar gets injected ----
   function applySettingsToUI() {
     const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
     const musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
@@ -89,13 +232,9 @@ function initSettings() {
     if (diffSelect)  diffSelect.value = difficulty;
   }
 
-  // Apply now (in case navbar is already there)
   applySettingsToUI();
-
-  // Re-apply whenever the navbar loader finishes
   window.addEventListener('navbarLoaded', applySettingsToUI);
 
-  // Fallback polling for the first 2 seconds (in case navbarLoaded never fires)
   let tries = 0;
   const pollInterval = setInterval(function () {
     if (document.getElementById('resetProgressBtn') || tries++ > 20) {
@@ -104,14 +243,8 @@ function initSettings() {
     }
   }, 100);
 
-  // ==============================================================
-  // EVENT DELEGATION – works for dynamically-injected elements
-  // ==============================================================
-
   // ---- Click handler (Reset Progress) ----
   document.addEventListener('click', function (e) {
-
-    // Check if the click was on (or inside) the Reset Progress button
     const resetBtn = e.target.closest('#resetProgressBtn');
     if (!resetBtn) return;
 
@@ -128,23 +261,23 @@ function initSettings() {
     );
     if (!ok) return;
 
-    // ----- Clear GLOBAL STATS -----
+    // Clear GLOBAL STATS
     localStorage.removeItem('gamesPlayed');
     localStorage.removeItem('bestTime');
     localStorage.removeItem('totalMatches');
     localStorage.removeItem('rewardsCount');
 
-    // ----- Clear POINTS (stars + coins) -----
+    // Clear POINTS (stars + coins)
     localStorage.removeItem('starsTotal');
     localStorage.removeItem('coinsTotal');
 
-    // ----- Clear LEVEL PROGRESSION for ALL subjects -----
+    // Clear LEVEL PROGRESSION for ALL subjects
     ['computer', 'science', 'ap'].forEach(function (sub) {
       localStorage.removeItem('matchMonster_unlocked_' + sub);
       localStorage.removeItem('matchMonster_completed_' + sub);
     });
 
-    // ----- Refresh the UI ----
+    // Refresh UI
     if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
     if (typeof window.updatePlayerLevelBox === 'function') {
       window.updatePlayerLevelBox();
@@ -157,7 +290,7 @@ function initSettings() {
       if (modal) modal.hide();
     }
 
-    // Quiet, non-blocking notification
+    // Quiet toast
     const toast = document.createElement('div');
     toast.textContent = '✅ Progress reset! Level 1 is unlocked.';
     toast.style.cssText = `
@@ -165,13 +298,14 @@ function initSettings() {
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      background: linear-gradient(135deg, #ef9886, #dc73bf);
-      color: #2a1a3a;
+      background: linear-gradient(135deg, #FFE066, #FFC107);
+      color: #1a0f2e;
       padding: 12px 28px;
       border-radius: 100px;
-      font-family: 'Irish Grover', cursive;
+      font-family: 'DynaPuff', system-ui, sans-serif;
+      font-weight: 700;
       font-size: 1rem;
-      box-shadow: 0 12px 40px rgba(220, 115, 191, 0.5);
+      box-shadow: 0 12px 40px rgba(255, 184, 0, 0.5);
       z-index: 3000;
       animation: fadeUp 0.4s ease;
       pointer-events: none;
@@ -179,7 +313,7 @@ function initSettings() {
     document.body.appendChild(toast);
     setTimeout(function () { toast.remove(); }, 2600);
 
-    // If on home page, reset the game board
+    // If on home page, reset the game board view
     const homeLobby      = document.getElementById('homeLobby');
     const homeGameScreen = document.getElementById('homeGameScreen');
     if (homeLobby)      homeLobby.style.display = 'block';
@@ -187,33 +321,31 @@ function initSettings() {
     if (typeof window.__quitGame === 'function') window.__quitGame();
   });
 
-  // ---- Change handler for settings toggles + difficulty select ----
+  // ---- Change handler for settings toggles + difficulty ----
   document.addEventListener('change', function (e) {
     const target = e.target;
 
-    // Settings toggles (sound / music)
     if (target.classList && target.classList.contains('settings-toggle')) {
       const key = target.dataset.key;
       if (key) localStorage.setItem(key, target.checked);
       return;
     }
 
-    // Difficulty select
     if (target.id === 'difficultySelect') {
       localStorage.setItem('difficulty', target.value);
     }
   });
 }
 
-// --------------------------------------------------------------
-// STATS – read/write from localStorage
-// --------------------------------------------------------------
+/* ================================================================
+   STATS – read/write from localStorage
+   ================================================================ */
 function getStats() {
   return {
-    gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-    bestTime:    localStorage.getItem('bestTime') || null,
-    totalMatches: parseInt(localStorage.getItem('totalMatches') || '0'),
-    rewards:      parseInt(localStorage.getItem('rewardsCount') || '0')
+    gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
+    bestTime:     localStorage.getItem('bestTime') || null,
+    totalMatches: parseInt(localStorage.getItem('totalMatches') || '0', 10),
+    rewards:      parseInt(localStorage.getItem('rewardsCount') || '0', 10),
   };
 }
 
@@ -231,16 +363,16 @@ function updateStatsDisplay() {
 }
 
 function saveStats(stats) {
-  localStorage.setItem('gamesPlayed', stats.gamesPlayed);
-  localStorage.setItem('bestTime',    stats.bestTime);
+  localStorage.setItem('gamesPlayed',  stats.gamesPlayed);
+  localStorage.setItem('bestTime',     stats.bestTime);
   localStorage.setItem('totalMatches', stats.totalMatches);
   localStorage.setItem('rewardsCount', stats.rewards);
   updateStatsDisplay();
 }
 
-// --------------------------------------------------------------
-// HOME PAGE – GAME LOGIC
-// --------------------------------------------------------------
+/* ================================================================
+   HOME PAGE – GAME LOGIC (inline board, only if elements exist)
+   ================================================================ */
 function initHomePage() {
   if (!document.getElementById('homePage')) return;
 
@@ -258,8 +390,12 @@ function initHomePage() {
   const winMoves     = document.getElementById('winMoves');
   const winTime      = document.getElementById('winTime');
 
+  // If there's no inline game board on the page, just wire stats and bail.
+  if (!grid) return;
+
   const MONSTERS = ['👾', '🧛', '🧟', '🧙', '🧝', '🧚', '🦄', '🐉'];
   const PAIR_COUNT = MONSTERS.length;
+
   let cards = [], flippedCards = [], matchedPairs = 0, moves = 0, isLocked = false;
   let timerInterval = null, seconds = 0, gameStarted = false;
 
@@ -273,17 +409,16 @@ function initHomePage() {
 
   function buildCardData() {
     const deck = [];
-    MONSTERS.forEach((emoji, idx) => {
-      deck.push({ id: idx, emoji, matched: false });
-      deck.push({ id: idx, emoji, matched: false });
+    MONSTERS.forEach(function (emoji, idx) {
+      deck.push({ id: idx, emoji: emoji, matched: false });
+      deck.push({ id: idx, emoji: emoji, matched: false });
     });
     return shuffle(deck);
   }
 
   function renderCards() {
-    if (!grid) return;
     grid.innerHTML = '';
-    cards.forEach((card, index) => {
+    cards.forEach(function (card, index) {
       const div = document.createElement('div');
       div.className = 'card-item';
       div.dataset.index = index;
@@ -301,7 +436,7 @@ function initHomePage() {
       inner.appendChild(back);
       inner.appendChild(front);
       div.appendChild(inner);
-      div.addEventListener('click', () => onCardClick(index));
+      div.addEventListener('click', function () { onCardClick(index); });
       grid.appendChild(div);
     });
   }
@@ -314,7 +449,7 @@ function initHomePage() {
   function startTimer() {
     if (timerInterval) return;
     seconds = 0;
-    timerInterval = setInterval(() => {
+    timerInterval = setInterval(function () {
       seconds++;
       if (timerDisplay) timerDisplay.textContent = seconds + 's';
     }, 1000);
@@ -342,7 +477,7 @@ function initHomePage() {
     if (!gameStarted) { gameStarted = true; startTimer(); }
 
     el.classList.add('flipped');
-    flippedCards.push({ index, el, card });
+    flippedCards.push({ index: index, el: el, card: card });
 
     if (flippedCards.length === 2) {
       moves++;
@@ -353,10 +488,11 @@ function initHomePage() {
 
   function checkMatch() {
     isLocked = true;
-    const [first, second] = flippedCards;
+    const first  = flippedCards[0];
+    const second = flippedCards[1];
 
     if (first.card.id === second.card.id) {
-      first.card.matched = true;
+      first.card.matched  = true;
       second.card.matched = true;
       first.el.classList.add('matched');
       second.el.classList.add('matched');
@@ -370,7 +506,7 @@ function initHomePage() {
         setTimeout(showWin, 400);
       }
     } else {
-      setTimeout(() => {
+      setTimeout(function () {
         first.el.classList.remove('flipped');
         second.el.classList.remove('flipped');
         flippedCards = [];
@@ -458,12 +594,11 @@ function initHomePage() {
   });
 
   function adjustGridColumns() {
-    if (!grid) return;
     const width = window.innerWidth;
     let cols = 4;
     if (width < 400) cols = 3;
     if (width < 320) cols = 2;
-    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    grid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
   }
   window.addEventListener('resize', adjustGridColumns);
 
