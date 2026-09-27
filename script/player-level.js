@@ -1,21 +1,74 @@
 /* ================================================================
-   PLAYER-LEVEL.JS – global player level, points, and star currency
+   PLAYER-LEVEL.JS
+   - STARS = 3-star rating per level (best) — never spent
+   - COINS = spendable currency — used to unlock levels
    ================================================================ */
 
 (function () {
   'use strict';
 
-  const SUBJECTS = ['computer', 'science', 'ap'];
+  const SUBJECTS        = ['computer', 'science', 'ap'];
   const LEVELS_PER_LEVEL = 3;
-  const UNLOCK_BASE_COST = 5;
+  const COIN_UNLOCK_BASE = 10;
+
+  // ================================================================
+  // STARS — rating (0-3) per level, best score kept
+  // Stored as: matchMonster_stars_<subject> = { 1: 3, 2: 2, ... }
+  // ================================================================
+  function getBestStars(subject, level) {
+    try {
+      const data = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}');
+      return Number(data[level]) || 0;
+    } catch (e) { return 0; }
+  }
+
+  function recordLevelStars(subject, level, stars) {
+    if (!SUBJECTS.includes(subject)) return;
+    let data = {};
+    try {
+      data = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}') || {};
+    } catch (e) { data = {}; }
+    const prev = Number(data[level]) || 0;
+    if (stars > prev) {
+      data[level] = stars;
+      localStorage.setItem('matchMonster_stars_' + subject, JSON.stringify(data));
+    }
+  }
 
   function getStarsTotal() {
-    return parseInt(localStorage.getItem('starsTotal') || '0', 10);
+    let total = 0;
+    SUBJECTS.forEach(function (sub) {
+      try {
+        const data = JSON.parse(localStorage.getItem('matchMonster_stars_' + sub) || '{}') || {};
+        Object.keys(data).forEach(function (k) {
+          total += Number(data[k]) || 0;
+        });
+      } catch (e) {}
+    });
+    return total;
   }
+
+  // ================================================================
+  // COINS — spendable currency
+  // ================================================================
   function getCoinsTotal() {
     return parseInt(localStorage.getItem('coinsTotal') || '0', 10);
   }
+  function addCoins(amount) {
+    const next = getCoinsTotal() + amount;
+    localStorage.setItem('coinsTotal', next);
+    return next;
+  }
+  function spendCoins(amount) {
+    const cur = getCoinsTotal();
+    if (cur < amount) return false;
+    localStorage.setItem('coinsTotal', cur - amount);
+    return true;
+  }
 
+  // ================================================================
+  // PLAYER LEVEL (unchanged logic)
+  // ================================================================
   function getPlayerLevel() {
     let totalCompleted = 0;
     SUBJECTS.forEach(function (sub) {
@@ -59,16 +112,12 @@
     });
   }
 
+  // ================================================================
+  // UNLOCK — now spent in COINS, not stars
+  // ================================================================
   function getUnlockCost(level) {
     if (level <= 1) return 0;
-    return level * UNLOCK_BASE_COST;
-  }
-
-  function spendStars(amount) {
-    const current = getStarsTotal();
-    if (current < amount) return false;
-    localStorage.setItem('starsTotal', current - amount);
-    return true;
+    return level * COIN_UNLOCK_BASE;
   }
 
   function tryUnlockLevel(subject, level) {
@@ -88,14 +137,14 @@
     }
 
     const cost  = getUnlockCost(level);
-    const stars = getStarsTotal();
+    const coins = getCoinsTotal();
 
-    if (stars < cost) {
-      return { ok: false, reason: 'not_enough_stars', cost: cost, stars: stars };
+    if (coins < cost) {
+      return { ok: false, reason: 'not_enough_coins', cost: cost, coins: coins };
     }
 
-    if (!spendStars(cost)) {
-      return { ok: false, reason: 'spend_failed', cost: cost, stars: stars };
+    if (!spendCoins(cost)) {
+      return { ok: false, reason: 'spend_failed', cost: cost, coins: coins };
     }
 
     unlocked.push(level);
@@ -121,6 +170,9 @@
     return getPlayerLevel();
   }
 
+  // ================================================================
+  // BOOT
+  // ================================================================
   function boot() { updatePlayerLevelBox(); }
 
   if (document.readyState === 'loading') {
@@ -137,13 +189,17 @@
     if (document.visibilityState === 'visible') updatePlayerLevelBox();
   });
 
+  // Expose API
   window.getPlayerLevel       = getPlayerLevel;
   window.updatePlayerLevelBox = updatePlayerLevelBox;
   window.completeLevel        = completeLevel;
   window.getStarsTotal        = getStarsTotal;
   window.getCoinsTotal        = getCoinsTotal;
+  window.addCoins             = addCoins;
+  window.spendCoins           = spendCoins;
   window.getUnlockCost        = getUnlockCost;
-  window.spendStars           = spendStars;
   window.tryUnlockLevel       = tryUnlockLevel;
+  window.getBestStars         = getBestStars;
+  window.recordLevelStars     = recordLevelStars;
 
 })();
