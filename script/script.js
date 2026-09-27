@@ -10,11 +10,45 @@ document.addEventListener('DOMContentLoaded', function () {
   const isStart = document.getElementById('startPage') !== null;
   const isHome  = document.getElementById('homePage')  !== null;
 
-  // ---- INDEX PAGE (auto-redirect to Start.html) ----
+  // ---- INDEX PAGE — loading bar with progress, then redirect ----
   if (isIndex) {
-    setTimeout(function () {
-      window.location.href = 'Start.html';
-    }, 2000);
+    const fill     = document.getElementById('loadingBarFill');
+    const logo     = document.getElementById('loadingBarLogo');
+    const wrap     = document.getElementById('loadingBarWrap');
+    const barWrap  = document.querySelector('.loading-bar-wrap');
+
+    let progress = 0;
+
+    function setProgress(p) {
+      progress = Math.max(0, Math.min(100, p));
+
+      // Bar fill width
+      if (fill) fill.style.width = progress + '%';
+
+      // Move the logo along the track
+      if (barWrap) barWrap.style.setProperty('--progress', String(progress / 100));
+
+      // Update ARIA
+      if (wrap) wrap.setAttribute('aria-valuenow', String(Math.round(progress)));
+    }
+
+    // Ease the progress forward a bit at a time (feels natural)
+    const timer = setInterval(function () {
+      // Accelerate towards 100 — smaller jumps early, bigger later
+      const remaining = 100 - progress;
+      const step      = Math.max(0.6, remaining * 0.06);
+      setProgress(progress + step);
+
+      if (progress >= 100) {
+        clearInterval(timer);
+        // Short pause so the player sees the full bar + logo at the end
+        setTimeout(function () {
+          window.location.href = 'Start.html';
+        }, 350);
+      }
+    }, 60);
+
+    setProgress(0);
   }
 
   // ---- START PAGE (button leads to Home.html) ----

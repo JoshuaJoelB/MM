@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a1428" />
   <title>Match Monster</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Keania+One&display=swap" rel="stylesheet" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
   <link rel="stylesheet" href="style/style.css" />
   <link rel="stylesheet" href="style/Level.css" />
+
   <link rel="icon" href="Assets/top_icon.png">
 </head>
 <body>
@@ -53,278 +60,245 @@
   <script src="script/player-level.js"></script>
   <script src="script/platform-loader.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const subject = urlParams.get('subject') || 'computer';
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const subject   = urlParams.get('subject') || 'computer';
 
-      // ----- READ "just unlocked" FLAG from sessionStorage -----
-      let justUnlockedLevel = null;
+    // ----- READ "just unlocked" FLAG -----
+    let justUnlockedLevel = null;
+    try {
+      const raw = sessionStorage.getItem('mm_just_unlocked');
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data && data.subject === subject) justUnlockedLevel = data.level;
+        sessionStorage.removeItem('mm_just_unlocked');
+      }
+    } catch (e) {}
+
+    const subjectNames = {
+      computer: 'Computer',
+      science:  'Science',
+      ap:       'AP'
+    };
+
+    document.getElementById('subjectMapTitle').textContent =
+      (subjectNames[subject] || 'Subject') + ' Map';
+
+    // ----- STORAGE HELPERS -----
+    function getUnlocked() {
       try {
-        const raw = sessionStorage.getItem('mm_just_unlocked');
-        if (raw) {
-          const data = JSON.parse(raw);
-          if (data && data.subject === subject) {
-            justUnlockedLevel = data.level;
-          }
-          sessionStorage.removeItem('mm_just_unlocked');
+        const arr = JSON.parse(localStorage.getItem('matchMonster_unlocked_' + subject) || '[1]');
+        return Array.isArray(arr) ? arr : [1];
+      } catch (e) { return [1]; }
+    }
+    function getCompleted() {
+      try {
+        const arr = JSON.parse(localStorage.getItem('matchMonster_completed_' + subject) || '[]');
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) { return []; }
+    }
+
+    // ----- SMOOTH SCENE TRANSITION -----
+    function fadeAndNavigate(url) {
+      let overlay = document.getElementById('sceneTransition');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'sceneTransition';
+        document.body.appendChild(overlay);
+        void overlay.offsetWidth;
+      }
+      overlay.classList.add('active');
+      setTimeout(() => { window.location.href = url; }, 550);
+    }
+
+    // ----- LEVEL POSITIONS -----
+    const mapContainer = document.getElementById('levelMap');
+    const totalLevels  = 10;
+
+    const LEVEL_POSITIONS = [
+      { x: 66, y: 85 },  // 1
+      { x: 56, y: 81 },  // 2
+      { x: 45, y: 78 },  // 3
+      { x: 36, y: 70 },  // 4
+      { x: 50, y: 65 },  // 5
+      { x: 66, y: 55 },  // 6
+      { x: 48, y: 51 },  // 7
+      { x: 36, y: 44 },  // 8
+      { x: 50, y: 38 },  // 9
+      { x: 60, y: 32 }   // 10
+    ];
+
+    function getCurrentLevelForPlayer(unlocked, completed, total) {
+      for (let lvl = 1; lvl <= total; lvl++) {
+        if (unlocked.includes(lvl) && !completed.includes(lvl)) return lvl;
+      }
+      return total;
+    }
+
+    // ================================================================
+    // RENDER
+    // ================================================================
+    function renderMap() {
+      const jojo = mapContainer.querySelector('.jojoma-character');
+
+      Array.from(mapContainer.children).forEach(child => {
+        if (child !== jojo) child.remove();
+      });
+
+      // Background island image
+      const bgImg = document.createElement('img');
+      bgImg.src = 'Assets/Platform_Island.png';
+      bgImg.alt = '';
+      bgImg.className = 'level-map-bg';
+      bgImg.draggable = false;
+      mapContainer.appendChild(bgImg);
+
+      const unlockedLevels  = getUnlocked();
+      const completedLevels = getCompleted();
+
+      // ---- Level markers (number only) ----
+      LEVEL_POSITIONS.forEach((pos, i) => {
+        const level       = i + 1;
+        const isUnlocked  = unlockedLevels.includes(level);
+        const isCompleted = completedLevels.includes(level);
+
+        const island = document.createElement('div');
+        island.className = 'island-item';
+        island.style.left = pos.x + '%';
+        island.style.top  = pos.y + '%';
+        island.dataset.level = level;
+
+        if (level === 1)  island.classList.add('start-island');
+        if (level === 10) island.classList.add('end-island');
+        if (isUnlocked && isCompleted) island.classList.add('is-completed');
+        if (!isUnlocked) island.classList.add('is-locked');
+
+        const link = document.createElement('a');
+        link.className = 'island-link';
+
+        if (isUnlocked) {
+          link.href = `Gameplay/Gameplay-${subject}.html?level=${level}&subject=${subject}`;
+          link.addEventListener('click', function (e) {
+            e.preventDefault();
+            fadeAndNavigate(this.href);
+          });
+        } else {
+          link.href = 'javascript:void(0)';
         }
-      } catch (e) {}
 
-      const subjectNames = {
-        computer: 'Computer',
-        science: 'Science',
-        ap: 'AP'
-      };
+        // Just the number
+        const number = document.createElement('span');
+        number.className = 'island-number';
+        number.textContent = level;
+        link.appendChild(number);
 
-      // Dynamic title: "Computer Map" / "Science Map" / "AP Map"
-      document.getElementById('subjectMapTitle').textContent =
-        (subjectNames[subject] || 'Subject') + ' Map';
+        island.appendChild(link);
 
-      // ----- HELPERS -----
-      function getUnlocked() {
-        try {
-          const arr = JSON.parse(localStorage.getItem('matchMonster_unlocked_' + subject) || '[1]');
-          return Array.isArray(arr) ? arr : [1];
-        } catch (e) { return [1]; }
-      }
-      function getCompleted() {
-        try {
-          const arr = JSON.parse(localStorage.getItem('matchMonster_completed_' + subject) || '[]');
-          return Array.isArray(arr) ? arr : [];
-        } catch (e) { return []; }
-      }
-      function getStars() {
-        return parseInt(localStorage.getItem('starsTotal') || '0', 10);
-      }
+        // Locked click → try to unlock
+        if (!isUnlocked) {
+          link.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (typeof window.tryUnlockLevel !== 'function') return;
+            const result = window.tryUnlockLevel(subject, level);
 
-      // ----- SMOOTH SCENE TRANSITION -----
-      function fadeAndNavigate(url) {
-        let overlay = document.getElementById('sceneTransition');
-        if (!overlay) {
-          overlay = document.createElement('div');
-          overlay.id = 'sceneTransition';
-          document.body.appendChild(overlay);
-          void overlay.offsetWidth;
-        }
-        overlay.classList.add('active');
-        setTimeout(() => {
-          window.location.href = url;
-        }, 550);
-      }
-
-      // The level Jojoma should stand on
-      function getCurrentLevelForPlayer(unlocked, completed, total) {
-        for (let lvl = 1; lvl <= total; lvl++) {
-          if (unlocked.includes(lvl) && !completed.includes(lvl)) return lvl;
-        }
-        return total;
-      }
-
-      // ----- MAP SETUP -----
-      const mapContainer = document.getElementById('levelMap');
-      const totalLevels  = 10;
-
-            // Positions tuned to sit on the 4 islands + 3 bridges.
-      // L1 = bottom-right island, L10 = top-left island.
-      const LEVEL_POSITIONS = [
-        // Island D (bottom-right) — Levels 1, 2
-        { x: 66, y: 85 },  // 1
-        { x: 56, y: 81 },  // 2
-
-        // Bridge 3 (bottom) — Level 3
-        { x: 45, y: 78 },  // 3
-
-        // Island C (bottom-left) — Levels 4, 5
-        { x: 36, y: 70 },  // 4
-        { x: 50, y: 65 },  // 5
-
-        // Bridge 2 (diagonal middle) — Level 6
-        { x: 66, y: 55 },  // 6
-
-        // Island B (top-right) — Levels 7, 8
-        { x: 48, y: 51 },  // 7
-        { x: 36, y: 44 },  // 8
-
-        // Bridge 1 (top) — Level 9
-        { x: 50, y: 38 },  // 9
-
-        // Island A (top-left) — Level 10
-        { x: 60, y: 32 }   // 10
-      ];
-
-      function renderMap() {
-        const jojo = mapContainer.querySelector('.jojoma-character');
-
-        Array.from(mapContainer.children).forEach(child => {
-          if (child !== jojo) child.remove();
-        });
-
-        // ---- Background island image ----
-        const bgImg = document.createElement('img');
-        bgImg.src = 'Assets/Platform_Island.png';
-        bgImg.alt = '';
-        bgImg.className = 'level-map-bg';
-        bgImg.draggable = false;
-        mapContainer.appendChild(bgImg);
-
-        const unlockedLevels  = getUnlocked();
-        const completedLevels = getCompleted();
-
-        // ---- Level markers ----
-        LEVEL_POSITIONS.forEach((pos, i) => {
-          const level = i + 1;
-          const isUnlocked  = unlockedLevels.includes(level);
-          const isCompleted = completedLevels.includes(level);
-
-          const island = document.createElement('div');
-          island.className = 'island-item';
-          island.style.left = pos.x + '%';
-          island.style.top  = pos.y + '%';
-          island.dataset.level = level;
-
-          if (level === 1)  island.classList.add('start-island');
-          if (level === 10) island.classList.add('end-island');
-          if (isUnlocked && isCompleted) island.classList.add('is-completed');
-          if (!isUnlocked) island.classList.add('is-locked');
-
-          const link = document.createElement('a');
-          link.className = 'island-link';
-
-          if (isUnlocked) {
-            link.href = `Gameplay/Gameplay-${subject}.html?level=${level}&subject=${subject}`;
-            link.addEventListener('click', function (e) {
-              e.preventDefault();
-              fadeAndNavigate(this.href);
-            });
-          } else {
-            link.href = 'javascript:void(0)';
-          }
-
-          const number = document.createElement('span');
-          number.className = 'island-number';
-          number.textContent = level;
-          link.appendChild(number);
-
-          const label = document.createElement('span');
-          label.className = 'island-label';
-          label.textContent = `Lvl ${level}`;
-          link.appendChild(label);
-
-          island.appendChild(link);
-
-          if (!isUnlocked) {
-            const cost = (typeof window.getUnlockCost === 'function')
-                       ? window.getUnlockCost(level)
-                       : level * 5;
-
-            const lockTag = document.createElement('div');
-            lockTag.className = 'island-unlock-tag';
-            lockTag.textContent = `🔒 ${cost}⭐`;
-            island.appendChild(lockTag);
-
-            link.addEventListener('click', function (e) {
-              e.preventDefault();
-              if (typeof window.tryUnlockLevel !== 'function') return;
-              const result = window.tryUnlockLevel(subject, level);
-
-              if (result.ok) {
-                alert(`🎉 Level ${level} unlocked for ${result.cost || 0}⭐!`);
-                justUnlockedLevel = level;
-                renderMap();
-                if (typeof window.updatePlayerLevelBox === 'function') {
-                  window.updatePlayerLevelBox();
-                }
-              } else if (result.reason === 'not_enough_stars') {
-                alert(
-                  `⭐ Not enough stars!\n\n` +
-                  `Level ${level} costs ${result.cost} stars.\n` +
-                  `You have ${result.stars} stars.\n\n` +
-                  `Play more levels to earn stars!`
-                );
-              } else if (result.reason === 'previous_locked') {
-                alert(`Complete the previous level first!`);
+            if (result.ok) {
+              justUnlockedLevel = level;
+              renderMap();
+              if (typeof window.updatePlayerLevelBox === 'function') {
+                window.updatePlayerLevelBox();
               }
-            });
-          }
-
-          mapContainer.appendChild(island);
-        });
-
-        // ================================================================
-        // JOJOMA CHARACTER
-        // ================================================================
-        const currentLevel = getCurrentLevelForPlayer(
-          unlockedLevels, completedLevels, totalLevels
-        );
-        const targetPos = LEVEL_POSITIONS[currentLevel - 1];
-
-        const shouldAnimateUnlock =
-          justUnlockedLevel === currentLevel && currentLevel > 1;
-        const startLevelForJojo = shouldAnimateUnlock ? currentLevel - 1 : currentLevel;
-        const startPos = LEVEL_POSITIONS[startLevelForJojo - 1];
-
-        if (jojo) {
-          if (targetPos) {
-            jojo.style.left = targetPos.x + '%';
-            jojo.style.top  = targetPos.y + '%';
-            jojo.dataset.level = currentLevel;
-          }
-        } else if (targetPos) {
-          const jojoEl = document.createElement('img');
-          jojoEl.src = 'Assets/jojoma.png';
-          jojoEl.alt = '';
-          jojoEl.className = 'jojoma-character';
-          jojoEl.draggable = false;
-          jojoEl.dataset.level = startLevelForJojo;
-
-          const initialPos = shouldAnimateUnlock ? startPos : targetPos;
-          jojoEl.style.left = initialPos.x + '%';
-          jojoEl.style.top  = initialPos.y + '%';
-          mapContainer.appendChild(jojoEl);
-
-          if (shouldAnimateUnlock) {
-            setTimeout(() => {
-              const targetMarker = mapContainer.querySelector(
-                `.island-item[data-level="${currentLevel}"]`
+            } else if (result.reason === 'not_enough_stars') {
+              alert(
+                `⭐ Not enough stars!\n\n` +
+                `Level ${level} costs ${result.cost} stars.\n` +
+                `You have ${result.stars} stars.\n\n` +
+                `Play more levels to earn stars!`
               );
-              if (targetMarker) {
-                targetMarker.classList.add('just-unlocked');
-                setTimeout(() => targetMarker.classList.remove('just-unlocked'), 1600);
-              }
+            } else if (result.reason === 'previous_locked') {
+              alert(`Complete the previous level first!`);
+            }
+          });
+        }
 
-              jojoEl.style.left = targetPos.x + '%';
-              jojoEl.style.top  = targetPos.y + '%';
-              jojoEl.dataset.level = currentLevel;
+        mapContainer.appendChild(island);
+      });
 
-              setTimeout(() => {
-                fadeAndNavigate(
-                  `Gameplay/Gameplay-${subject}.html?level=${currentLevel}&subject=${subject}`
-                );
-              }, 1400);
-            }, 400);
+      // ================================================================
+      // JOJOMA
+      // ================================================================
+      const currentLevel = getCurrentLevelForPlayer(
+        unlockedLevels, completedLevels, totalLevels
+      );
+      const targetPos = LEVEL_POSITIONS[currentLevel - 1];
 
-            justUnlockedLevel = null;
-          }
+      const shouldAnimateUnlock =
+        justUnlockedLevel === currentLevel && currentLevel > 1;
+      const startLevelForJojo = shouldAnimateUnlock ? currentLevel - 1 : currentLevel;
+      const startPos = LEVEL_POSITIONS[startLevelForJojo - 1];
+
+      if (jojo) {
+        if (targetPos) {
+          jojo.style.left = targetPos.x + '%';
+          jojo.style.top  = targetPos.y + '%';
+          jojo.dataset.level = currentLevel;
+        }
+      } else if (targetPos) {
+        const jojoEl = document.createElement('img');
+        jojoEl.src = 'Assets/jojoma.png';
+        jojoEl.alt = '';
+        jojoEl.className = 'jojoma-character';
+        jojoEl.draggable = false;
+        jojoEl.dataset.level = startLevelForJojo;
+
+        const initialPos = shouldAnimateUnlock ? startPos : targetPos;
+        jojoEl.style.left = initialPos.x + '%';
+        jojoEl.style.top  = initialPos.y + '%';
+        mapContainer.appendChild(jojoEl);
+
+        if (shouldAnimateUnlock) {
+          setTimeout(() => {
+            const targetMarker = mapContainer.querySelector(
+              `.island-item[data-level="${currentLevel}"]`
+            );
+            if (targetMarker) {
+              targetMarker.classList.add('just-unlocked');
+              setTimeout(() => targetMarker.classList.remove('just-unlocked'), 1600);
+            }
+
+            jojoEl.style.left = targetPos.x + '%';
+            jojoEl.style.top  = targetPos.y + '%';
+            jojoEl.dataset.level = currentLevel;
+
+            setTimeout(() => {
+              fadeAndNavigate(
+                `Gameplay/Gameplay-${subject}.html?level=${currentLevel}&subject=${subject}`
+              );
+            }, 1400);
+          }, 400);
+
+          justUnlockedLevel = null;
         }
       }
+    }
 
-      // ---- Boot after the platform assets finish loading ----
-      function bootMap() {
-        renderMap();
-        window.addEventListener('pageshow', renderMap);
-        window.addEventListener('focus',    renderMap);
-      }
+    // ---- Boot ----
+    function bootMap() {
+      renderMap();
+      window.addEventListener('pageshow', renderMap);
+      window.addEventListener('focus',    renderMap);
+    }
 
-      if (window.platformReadyPromise) {
-        window.platformReadyPromise.then(bootMap);
-      } else {
-        bootMap();
-      }
-    });
+    if (window.platformReadyPromise) {
+      window.platformReadyPromise.then(bootMap);
+    } else {
+      bootMap();
+    }
+  });
   </script>
 
   <script src="script/cloud-loader.js"></script>
   <script src="script/clouds.js"></script>
+
 </body>
 </html>

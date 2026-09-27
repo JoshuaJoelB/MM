@@ -101,7 +101,7 @@ body::before {
 .page.active-page { display: block; }
 
 /* ================================================================
-   INDEX PAGE
+   INDEX PAGE — loading screen with progress bar
    ================================================================ */
 #indexPage {
   background: transparent;
@@ -109,16 +109,26 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 #indexPage.active-page { display: flex; }
 
-.index-content { text-align: center; padding: 20px; }
+.index-content {
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
 
+/* ---- Big logo above the bar ---- */
 .index-logo-wrapper {
   position: relative;
   width: 160px;
   height: 160px;
-  margin: 0 auto 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,51 +167,75 @@ body::before {
   50%      { transform: scale(1.05); filter: drop-shadow(0 10px 42px rgba(255, 215, 0, 0.8)); }
 }
 
-.index-title {
-  font-family: 'DynaPuff', system-ui, sans-serif !important;
-  font-weight: 700 !important;
-  font-size: 4rem;
-  color: #1a0f2e;
+/* ================================================================
+   LOADING BAR with Logo.png riding on it
+   ================================================================ */
+.loading-bar-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  padding: 0;          /* ← was 0 28px, now removed */
+}
+
+.loading-bar-track {
+  position: relative;
+  width: 100%;
+  height: 22px;
+  background: rgba(10, 20, 40, 0.85);
+  border: 3px solid #1a0f2e;
+  border-radius: 100px;
+  overflow: hidden;
+  box-shadow:
+    0 6px 0 #7a4b00,
+    0 10px 26px rgba(255, 184, 0, 0.35),
+    inset 0 2px 0 rgba(255, 215, 0, 0.25);
+}
+
+.loading-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
   background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 3px #1a0f2e;
-  paint-order: stroke fill;
+  border-radius: 100px;
+  box-shadow:
+    0 0 18px rgba(255, 215, 0, 0.85),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
+  transition: width 0.35s ease;
+}
+.loading-bar-logo {
+  position: absolute;
+  top: 50%;
+
+  /* Moves from 0 (left edge) → full width minus logo width (right edge)
+     — --progress is a number from 0 to 1 set by JS */
+  left: calc(var(--progress, 0) * (100% - 44px));
+  transform: translateY(-50%);
+
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+
   filter:
-    drop-shadow(0 6px 0 #7a4b00)
-    drop-shadow(0 10px 30px rgba(255, 184, 0, 0.55));
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 0;
+    drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+
+  z-index: 3;
+  transition: left 0.35s ease;
+  animation: logoBob 1.4s ease-in-out infinite;
 }
 
-.index-sub {
-  font-family: 'DynaPuff', system-ui, sans-serif !important;
-  font-weight: 700 !important;
-  color: #FFD700;
-  font-size: 1.1rem;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  text-shadow: 0 2px 0 rgba(10, 20, 40, 0.6);
-}
-
-.index-loading-text {
-  margin-top: 24px;
-  color: #FFD700;
-  font-family: 'DynaPuff', system-ui, sans-serif !important;
-  font-weight: 700 !important;
-  letter-spacing: 3px;
-  font-size: 1rem;
-  animation: loadingFade 1.5s ease-in-out infinite;
-}
-
-@keyframes loadingFade { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-
+/* Mobile — logo scales, formula updates for the new width */
 @media (max-width: 480px) {
-  .index-logo-wrapper { width: 130px; height: 130px; }
-  .index-logo-img { width: 110px; height: 110px; }
-  .index-title { font-size: 2.6rem; -webkit-text-stroke-width: 2px; }
+  .loading-bar-logo {
+    width: 36px;
+    height: 36px;
+    left: calc(var(--progress, 0) * (100% - 36px));
+  }
 }
 
 /* ================================================================
