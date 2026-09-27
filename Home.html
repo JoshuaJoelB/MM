@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
-  <!-- Font Awesome (kept for the navbar — remove if not needed anywhere) -->
+  <!-- Font Awesome -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -29,11 +29,14 @@
 </head>
 <body>
 
+  <!-- Clouds + Islands layer (fixed, behind the page, above the sky) -->
+  <div id="cloudLayer"></div>
+
   <div id="homePage" class="page active-page">
     <div class="home-bg">
       <div class="home-overlay">
 
-        <!-- NAVBAR (loaded from navbar.html) -->
+        <!-- NAVBAR (loaded from navbar.html by navbar-loader.js) -->
         <div id="navbarContainer"></div>
 
         <!-- HOME LOBBY -->
@@ -43,26 +46,12 @@
           <div class="home-title-content text-center">
             <h1 class="home-main-title">Match</h1>
             <h2 class="home-sub-title">Monsters</h2>
-            <p class="home-tagline">Flip · Match · Earn</p>
           </div>
 
           <!-- MAIN CTA -->
           <a href="Subject.html" class="btn-start-game" id="chooseSubjectBtn">
             Play Now
           </a>
-
-          <!-- QUICK ACTIONS -->
-          <div class="home-quick-actions">
-            <button type="button" class="home-quick-btn" id="btnQuickRewards" aria-label="Rewards">
-              Rewards
-            </button>
-            <button type="button" class="home-quick-btn" id="btnQuickMonsters" aria-label="Monster collection">
-              Monsters
-            </button>
-            <button type="button" class="home-quick-btn" id="btnQuickHowTo" aria-label="How to play">
-              How to Play
-            </button>
-          </div>
 
         </div>
         <!-- /HOME LOBBY -->
@@ -73,15 +62,25 @@
   <!-- /homePage -->
 
   <!-- Scripts -->
+
+  <!-- Bootstrap Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Player level + points (must load before navbar-loader) -->
   <script src="script/player-level.js"></script>
+
+  <!-- Navbar injector -->
   <script src="script/navbar-loader.js"></script>
+
+  <!-- Home page logic -->
   <script src="script/script.js"></script>
+
   <!-- Clouds -->
   <script src="script/cloud-loader.js"></script>
   <script src="script/clouds.js"></script>
 
-  <!-- Island (sits between back and front clouds) -->
+  <!-- Islands (sit between back and front clouds) -->
   <script src="script/island.js"></script>
+
 </body>
 </html>
