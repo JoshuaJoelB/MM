@@ -25,7 +25,6 @@
     <div class="level-bg">
       <div class="level-overlay">
 
-        <!-- NAVBAR: back button | title | point chips -->
         <header class="level-navbar">
           <a href="Subject.html" class="btn btn-back-top">
             <i class="fas fa-arrow-left"></i>
@@ -35,22 +34,19 @@
           <h1 class="level-main-title" id="subjectMapTitle">Computer Map</h1>
 
           <div class="player-level-box point-box-floating">
-            <div class="point-chip point-chip-star" title="Star Rating (best per level)">
+            <div class="point-chip point-chip-star" title="Star Rating">
               <i class="fas fa-star"></i>
               <span data-nav-stars>0</span>
             </div>
-            <div class="point-chip point-chip-coin" title="Coins — used to unlock levels">
+            <div class="point-chip point-chip-coin" title="Points — used to unlock levels">
               <i class="fas fa-coins"></i>
-              <span data-nav-coins>0</span>
+              <span data-nav-points>0</span>
             </div>
           </div>
         </header>
 
-        <!-- MAP CONTENT -->
         <div class="level-content">
-          <div class="level-map" id="levelMap">
-            <!-- Level markers + Jojoma character injected by JavaScript -->
-          </div>
+          <div class="level-map" id="levelMap"></div>
         </div>
 
       </div>
@@ -65,7 +61,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const subject   = urlParams.get('subject') || 'computer';
 
-    // ----- READ "just unlocked" FLAG -----
+    // ---- just_unlocked flag (only used for the jojoma walk animation) ----
     let justUnlockedLevel = null;
     try {
       const raw = sessionStorage.getItem('mm_just_unlocked');
@@ -76,20 +72,15 @@
       }
     } catch (e) {}
 
-    const subjectNames = {
-      computer: 'Computer',
-      science:  'Science',
-      ap:       'AP'
-    };
+    const subjectNames = { computer: 'Computer', science: 'Science', ap: 'AP' };
+    const titleEl = document.getElementById('subjectMapTitle');
+    if (titleEl) titleEl.textContent = (subjectNames[subject] || 'Subject') + ' Map';
 
-    document.getElementById('subjectMapTitle').textContent =
-      (subjectNames[subject] || 'Subject') + ' Map';
-
-    // ----- STORAGE HELPERS -----
+    // ---- Storage helpers ----
     function getUnlocked() {
       try {
         const arr = JSON.parse(localStorage.getItem('matchMonster_unlocked_' + subject) || '[1]');
-        return Array.isArray(arr) ? arr : [1];
+        return Array.isArray(arr) && arr.length ? arr : [1];
       } catch (e) { return [1]; }
     }
     function getCompleted() {
@@ -98,15 +89,13 @@
         return Array.isArray(arr) ? arr : [];
       } catch (e) { return []; }
     }
-    // NEW: read best star rating per level
     function getBestStars(level) {
       try {
-        const data = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}');
-        return Number(data[level]) || 0;
+        const map = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}');
+        return Number(map[level]) || 0;
       } catch (e) { return 0; }
     }
 
-    // ----- SMOOTH SCENE TRANSITION -----
     function fadeAndNavigate(url) {
       let overlay = document.getElementById('sceneTransition');
       if (!overlay) {
@@ -119,28 +108,23 @@
       setTimeout(() => { window.location.href = url; }, 550);
     }
 
-    // ----- LEVEL POSITIONS -----
     const mapContainer = document.getElementById('levelMap');
     const totalLevels  = 10;
 
     const LEVEL_POSITIONS = [
-      { x: 66, y: 85 },  // 1
-      { x: 56, y: 81 },  // 2
-      { x: 45, y: 78 },  // 3
-      { x: 36, y: 70 },  // 4
-      { x: 50, y: 65 },  // 5
-      { x: 66, y: 55 },  // 6
-      { x: 48, y: 51 },  // 7
-      { x: 36, y: 44 },  // 8
-      { x: 50, y: 38 },  // 9
-      { x: 60, y: 32 }   // 10
+      { x: 66, y: 85 }, { x: 56, y: 81 }, { x: 45, y: 78 }, { x: 36, y: 70 },
+      { x: 50, y: 65 }, { x: 66, y: 55 }, { x: 48, y: 51 }, { x: 36, y: 44 },
+      { x: 50, y: 38 }, { x: 60, y: 32 }
     ];
 
     function getCurrentLevelForPlayer(unlocked, completed, total) {
       for (let lvl = 1; lvl <= total; lvl++) {
         if (unlocked.includes(lvl) && !completed.includes(lvl)) return lvl;
       }
-      return total;
+      for (let lvl = total; lvl >= 1; lvl--) {
+        if (unlocked.includes(lvl)) return lvl;
+      }
+      return 1;
     }
 
     // ================================================================
@@ -149,11 +133,12 @@
     function renderMap() {
       const jojo = mapContainer.querySelector('.jojoma-character');
 
+      // Remove all children except jojoma
       Array.from(mapContainer.children).forEach(child => {
         if (child !== jojo) child.remove();
       });
 
-      // Background island image
+      // Background island
       const bgImg = document.createElement('img');
       bgImg.src = 'Assets/Platform_Island.png';
       bgImg.alt = '';
@@ -161,15 +146,15 @@
       bgImg.draggable = false;
       mapContainer.appendChild(bgImg);
 
-      const unlockedLevels  = getUnlocked();
-      const completedLevels = getCompleted();
+      const unlocked  = getUnlocked();
+      const completed = getCompleted();
 
       // ---- Level markers ----
       LEVEL_POSITIONS.forEach((pos, i) => {
         const level       = i + 1;
-        const isUnlocked  = unlockedLevels.includes(level);
-        const isCompleted = completedLevels.includes(level);
-        const bestStars   = getBestStars(level);
+        const isUnlocked  = unlocked.includes(level);
+        const isCompleted = completed.includes(level);
+        const stars       = getBestStars(level);
 
         const island = document.createElement('div');
         island.className = 'island-item';
@@ -193,87 +178,35 @@
           });
         } else {
           link.href = 'javascript:void(0)';
+          link.addEventListener('click', function (e) {
+            e.preventDefault();
+            handleUnlockClick(level);
+          });
         }
 
-        // Number
+        // Level number
         const number = document.createElement('span');
         number.className = 'island-number';
         number.textContent = level;
         link.appendChild(number);
 
-        island.appendChild(link);
-
-        // ----------------------------------------------------------
-        // 3-STAR RATING ROW
-        // Show stars if level has been played (bestStars > 0) OR if it's
-        // the start level (so kids see the goal). Locked & unplayed
-        // levels show empty stars so the target is always visible.
-        // ----------------------------------------------------------
-               // ----------------------------------------------------------
-        // 3-STAR RATING ROW — sits on the bottom curve of the pill
-        // ----------------------------------------------------------
+        // Star rating row (on bottom curve of the pill)
         const starsRow = document.createElement('div');
         starsRow.className = 'island-stars';
-
-        const showStars = bestStars > 0 || isCompleted || isUnlocked;
-        if (showStars) {
-          for (let s = 1; s <= 3; s++) {
-            const star = document.createElement('i');
-            star.className = 'fas fa-star' + (s <= bestStars ? ' filled' : '');
-            starsRow.appendChild(star);
-          }
-          // Append INSIDE the link so we can position it against the pill
-          link.appendChild(starsRow);
+        for (let s = 1; s <= 3; s++) {
+          const star = document.createElement('i');
+          star.className = 'fas fa-star' + (s <= stars ? ' filled' : '');
+          starsRow.appendChild(star);
         }
-        // Locked click → try to unlock (costs COINS)
-        if (!isUnlocked) {
-          link.addEventListener('click', function (e) {
-            e.preventDefault();
-            if (typeof window.tryUnlockLevel !== 'function') return;
-            const result = window.tryUnlockLevel(subject, level);
+        link.appendChild(starsRow);
 
-            if (result.ok) {
-              justUnlockedLevel = level;
-              renderMap();
-              if (typeof window.updatePlayerLevelBox === 'function') {
-                window.updatePlayerLevelBox();
-              }
-            } else if (result.reason === 'not_enough_coins') {
-              alert(
-                `🪙 Not enough coins!\n\n` +
-                `Level ${level} costs ${result.cost} coins.\n` +
-                `You have ${result.coins} coins.\n\n` +
-                `Play more levels to earn coins!`
-              );
-            } else if (result.reason === 'not_enough_stars') {
-              // fallback for legacy reason name
-              alert(
-                `⭐ Not enough coins!\n\n` +
-                `Level ${level} costs ${result.cost}.\n` +
-                `You have ${result.stars}.\n\n` +
-                `Play more levels to earn more!`
-              );
-            } else if (result.reason === 'previous_locked') {
-              alert(`Complete the previous level first!`);
-            }
-          });
-        }
-
+        island.appendChild(link);
         mapContainer.appendChild(island);
       });
 
-      // ================================================================
-      // JOJOMA
-      // ================================================================
-      const currentLevel = getCurrentLevelForPlayer(
-        unlockedLevels, completedLevels, totalLevels
-      );
+      // ---- Jojo positioning ----
+      const currentLevel = getCurrentLevelForPlayer(unlocked, completed, totalLevels);
       const targetPos = LEVEL_POSITIONS[currentLevel - 1];
-
-      const shouldAnimateUnlock =
-        justUnlockedLevel === currentLevel && currentLevel > 1;
-      const startLevelForJojo = shouldAnimateUnlock ? currentLevel - 1 : currentLevel;
-      const startPos = LEVEL_POSITIONS[startLevelForJojo - 1];
 
       if (jojo) {
         if (targetPos) {
@@ -287,44 +220,103 @@
         jojoEl.alt = '';
         jojoEl.className = 'jojoma-character';
         jojoEl.draggable = false;
-        jojoEl.dataset.level = startLevelForJojo;
-
-        const initialPos = shouldAnimateUnlock ? startPos : targetPos;
-        jojoEl.style.left = initialPos.x + '%';
-        jojoEl.style.top  = initialPos.y + '%';
+        jojoEl.dataset.level = currentLevel;
+        jojoEl.style.left = targetPos.x + '%';
+        jojoEl.style.top  = targetPos.y + '%';
         mapContainer.appendChild(jojoEl);
-
-        if (shouldAnimateUnlock) {
-          setTimeout(() => {
-            const targetMarker = mapContainer.querySelector(
-              `.island-item[data-level="${currentLevel}"]`
-            );
-            if (targetMarker) {
-              targetMarker.classList.add('just-unlocked');
-              setTimeout(() => targetMarker.classList.remove('just-unlocked'), 1600);
-            }
-
-            jojoEl.style.left = targetPos.x + '%';
-            jojoEl.style.top  = targetPos.y + '%';
-            jojoEl.dataset.level = currentLevel;
-
-            setTimeout(() => {
-              fadeAndNavigate(
-                `Gameplay/Gameplay-${subject}.html?level=${currentLevel}&subject=${subject}`
-              );
-            }, 1400);
-          }, 400);
-
-          justUnlockedLevel = null;
-        }
       }
     }
 
-    // ---- Boot ----
+    // ================================================================
+    // UNLOCK CLICK
+    // ================================================================
+    function handleUnlockClick(level) {
+      if (typeof window.tryUnlockLevel !== 'function') {
+        alert('System not ready. Please refresh the page.');
+        return;
+      }
+
+      const result = window.tryUnlockLevel(subject, level);
+
+      if (result.ok) {
+        // localStorage is already saved inside tryUnlockLevel (with read-back verification)
+
+        // Re-render the whole map so the new unlock state is shown
+        renderMap();
+
+        // Highlight the newly unlocked level briefly
+        const marker = mapContainer.querySelector(`.island-item[data-level="${level}"]`);
+        if (marker) {
+          marker.classList.add('just-unlocked');
+          setTimeout(() => marker.classList.remove('just-unlocked'), 1600);
+        }
+
+        // Walk jojoma to the newly unlocked level
+        const jojo = mapContainer.querySelector('.jojoma-character');
+        const pos  = LEVEL_POSITIONS[level - 1];
+        if (jojo && pos) {
+          jojo.style.left = pos.x + '%';
+          jojo.style.top  = pos.y + '%';
+          jojo.dataset.level = level;
+        }
+
+        // Do NOT navigate away — the user can now click the level to play it.
+        return;
+      }
+
+      // ---- Failure messages ----
+      if (result.reason === 'not_enough_points') {
+        alert(
+          `⭐ Not enough points!\n\n` +
+          `Level ${level} costs ${result.cost} points.\n` +
+          `You have ${result.points} points.\n\n` +
+          `Play more levels to earn points!`
+        );
+      } else if (result.reason === 'previous_not_completed') {
+        alert(
+          `Finish Level ${level - 1} first!\n\n` +
+          `You need to complete the previous level before unlocking Level ${level}.`
+        );
+      } else if (result.reason === 'previous_locked') {
+        alert(`Complete the previous level first!`);
+      } else if (result.reason === 'save_failed') {
+        alert(`Could not save your progress. Please try again.`);
+      } else {
+        alert(`Could not unlock Level ${level}. Please try again.`);
+      }
+    }
+
+    // ================================================================
+    // BOOT
+    // ================================================================
     function bootMap() {
       renderMap();
-      window.addEventListener('pageshow', renderMap);
-      window.addEventListener('focus',    renderMap);
+
+      // If we just arrived back from unlocking in Gameplay, animate jojoma
+      if (justUnlockedLevel) {
+        const targetLevel = justUnlockedLevel;
+        justUnlockedLevel = null;
+
+        setTimeout(() => {
+          const pos    = LEVEL_POSITIONS[targetLevel - 1];
+          const jojo   = mapContainer.querySelector('.jojoma-character');
+          const marker = mapContainer.querySelector(`.island-item[data-level="${targetLevel}"]`);
+
+          if (marker) {
+            marker.classList.add('just-unlocked');
+            setTimeout(() => marker.classList.remove('just-unlocked'), 1600);
+          }
+          if (jojo && pos) {
+            jojo.style.left = pos.x + '%';
+            jojo.style.top  = pos.y + '%';
+            jojo.dataset.level = targetLevel;
+          }
+        }, 400);
+      }
+
+      // Re-render on focus/page-show (fresh state from localStorage)
+      window.addEventListener('pageshow', function () { renderMap(); });
+      window.addEventListener('focus',    function () { renderMap(); });
     }
 
     if (window.platformReadyPromise) {
