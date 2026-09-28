@@ -1,81 +1,99 @@
 /* ================================================================
    PLAYER-LEVEL.JS
-   - STARS = 3-star rating per level (best) — never spent
-   - COINS = spendable currency — used to unlock levels
+   - POINTS = spendable currency (used to unlock levels)
+   - STARS  = 3-star rating per level (best kept)
+   - Level 1 is free. Levels 2-10 cost 15 points each.
+   - To unlock Level N, Level N-1 must be COMPLETED.
    ================================================================ */
 
 (function () {
   'use strict';
 
-  const SUBJECTS        = ['computer', 'science', 'ap'];
-  const LEVELS_PER_LEVEL = 3;
-  const COIN_UNLOCK_BASE = 10;
+  const SUBJECTS          = ['computer', 'science', 'ap'];
+  const LEVELS_PER_LEVEL  = 3;
+  const UNLOCK_COST_FLAT  = 15;
+
+  // ---- Safe localStorage helpers ----
+  function safeParse(json, fallback) {
+    try { return JSON.parse(json); } catch (e) { return fallback; }
+  }
+
+  function getUnlockedList(subject) {
+    const arr = safeParse(localStorage.getItem('matchMonster_unlocked_' + subject), [1]);
+    return (Array.isArray(arr) && arr.length) ? arr : [1];
+  }
+  function getCompletedList(subject) {
+    const arr = safeParse(localStorage.getItem('matchMonster_completed_' + subject), []);
+    return Array.isArray(arr) ? arr : [];
+  }
+  function getStarsMap(subject) {
+    const obj = safeParse(localStorage.getItem('matchMonster_stars_' + subject), {});
+    return (obj && typeof obj === 'object') ? obj : {};
+  }
+  function saveUnlockedList(subject, list) {
+    localStorage.setItem('matchMonster_unlocked_' + subject, JSON.stringify(list));
+  }
+  function saveCompletedList(subject, list) {
+    localStorage.setItem('matchMonster_completed_' + subject, JSON.stringify(list));
+  }
+  function saveStarsMap(subject, map) {
+    localStorage.setItem('matchMonster_stars_' + subject, JSON.stringify(map));
+  }
 
   // ================================================================
-  // STARS — rating (0-3) per level, best score kept
-  // Stored as: matchMonster_stars_<subject> = { 1: 3, 2: 2, ... }
+  // POINTS
+  // ================================================================
+  function getPointsTotal() {
+    return parseInt(localStorage.getItem('pointsTotal') || '0', 10);
+  }
+  function addPoints(amount) {
+    const next = getPointsTotal() + amount;
+    localStorage.setItem('pointsTotal', String(next));
+    updatePlayerLevelBox();
+    return next;
+  }
+  function spendPoints(amount) {
+    const cur = getPointsTotal();
+    if (cur < amount) return false;
+    localStorage.setItem('pointsTotal', String(cur - amount));
+    updatePlayerLevelBox();
+    return true;
+  }
+
+  // ================================================================
+  // STARS (rating)
   // ================================================================
   function getBestStars(subject, level) {
-    try {
-      const data = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}');
-      return Number(data[level]) || 0;
-    } catch (e) { return 0; }
+    const map = getStarsMap(subject);
+    return Number(map[level]) || 0;
   }
-
   function recordLevelStars(subject, level, stars) {
     if (!SUBJECTS.includes(subject)) return;
-    let data = {};
-    try {
-      data = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}') || {};
-    } catch (e) { data = {}; }
-    const prev = Number(data[level]) || 0;
+    const map = getStarsMap(subject);
+    const prev = Number(map[level]) || 0;
     if (stars > prev) {
-      data[level] = stars;
-      localStorage.setItem('matchMonster_stars_' + subject, JSON.stringify(data));
+      map[level] = stars;
+      saveStarsMap(subject, map);
     }
   }
-
   function getStarsTotal() {
     let total = 0;
     SUBJECTS.forEach(function (sub) {
-      try {
-        const data = JSON.parse(localStorage.getItem('matchMonster_stars_' + sub) || '{}') || {};
-        Object.keys(data).forEach(function (k) {
-          total += Number(data[k]) || 0;
-        });
-      } catch (e) {}
+      const map = getStarsMap(sub);
+      Object.keys(map).forEach(function (k) {
+        total += Number(map[k]) || 0;
+      });
     });
     return total;
   }
 
   // ================================================================
-  // COINS — spendable currency
-  // ================================================================
-  function getCoinsTotal() {
-    return parseInt(localStorage.getItem('coinsTotal') || '0', 10);
-  }
-  function addCoins(amount) {
-    const next = getCoinsTotal() + amount;
-    localStorage.setItem('coinsTotal', next);
-    return next;
-  }
-  function spendCoins(amount) {
-    const cur = getCoinsTotal();
-    if (cur < amount) return false;
-    localStorage.setItem('coinsTotal', cur - amount);
-    return true;
-  }
-
-  // ================================================================
-  // PLAYER LEVEL (unchanged logic)
+  // PLAYER LEVEL
   // ================================================================
   function getPlayerLevel() {
     let totalCompleted = 0;
     SUBJECTS.forEach(function (sub) {
-      try {
-        const list = JSON.parse(localStorage.getItem('matchMonster_completed_' + sub) || '[]');
-        if (Array.isArray(list)) totalCompleted += list.length;
-      } catch (e) {}
+      totalCompleted += getCompletedList(sub).length;
     });
 
     const playerLevel     = Math.floor(totalCompleted / LEVELS_PER_LEVEL) + 1;
@@ -88,82 +106,87 @@
       progress: progressInLevel,
       percent:  progressPercent,
       stars:    getStarsTotal(),
-      coins:    getCoinsTotal()
+      points:   getPointsTotal()
     };
   }
 
   function updatePlayerLevelBox() {
     const data = getPlayerLevel();
-
-    document.querySelectorAll('[data-player-level-num]').forEach(el => {
-      el.textContent = data.level;
-    });
-    document.querySelectorAll('[data-player-progress-text]').forEach(el => {
-      el.textContent = data.progress + ' / ' + LEVELS_PER_LEVEL;
-    });
-    document.querySelectorAll('[data-player-progress-fill]').forEach(el => {
-      el.style.width = data.percent + '%';
-    });
-    document.querySelectorAll('[data-nav-stars]').forEach(el => {
-      el.textContent = data.stars;
-    });
-    document.querySelectorAll('[data-nav-coins]').forEach(el => {
-      el.textContent = data.coins;
-    });
+    document.querySelectorAll('[data-player-level-num]').forEach(el => el.textContent = data.level);
+    document.querySelectorAll('[data-player-progress-text]').forEach(el => el.textContent = data.progress + ' / ' + LEVELS_PER_LEVEL);
+    document.querySelectorAll('[data-player-progress-fill]').forEach(el => el.style.width = data.percent + '%');
+    document.querySelectorAll('[data-nav-stars]').forEach(el => el.textContent = data.stars);
+    document.querySelectorAll('[data-nav-points], [data-nav-coins]').forEach(el => el.textContent = data.points);
   }
 
   // ================================================================
-  // UNLOCK — now spent in COINS, not stars
+  // UNLOCK — 15 points flat, previous level must be COMPLETED
   // ================================================================
   function getUnlockCost(level) {
     if (level <= 1) return 0;
-    return level * COIN_UNLOCK_BASE;
+    return UNLOCK_COST_FLAT;
   }
 
   function tryUnlockLevel(subject, level) {
-    if (!SUBJECTS.includes(subject)) return { ok: false, reason: 'bad_subject' };
+    if (!SUBJECTS.includes(subject)) {
+      return { ok: false, reason: 'bad_subject' };
+    }
 
-    const unlockedKey = 'matchMonster_unlocked_' + subject;
-    let unlocked = [];
-    try { unlocked = JSON.parse(localStorage.getItem(unlockedKey) || '[1]'); } catch (e) { unlocked = [1]; }
-    if (!Array.isArray(unlocked)) unlocked = [1];
-
+    const unlocked = getUnlockedList(subject);
     if (unlocked.includes(level)) {
       return { ok: true, alreadyUnlocked: true };
     }
 
-    if (level > 1 && !unlocked.includes(level - 1)) {
-      return { ok: false, reason: 'previous_locked' };
+    // NEW RULE: previous level must be COMPLETED
+    if (level > 1) {
+      const completed = getCompletedList(subject);
+      if (!completed.includes(level - 1)) {
+        return { ok: false, reason: 'previous_not_completed' };
+      }
     }
 
-    const cost  = getUnlockCost(level);
-    const coins = getCoinsTotal();
+    const cost   = getUnlockCost(level);
+    const points = getPointsTotal();
 
-    if (coins < cost) {
-      return { ok: false, reason: 'not_enough_coins', cost: cost, coins: coins };
+    if (points < cost) {
+      return { ok: false, reason: 'not_enough_points', cost: cost, points: points };
     }
 
-    if (!spendCoins(cost)) {
-      return { ok: false, reason: 'spend_failed', cost: cost, coins: coins };
+    if (!spendPoints(cost)) {
+      return { ok: false, reason: 'spend_failed', cost: cost, points: points };
     }
 
     unlocked.push(level);
-    localStorage.setItem(unlockedKey, JSON.stringify(unlocked));
+    saveUnlockedList(subject, unlocked);
+
+    // ---- READ-BACK VERIFICATION ----
+    const verify = getUnlockedList(subject);
+    if (!verify.includes(level)) {
+      // Safety net: refund if save failed
+      addPoints(cost);
+      return { ok: false, reason: 'save_failed' };
+    }
+
     updatePlayerLevelBox();
     return { ok: true, cost: cost };
   }
 
+  // ================================================================
+  // COMPLETE
+  // ================================================================
   function completeLevel(subject, level) {
     if (!SUBJECTS.includes(subject)) return getPlayerLevel();
 
-    const key = 'matchMonster_completed_' + subject;
-    let completed = [];
-    try { completed = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { completed = []; }
-    if (!Array.isArray(completed)) completed = [];
-
+    const completed = getCompletedList(subject);
     if (!completed.includes(level)) {
       completed.push(level);
-      localStorage.setItem(key, JSON.stringify(completed));
+      saveCompletedList(subject, completed);
+    }
+
+    // ---- READ-BACK VERIFICATION ----
+    const verify = getCompletedList(subject);
+    if (!verify.includes(level)) {
+      console.warn('[player-level] completeLevel save verification failed');
     }
 
     updatePlayerLevelBox();
@@ -194,12 +217,18 @@
   window.updatePlayerLevelBox = updatePlayerLevelBox;
   window.completeLevel        = completeLevel;
   window.getStarsTotal        = getStarsTotal;
-  window.getCoinsTotal        = getCoinsTotal;
-  window.addCoins             = addCoins;
-  window.spendCoins           = spendCoins;
+  window.getPointsTotal       = getPointsTotal;
+  window.addPoints            = addPoints;
+  window.spendPoints          = spendPoints;
   window.getUnlockCost        = getUnlockCost;
   window.tryUnlockLevel       = tryUnlockLevel;
   window.getBestStars         = getBestStars;
   window.recordLevelStars     = recordLevelStars;
+  window.getUnlockedList      = getUnlockedList;
+  window.getCompletedList     = getCompletedList;
 
+  // Legacy aliases (harmless)
+  window.getCoinsTotal = getPointsTotal;
+  window.addCoins      = addPoints;
+  window.spendCoins    = spendPoints;
 })();

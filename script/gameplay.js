@@ -1,8 +1,9 @@
 /* ================================================================
    GAMEPLAY.JS
-   - 3-star rating based on move efficiency
-   - Coins earned on first completion only
-   - Best star rating saved per level
+   - POINTS = currency (awarded on first completion only)
+   - 3-STAR rating based on move efficiency (best per level kept)
+   - Level 1 is free; locked levels cost 15 points
+   - Previous level MUST be completed before playing the next
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -25,7 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   syncChips();
 
-  // ---- CONFETTI ----
+  // ============================================================
+  // CONFETTI
+  // ============================================================
   let confettiPromise = null;
   function loadConfetti() {
     if (confettiPromise) return confettiPromise;
@@ -66,7 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ---- URL PARAMS ----
+  // ============================================================
+  // URL PARAMS
+  // ============================================================
   const urlParams = new URLSearchParams(window.location.search);
   const level   = parseInt(urlParams.get('level')) || 1;
   const subject = urlParams.get('subject')
@@ -79,38 +84,74 @@ document.addEventListener('DOMContentLoaded', function() {
     science:  { name: 'Science',  icon: '../Assets/icons/science_icon.png' }
   }[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
 
-  // ---- Verify level is unlocked ----
+  // ============================================================
+  // SAFETY CHECKS
+  // ============================================================
+
+  // 1) Level must be unlocked
   const storageKey = `matchMonster_unlocked_${subject}`;
-  let unlockedLevels = JSON.parse(localStorage.getItem(storageKey)) || [1];
+  let unlockedLevels = [];
+  try {
+    unlockedLevels = JSON.parse(localStorage.getItem(storageKey) || '[1]');
+    if (!Array.isArray(unlockedLevels) || !unlockedLevels.length) unlockedLevels = [1];
+  } catch (e) { unlockedLevels = [1]; }
+
   if (!unlockedLevels.includes(level)) {
-    alert('This level is locked! Complete previous levels or unlock it with coins.');
+    alert('This level is locked! Complete previous levels or unlock it with points.');
     window.location.href = `../Level.html?subject=${subject}`;
     return;
   }
 
-  // ---- Card math ----
+  // 2) Previous level must be COMPLETED (Level 1 is exempt)
+  if (level > 1) {
+    let completedLevels = [];
+    try {
+      completedLevels = JSON.parse(localStorage.getItem('matchMonster_completed_' + subject) || '[]');
+      if (!Array.isArray(completedLevels)) completedLevels = [];
+    } catch (e) { completedLevels = []; }
+
+    if (!completedLevels.includes(level - 1)) {
+      alert(`Finish Level ${level - 1} first before playing Level ${level}!`);
+      window.location.href = `../Level.html?subject=${subject}`;
+      return;
+    }
+  }
+
+  // ============================================================
+  // CARD MATH
+  // ============================================================
   const totalCards = 4 + level * 2;
   const pairs      = totalCards / 2;
 
-  // ---- Reward formulas ----
-  const COINS_BASE      = 10;
-  const COINS_PER_LEVEL = level * 5;
-  const coinsEarned     = COINS_BASE + COINS_PER_LEVEL;
+  // ============================================================
+  // REWARD FORMULA
+  //   Level 1 → 15 points
+  //   Level 2 → 20 points
+  //   Level 3 → 25 points
+  //   ...
+  // ============================================================
+  const POINTS_BASE      = 10;
+  const POINTS_PER_LEVEL = level * 5;
+  const pointsEarned     = POINTS_BASE + POINTS_PER_LEVEL;
 
-  // 3-star thresholds (moves / pairs ratio)
+  // ============================================================
+  // 3-STAR THRESHOLDS (moves / pairs ratio)
+  // ============================================================
   const STAR3_RATIO = 1.4;   // ≤ 1.4 → 3 stars
   const STAR2_RATIO = 2.0;   // ≤ 2.0 → 2 stars
                              //  else → 1 star
 
-  function calculateStars(moves, pairsCount) {
-    if (pairsCount <= 0) return 1;
-    const ratio = moves / pairsCount;
+  function calculateStars(mv, pairCount) {
+    if (pairCount <= 0) return 1;
+    const ratio = mv / pairCount;
     if (ratio <= STAR3_RATIO) return 3;
     if (ratio <= STAR2_RATIO) return 2;
     return 1;
   }
 
-  // ---- Image pool ----
+  // ============================================================
+  // IMAGE POOLS
+  // ============================================================
   const imagePools = {
     computer: [
       'photo-1517336714731-489689fd1ca8','photo-1496181133206-80ce9b88a853',
@@ -142,9 +183,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return `https://images.unsplash.com/${pool[pairIndex % pool.length]}?w=400&h=500&fit=crop&auto=format&q=70`;
   }
 
-  // ---- Build deck ----
+  // ============================================================
+  // BUILD DECK
+  // ============================================================
   let deck = [];
   for (let i = 0; i < pairs; i++) { deck.push(i); deck.push(i); }
+
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -154,7 +198,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   deck = shuffle(deck);
 
-  // ---- DOM ----
+  // ============================================================
+  // DOM REFS
+  // ============================================================
   const grid           = document.getElementById('cardGrid');
   const levelDisplay   = document.getElementById('levelDisplay');
   const movesDisplay   = document.getElementById('movesDisplay');
@@ -166,10 +212,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const winStarsEarned = document.getElementById('winStarsEarned');
   const winCoinsEarned = document.getElementById('winCoinsEarned');
 
-  // Star rating display (created dynamically in overlay)
+  // Star rating row inside the win overlay (created on first show)
   let winStarsRow = document.getElementById('winStarRating');
 
-  // ---- State ----
+  // ============================================================
+  // STATE
+  // ============================================================
   let flippedCards  = [];
   let matchedPairs  = 0;
   let moves         = 0;
@@ -180,7 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (levelDisplay) levelDisplay.textContent = level;
 
-  // ---- Helpers ----
+  // ============================================================
+  // HELPERS
+  // ============================================================
   function wasLevelCompletedBefore() {
     try {
       const arr = JSON.parse(localStorage.getItem('matchMonster_completed_' + subject) || '[]');
@@ -194,8 +244,11 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) { return false; }
   }
 
-  // ---- Render ----
+  // ============================================================
+  // RENDER
+  // ============================================================
   function renderCards() {
+    if (!grid) return;
     grid.innerHTML = '';
 
     deck.forEach((pairIndex, index) => {
@@ -207,8 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
+      // ---- BACK ----
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
+
       const badge = document.createElement('div');
       badge.className = 'card-subject-badge';
 
@@ -227,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
       back.appendChild(badge);
       inner.appendChild(back);
 
+      // ---- FRONT ----
       const front = document.createElement('div');
       front.className = 'card-face card-face-front';
 
@@ -262,6 +318,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (movesDisplay) movesDisplay.textContent = moves;
   }
 
+  // ============================================================
+  // TIMER
+  // ============================================================
   function startTimer() {
     if (timerInterval) return;
     seconds = 0;
@@ -278,6 +337,9 @@ document.addEventListener('DOMContentLoaded', function() {
     gameStarted = false;
   }
 
+  // ============================================================
+  // GAMEPLAY
+  // ============================================================
   function onCardClick(index) {
     if (isLocked) return;
     const el = grid.children[index];
@@ -321,9 +383,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // ================================================================
+  // ============================================================
   // WIN
-  // ================================================================
+  // ============================================================
   function showWin() {
     if (winMoves) winMoves.textContent = moves;
     if (winTime)  winTime.textContent  = seconds + 's';
@@ -331,32 +393,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const wasCompletedBefore = wasLevelCompletedBefore();
     const starsEarned = calculateStars(moves, pairs);
 
-    // ---- Save best rating (stars never spent) ----
+    // ---- Save best star rating ----
     if (typeof window.recordLevelStars === 'function') {
       window.recordLevelStars(subject, level, starsEarned);
     }
 
-    // ---- Coins only on FIRST completion ----
+    // ---- Award points ONLY on first completion ----
     if (!wasCompletedBefore) {
-      if (typeof window.addCoins === 'function') {
-        window.addCoins(coinsEarned);
+      if (typeof window.addPoints === 'function') {
+        window.addPoints(pointsEarned);
       } else {
-        const cur = parseInt(localStorage.getItem('coinsTotal') || '0', 10);
-        localStorage.setItem('coinsTotal', cur + coinsEarned);
+        const cur = parseInt(localStorage.getItem('pointsTotal') || '0', 10);
+        localStorage.setItem('pointsTotal', String(cur + pointsEarned));
       }
     }
 
-    // ---- Update overlay displays ----
-    // Coins earned this run (only shown on first completion, else 0)
+    // ---- Points display (this run) ----
     if (winCoinsEarned) {
-      winCoinsEarned.textContent = wasCompletedBefore ? '+0' : '+' + coinsEarned;
+      winCoinsEarned.textContent = wasCompletedBefore ? '+0' : '+' + pointsEarned;
     }
 
-    // ---- Star rating row (create if missing) ----
+    // ---- Star rating row (create once) ----
     if (!winStarsRow) {
       const container = winOverlay ? winOverlay.querySelector('.win-box') : null;
       if (container) {
-        // Insert the star row after <p> "You matched all the cards!"
         const pTag = container.querySelector('p');
         const starRow = document.createElement('div');
         starRow.id = 'winStarRating';
@@ -375,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // Fill stars based on rating
+    // Fill earned stars
     if (winStarsRow) {
       const icons = winStarsRow.querySelectorAll('i');
       icons.forEach((icon, i) => {
@@ -383,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
-    // ---- Stars earned display (total) ----
+    // ---- Stars total (rating sum) ----
     if (winStarsEarned) {
       const total = (typeof window.getStarsTotal === 'function')
         ? window.getStarsTotal()
@@ -413,12 +473,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const nextUnlocked = isNextLevelUnlocked();
 
         if (nextUnlocked) {
+          // Already unlocked → go straight there
           nextLevelBtn.innerHTML = `Next Level <i class="fas fa-arrow-right ms-2"></i>`;
           nextLevelBtn.onclick = function () {
             window.location.href =
               `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
           };
         } else {
+          // Still locked → try to unlock with points
           nextLevelBtn.innerHTML = `<i class="fas fa-unlock me-2"></i> Unlock Next Level`;
           nextLevelBtn.onclick = function () {
             if (typeof window.tryUnlockLevel !== 'function') {
@@ -436,21 +498,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 } catch (e) {}
               }
               window.location.href = `../Level.html?subject=${subject}`;
-            } else if (result.reason === 'not_enough_coins') {
+            } else if (result.reason === 'not_enough_points') {
               alert(
-                `🪙 Not enough coins!\n\n` +
-                `Level ${nextLevel} costs ${result.cost} coins.\n` +
-                `You have ${result.coins} coins.\n\n` +
-                `Play more levels to earn coins!`
+                `⭐ Not enough points!\n\n` +
+                `Level ${nextLevel} costs ${result.cost} points.\n` +
+                `You have ${result.points} points.\n\n` +
+                `Play more levels to earn points!`
               );
+            } else if (result.reason === 'previous_not_completed') {
+              alert(`Finish Level ${nextLevel - 1} first!`);
             } else if (result.reason === 'previous_locked') {
               alert(`Complete the previous level first!`);
+            } else if (result.reason === 'save_failed') {
+              alert(`Could not save your progress. Please try again.`);
             }
           };
         }
 
         nextLevelBtn.style.display = 'inline-block';
       } else {
+        // Level 10 = final
         nextLevelBtn.innerHTML = `<i class="fas fa-trophy me-2"></i> All Done`;
         nextLevelBtn.onclick = function () {
           window.location.href = `../Level.html?subject=${subject}`;
@@ -469,17 +536,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (stats.bestTime === null || seconds < stats.bestTime) stats.bestTime = seconds;
     stats.totalMatches += pairs;
     stats.rewards += 1;
-    localStorage.setItem('gamesPlayed',  stats.gamesPlayed);
-    localStorage.setItem('bestTime',     stats.bestTime);
-    localStorage.setItem('totalMatches', stats.totalMatches);
-    localStorage.setItem('rewardsCount', stats.rewards);
+    localStorage.setItem('gamesPlayed',  String(stats.gamesPlayed));
+    localStorage.setItem('bestTime',     String(stats.bestTime));
+    localStorage.setItem('totalMatches', String(stats.totalMatches));
+    localStorage.setItem('rewardsCount', String(stats.rewards));
   }
 
+  // ============================================================
+  // NAVIGATION
+  // ============================================================
   function goToLevels() {
     window.location.href = `../Level.html?subject=${subject}`;
   }
 
-  document.getElementById('btnLevels')?.addEventListener('click', goToLevels);
+  const btnLevels = document.getElementById('btnLevels');
+  if (btnLevels) btnLevels.addEventListener('click', goToLevels);
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
@@ -490,6 +561,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // ============================================================
+  // BOOT
+  // ============================================================
   renderCards();
   updateStats();
   resetTimer();

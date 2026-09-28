@@ -1,7 +1,5 @@
 /* ================================================================
    SCRIPT.JS – shared logic for all pages
-   Works with dynamically-loaded navbar + new home quick actions.
-   Every DOM lookup is null-safe so this file is safe on any page.
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -10,10 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const isStart = document.getElementById('startPage') !== null;
   const isHome  = document.getElementById('homePage')  !== null;
 
-  // ---- INDEX PAGE — loading bar with progress, then redirect ----
+  // ============================================================
+  // INDEX PAGE — loading bar with progress, then redirect
+  // ============================================================
   if (isIndex) {
     const fill     = document.getElementById('loadingBarFill');
-    const logo     = document.getElementById('loadingBarLogo');
     const wrap     = document.getElementById('loadingBarWrap');
     const barWrap  = document.querySelector('.loading-bar-wrap');
 
@@ -21,27 +20,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function setProgress(p) {
       progress = Math.max(0, Math.min(100, p));
-
-      // Bar fill width
       if (fill) fill.style.width = progress + '%';
-
-      // Move the logo along the track
       if (barWrap) barWrap.style.setProperty('--progress', String(progress / 100));
-
-      // Update ARIA
       if (wrap) wrap.setAttribute('aria-valuenow', String(Math.round(progress)));
     }
 
-    // Ease the progress forward a bit at a time (feels natural)
     const timer = setInterval(function () {
-      // Accelerate towards 100 — smaller jumps early, bigger later
       const remaining = 100 - progress;
       const step      = Math.max(0.6, remaining * 0.06);
       setProgress(progress + step);
 
       if (progress >= 100) {
         clearInterval(timer);
-        // Short pause so the player sees the full bar + logo at the end
         setTimeout(function () {
           window.location.href = 'Start.html';
         }, 350);
@@ -51,7 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
     setProgress(0);
   }
 
-  // ---- START PAGE (button leads to Home.html) ----
+  // ============================================================
+  // START PAGE — button leads to Home.html
+  // ============================================================
   if (isStart) {
     const btn = document.getElementById('letsStartBtn');
     if (btn) {
@@ -61,20 +53,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // ---- HOME PAGE ----
+  // ============================================================
+  // HOME PAGE
+  // ============================================================
   if (isHome) {
-
-    // ==============================================================
-    // SYNC NAVBAR CHIPS (stars + coins + player level)
-    // Runs immediately, then retries for ~1s in case the navbar
-    // and player-level.js inject slightly later.
-    // ==============================================================
     function syncChips() {
       if (typeof window.updatePlayerLevelBox === 'function') {
         window.updatePlayerLevelBox();
       }
     }
-
     syncChips();
 
     let chipTries = 0;
@@ -91,10 +78,12 @@ document.addEventListener('DOMContentLoaded', function () {
     initQuickActions();
   }
 
-  // ---- SETTINGS: initialize whenever the navbar is loaded ----
+  // ============================================================
+  // SETTINGS
+  // ============================================================
   initSettings();
 
-  // fallback: if no active page, set the first one
+  // fallback active page
   if (!document.querySelector('.page.active-page')) {
     const first = document.querySelector('.page');
     if (first) first.classList.add('active-page');
@@ -104,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ================================================================
    QUICK ACTIONS — Rewards / Monsters / How to Play
-   Builds a lightweight modal on the fly (no HTML changes needed).
    ================================================================ */
 function initQuickActions() {
 
@@ -113,6 +101,10 @@ function initQuickActions() {
       gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
       totalMatches: parseInt(localStorage.getItem('totalMatches') || '0', 10),
       rewards:      parseInt(localStorage.getItem('rewardsCount') || '0', 10),
+      points:       parseInt(localStorage.getItem('pointsTotal')  || '0', 10),
+      stars: (typeof window.getStarsTotal === 'function')
+             ? window.getStarsTotal()
+             : 0,
       bestTime:     localStorage.getItem('bestTime') || null,
     };
   }
@@ -127,13 +119,13 @@ function initQuickActions() {
           <div class="quick-modal-stats">
             <div class="quick-modal-stat">
               <i class="fas fa-star" style="color:#FFD700"></i>
-              <span class="quick-modal-value">${s.rewards}</span>
+              <span class="quick-modal-value">${s.stars}</span>
               <span class="quick-modal-label">Stars Earned</span>
             </div>
             <div class="quick-modal-stat">
-              <i class="fas fa-check-double" style="color:#00BFFF"></i>
-              <span class="quick-modal-value">${s.totalMatches}</span>
-              <span class="quick-modal-label">Matches Made</span>
+              <i class="fas fa-coins" style="color:#FFD700"></i>
+              <span class="quick-modal-value">${s.points}</span>
+              <span class="quick-modal-label">Points</span>
             </div>
             <div class="quick-modal-stat">
               <i class="fas fa-gamepad" style="color:#FFD700"></i>
@@ -141,7 +133,7 @@ function initQuickActions() {
               <span class="quick-modal-label">Games Played</span>
             </div>
           </div>
-          <p class="quick-modal-note">Clear more boards to earn stars and unlock new rewards!</p>
+          <p class="quick-modal-note">Clear more boards to earn points and unlock new levels!</p>
         `;
       },
     },
@@ -192,7 +184,6 @@ function initQuickActions() {
     const data = QUICK_CONTENT[key];
     if (!data) return;
 
-    // Reuse existing modal
     let modal = document.getElementById('quickActionModal');
 
     if (!modal) {
@@ -228,16 +219,13 @@ function initQuickActions() {
       });
     }
 
-    // Populate
     modal.querySelector('#quickModalIcon').className = 'fas ' + data.icon + ' quick-modal-icon';
     modal.querySelector('#quickModalTitle').textContent = data.title;
     modal.querySelector('#quickModalBody').innerHTML = data.body();
 
-    // Show
     requestAnimationFrame(function () { modal.classList.add('show'); });
   }
 
-  // Wire the three home-page buttons
   const rewardsBtn  = document.getElementById('btnQuickRewards');
   const monstersBtn = document.getElementById('btnQuickMonsters');
   const howtoBtn    = document.getElementById('btnQuickHowTo');
@@ -248,7 +236,7 @@ function initQuickActions() {
 }
 
 /* ================================================================
-   SETTINGS – uses event delegation (works with dynamic navbar)
+   SETTINGS — event delegation (works with dynamic navbar)
    ================================================================ */
 function initSettings() {
 
@@ -277,7 +265,7 @@ function initSettings() {
     }
   }, 100);
 
-  // ---- Click handler (Reset Progress) ----
+  // ---- Reset Progress ----
   document.addEventListener('click', function (e) {
     const resetBtn = e.target.closest('#resetProgressBtn');
     if (!resetBtn) return;
@@ -287,28 +275,31 @@ function initSettings() {
     const ok = confirm(
       '⚠️ Reset all progress?\n\n' +
       'This will erase:\n' +
-      '• All stats (games, matches, rewards, best time)\n' +
+      '• All stats (games, matches, best time)\n' +
       '• All unlocked & completed levels\n' +
-      '• All stars and coins\n' +
+      '• All star ratings\n' +
+      '• All points\n' +
       '• Everything for Computer, Science, and AP\n\n' +
       'This cannot be undone!'
     );
     if (!ok) return;
 
-    // Clear GLOBAL STATS
+    // Clear global stats
     localStorage.removeItem('gamesPlayed');
     localStorage.removeItem('bestTime');
     localStorage.removeItem('totalMatches');
     localStorage.removeItem('rewardsCount');
 
-    // Clear POINTS (stars + coins)
-    localStorage.removeItem('starsTotal');
+    // Clear currency (new + legacy keys)
+    localStorage.removeItem('pointsTotal');
     localStorage.removeItem('coinsTotal');
+    localStorage.removeItem('starsTotal');
 
-    // Clear LEVEL PROGRESSION for ALL subjects
+    // Clear per-subject progress + stars
     ['computer', 'science', 'ap'].forEach(function (sub) {
       localStorage.removeItem('matchMonster_unlocked_' + sub);
       localStorage.removeItem('matchMonster_completed_' + sub);
+      localStorage.removeItem('matchMonster_stars_' + sub);
     });
 
     // Refresh UI
@@ -317,14 +308,14 @@ function initSettings() {
       window.updatePlayerLevelBox();
     }
 
-    // Close the settings modal
+    // Close settings modal
     const modalEl = document.getElementById('settingsModal');
     if (modalEl && window.bootstrap) {
       const modal = bootstrap.Modal.getInstance(modalEl);
       if (modal) modal.hide();
     }
 
-    // Quiet toast
+    // Toast
     const toast = document.createElement('div');
     toast.textContent = '✅ Progress reset! Level 1 is unlocked.';
     toast.style.cssText = `
@@ -347,7 +338,7 @@ function initSettings() {
     document.body.appendChild(toast);
     setTimeout(function () { toast.remove(); }, 2600);
 
-    // If on home page, reset the game board view
+    // Reset home board view
     const homeLobby      = document.getElementById('homeLobby');
     const homeGameScreen = document.getElementById('homeGameScreen');
     if (homeLobby)      homeLobby.style.display = 'block';
@@ -355,7 +346,7 @@ function initSettings() {
     if (typeof window.__quitGame === 'function') window.__quitGame();
   });
 
-  // ---- Change handler for settings toggles + difficulty ----
+  // ---- Toggles + difficulty ----
   document.addEventListener('change', function (e) {
     const target = e.target;
 
@@ -372,7 +363,7 @@ function initSettings() {
 }
 
 /* ================================================================
-   STATS – read/write from localStorage
+   STATS — read/write
    ================================================================ */
 function getStats() {
   return {
@@ -397,15 +388,15 @@ function updateStatsDisplay() {
 }
 
 function saveStats(stats) {
-  localStorage.setItem('gamesPlayed',  stats.gamesPlayed);
-  localStorage.setItem('bestTime',     stats.bestTime);
-  localStorage.setItem('totalMatches', stats.totalMatches);
-  localStorage.setItem('rewardsCount', stats.rewards);
+  localStorage.setItem('gamesPlayed',  String(stats.gamesPlayed));
+  localStorage.setItem('bestTime',     String(stats.bestTime));
+  localStorage.setItem('totalMatches', String(stats.totalMatches));
+  localStorage.setItem('rewardsCount', String(stats.rewards));
   updateStatsDisplay();
 }
 
 /* ================================================================
-   HOME PAGE – GAME LOGIC (inline board, only if elements exist)
+   HOME PAGE – inline board (only if elements exist)
    ================================================================ */
 function initHomePage() {
   if (!document.getElementById('homePage')) return;
@@ -424,7 +415,6 @@ function initHomePage() {
   const winMoves     = document.getElementById('winMoves');
   const winTime      = document.getElementById('winTime');
 
-  // If there's no inline game board on the page, just wire stats and bail.
   if (!grid) return;
 
   const MONSTERS = ['👾', '🧛', '🧟', '🧙', '🧝', '🧚', '🦄', '🐉'];
@@ -598,7 +588,6 @@ function initHomePage() {
     updateStatsDisplay();
   }
 
-  // ---- Event listeners ----
   if (startBtn) startBtn.addEventListener('click', initGame);
   if (quitBtn)  quitBtn.addEventListener('click', quitGame);
 
