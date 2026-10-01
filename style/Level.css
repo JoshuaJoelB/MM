@@ -536,3 +536,21 @@
 
   .island-stars { font-size: 0.54rem; gap: 1px; }
 }
+
+/* ================================================================
+   DECORATIVE ISLANDS (behind the level markers)
+   ================================================================ */
+.deco-island {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.4s ease;
+}
+
+/* Hide the decoratives on very small phones so they don't clutter */
+@media (max-width: 480px) {
+  .deco-island { opacity: 0.55 !important; }
+}
+@media (max-width: 360px) {
+  .deco-island { display: none; }
+}
