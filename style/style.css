@@ -2096,6 +2096,109 @@ h1, h2, h3, h4, h5, h6,
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
+/* ================================================================
+   LOSE OVERLAY
+   ================================================================ */
+.lose-overlay {
+  background: rgba(10, 20, 40, 0.92);
+}
+
+.lose-box {
+  border-color: rgba(255, 90, 90, 0.55);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(255, 90, 90, 0.25);
+}
+
+.lose-icon {
+  filter: drop-shadow(0 8px 24px rgba(255, 90, 90, 0.55));
+  animation: floatMonster 2.5s ease-in-out infinite;
+}
+
+.lose-heading {
+  color: #1a0f2e;
+  background: linear-gradient(180deg, #FFB0B0 0%, #FF5A5A 55%, #D63030 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 2px #1a0f2e;
+  paint-order: stroke fill;
+  filter:
+    drop-shadow(0 4px 0 #7a1a1a)
+    drop-shadow(0 8px 24px rgba(255, 90, 90, 0.55));
+}
+
+.lose-text {
+  color: #FFC9C9 !important;
+}
+
+/* ---- Time hero row (own line) ---- */
+.lose-time-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 16px 0 18px;
+  padding: 12px 24px;
+  background: rgba(255, 90, 90, 0.1);
+  border: 2px solid rgba(255, 90, 90, 0.4);
+  border-radius: 20px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.lose-time-value {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: #FFD700;
+  letter-spacing: 2px;
+  text-shadow:
+    0 3px 0 #7a4b00,
+    0 0 22px rgba(255, 215, 0, 0.85);
+}
+
+.lose-time-label {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #FFD700;
+  text-shadow: 0 1px 0 #7a4b00;
+  opacity: 0.9;
+}
+
+/* Win-stats row now sits below the time hero */
+.lose-box .win-stats {
+  margin: 0 0 20px;
+}
+
+.lose-box .win-stats .num {
+  font-size: 1.6rem;
+  color: #FFD700;
+  text-shadow:
+    0 2px 0 #7a4b00,
+    0 0 12px rgba(255, 215, 0, 0.6);
+}
+
+.lose-box .win-stats .label {
+  color: #FFD700;
+  text-shadow: 0 1px 0 #7a4b00;
+  opacity: 0.9;
+}
+
+/* Responsive — scale the time down on small phones */
+@media (max-width: 480px) {
+  .lose-time-value { font-size: 2rem; letter-spacing: 1px; }
+  .lose-time-hero { padding: 10px 18px; margin: 12px 0 14px; }
+  .lose-time-label { font-size: 0.6rem; letter-spacing: 3px; }
+  .lose-box .win-stats .num { font-size: 1.3rem; }
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .win-star-rating { font-size: 2.2rem; gap: 10px; min-height: 50px; }

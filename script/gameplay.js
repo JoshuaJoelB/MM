@@ -1,7 +1,9 @@
 /* ================================================================
    GAMEPLAY.JS
-   - POINTS = currency (awarded on first completion only)
-   - 3-STAR rating based on move efficiency (best per level kept)
+   - 2-MINUTE COUNTDOWN TIMER (MM:SS)
+   - Lose when timer reaches 00:00
+   - POINTS awarded on first completion only
+   - 3-STAR rating based on moves efficiency
    - Level 1 is free; locked levels cost 15 points
    - Previous level MUST be completed before playing the next
    ================================================================ */
@@ -124,11 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const pairs      = totalCards / 2;
 
   // ============================================================
-  // REWARD FORMULA
-  //   Level 1 → 15 points
-  //   Level 2 → 20 points
-  //   Level 3 → 25 points
-  //   ...
+  // REWARD FORMULA  (Level 1 → 15, Level 2 → 20, ...)
   // ============================================================
   const POINTS_BASE      = 10;
   const POINTS_PER_LEVEL = level * 5;
@@ -137,9 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   // 3-STAR THRESHOLDS (moves / pairs ratio)
   // ============================================================
-  const STAR3_RATIO = 1.4;   // ≤ 1.4 → 3 stars
-  const STAR2_RATIO = 2.0;   // ≤ 2.0 → 2 stars
-                             //  else → 1 star
+  const STAR3_RATIO = 1.4;
+  const STAR2_RATIO = 2.0;
 
   function calculateStars(mv, pairCount) {
     if (pairCount <= 0) return 1;
@@ -147,6 +144,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (ratio <= STAR3_RATIO) return 3;
     if (ratio <= STAR2_RATIO) return 2;
     return 1;
+  }
+
+  // ============================================================
+  // TIMER — 2 MINUTES (120 seconds) COUNTDOWN
+  // ============================================================
+  const GAME_DURATION = 120;   // seconds
+  let secondsLeft = GAME_DURATION;
+
+  function formatTime(secs) {
+    secs = Math.max(0, Math.floor(secs));
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
 
   // ============================================================
@@ -206,13 +216,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const movesDisplay   = document.getElementById('movesDisplay');
   const timerDisplay   = document.getElementById('timerDisplay');
   const winOverlay     = document.getElementById('winOverlay');
+  const loseOverlay    = document.getElementById('loseOverlay');
   const winMoves       = document.getElementById('winMoves');
   const winTime        = document.getElementById('winTime');
   const nextLevelBtn   = document.getElementById('btnNextLevel');
   const winStarsEarned = document.getElementById('winStarsEarned');
   const winCoinsEarned = document.getElementById('winCoinsEarned');
 
-  // Star rating row inside the win overlay (created on first show)
   let winStarsRow = document.getElementById('winStarRating');
 
   // ============================================================
@@ -223,8 +233,8 @@ document.addEventListener('DOMContentLoaded', function() {
   let moves         = 0;
   let isLocked      = false;
   let timerInterval = null;
-  let seconds       = 0;
   let gameStarted   = false;
+  let gameFinished  = false;   // true after win OR loss
 
   if (levelDisplay) levelDisplay.textContent = level;
 
@@ -245,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // RENDER
+  // RENDER CARDS
   // ============================================================
   function renderCards() {
     if (!grid) return;
@@ -260,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
-      // ---- BACK ----
+      // BACK
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
 
@@ -282,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
       back.appendChild(badge);
       inner.appendChild(back);
 
-      // ---- FRONT ----
+      // FRONT
       const front = document.createElement('div');
       front.className = 'card-face card-face-front';
 
@@ -322,31 +332,45 @@ document.addEventListener('DOMContentLoaded', function() {
   // TIMER
   // ============================================================
   function startTimer() {
-    if (timerInterval) return;
-    seconds = 0;
+    if (timerInterval || gameFinished) return;
+
     timerInterval = setInterval(() => {
-      seconds++;
-      if (timerDisplay) timerDisplay.textContent = seconds + 's';
+      secondsLeft--;
+      if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
+
+      if (secondsLeft <= 0) {
+        stopTimer();
+        loseGame();
+      }
     }, 1000);
   }
-  function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
   function resetTimer() {
     stopTimer();
-    seconds = 0;
-    if (timerDisplay) timerDisplay.textContent = '0s';
-    gameStarted = false;
+    secondsLeft = GAME_DURATION;
+    if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
+    gameStarted  = false;
+    gameFinished = false;
   }
 
   // ============================================================
   // GAMEPLAY
   // ============================================================
   function onCardClick(index) {
-    if (isLocked) return;
+    if (isLocked || gameFinished) return;
     const el = grid.children[index];
     if (!el) return;
     if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
 
-    if (!gameStarted) { gameStarted = true; startTimer(); }
+    if (!gameStarted) {
+      gameStarted = true;
+      startTimer();
+    }
 
     el.classList.add('flipped');
     flippedCards.push({ index, el, pair: deck[index] });
@@ -384,21 +408,51 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
+  // LOSE
+  // ============================================================
+  function loseGame() {
+    if (gameFinished) return;
+    gameFinished = true;
+    isLocked = true;
+
+    // Make sure win overlay isn't showing
+    if (winOverlay) winOverlay.classList.remove('show');
+
+    // Show lose overlay
+    if (loseOverlay) {
+      loseOverlay.classList.add('show');
+
+      const loseTimeEl   = document.getElementById('loseTime');
+      const loseMovesEl  = document.getElementById('loseMoves');
+      const losePairsEl  = document.getElementById('losePairs');
+
+      if (loseTimeEl)  loseTimeEl.textContent  = formatTime(0);
+      if (loseMovesEl) loseMovesEl.textContent = moves;
+      if (losePairsEl) losePairsEl.textContent = matchedPairs + ' / ' + pairs;
+    }
+  }
+
+  // ============================================================
   // WIN
   // ============================================================
   function showWin() {
+    if (gameFinished) return;
+    gameFinished = true;
+
+    const elapsed = GAME_DURATION - secondsLeft;
+
     if (winMoves) winMoves.textContent = moves;
-    if (winTime)  winTime.textContent  = seconds + 's';
+    if (winTime)  winTime.textContent  = formatTime(elapsed);
 
     const wasCompletedBefore = wasLevelCompletedBefore();
     const starsEarned = calculateStars(moves, pairs);
 
-    // ---- Save best star rating ----
+    // Save best star rating
     if (typeof window.recordLevelStars === 'function') {
       window.recordLevelStars(subject, level, starsEarned);
     }
 
-    // ---- Award points ONLY on first completion ----
+    // Award points on first completion only
     if (!wasCompletedBefore) {
       if (typeof window.addPoints === 'function') {
         window.addPoints(pointsEarned);
@@ -408,12 +462,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // ---- Points display (this run) ----
     if (winCoinsEarned) {
       winCoinsEarned.textContent = wasCompletedBefore ? '+0' : '+' + pointsEarned;
     }
 
-    // ---- Star rating row (create once) ----
+    // Build star rating row (once)
     if (!winStarsRow) {
       const container = winOverlay ? winOverlay.querySelector('.win-box') : null;
       if (container) {
@@ -435,7 +488,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // Fill earned stars
     if (winStarsRow) {
       const icons = winStarsRow.querySelectorAll('i');
       icons.forEach((icon, i) => {
@@ -443,7 +495,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
-    // ---- Stars total (rating sum) ----
     if (winStarsEarned) {
       const total = (typeof window.getStarsTotal === 'function')
         ? window.getStarsTotal()
@@ -451,11 +502,9 @@ document.addEventListener('DOMContentLoaded', function() {
       winStarsEarned.textContent = total;
     }
 
-    // ---- Show + celebrate ----
     if (winOverlay) winOverlay.classList.add('show');
     celebrateWin();
 
-    // ---- Register completion ----
     if (typeof window.completeLevel === 'function') {
       window.completeLevel(subject, level);
     }
@@ -463,9 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
       window.updatePlayerLevelBox();
     }
 
-    // ============================================================
-    // NEXT LEVEL BUTTON
-    // ============================================================
+    // ---- NEXT LEVEL BUTTON ----
     const nextLevel = level + 1;
 
     if (nextLevelBtn) {
@@ -473,14 +520,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const nextUnlocked = isNextLevelUnlocked();
 
         if (nextUnlocked) {
-          // Already unlocked → go straight there
           nextLevelBtn.innerHTML = `Next Level <i class="fas fa-arrow-right ms-2"></i>`;
           nextLevelBtn.onclick = function () {
             window.location.href =
               `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
           };
         } else {
-          // Still locked → try to unlock with points
           nextLevelBtn.innerHTML = `<i class="fas fa-unlock me-2"></i> Unlock Next Level`;
           nextLevelBtn.onclick = function () {
             if (typeof window.tryUnlockLevel !== 'function') {
@@ -517,7 +562,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         nextLevelBtn.style.display = 'inline-block';
       } else {
-        // Level 10 = final
         nextLevelBtn.innerHTML = `<i class="fas fa-trophy me-2"></i> All Done`;
         nextLevelBtn.onclick = function () {
           window.location.href = `../Level.html?subject=${subject}`;
@@ -533,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
       rewards:      parseInt(localStorage.getItem('rewardsCount') || '0', 10)
     };
     stats.gamesPlayed += 1;
-    if (stats.bestTime === null || seconds < stats.bestTime) stats.bestTime = seconds;
+    if (stats.bestTime === null || elapsed < stats.bestTime) stats.bestTime = elapsed;
     stats.totalMatches += pairs;
     stats.rewards += 1;
     localStorage.setItem('gamesPlayed',  String(stats.gamesPlayed));
@@ -552,11 +596,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnLevels = document.getElementById('btnLevels');
   if (btnLevels) btnLevels.addEventListener('click', goToLevels);
 
+  // Lose modal buttons
+  const btnLoseRetry  = document.getElementById('btnLoseRetry');
+  const btnLoseLevels = document.getElementById('btnLoseLevels');
+
+  if (btnLoseRetry)  btnLoseRetry.addEventListener('click', function () {
+    window.location.reload();
+  });
+  if (btnLoseLevels) btnLoseLevels.addEventListener('click', goToLevels);
+
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-      if (winOverlay && winOverlay.classList.contains('show')) {
-        winOverlay.classList.remove('show');
-      }
+      if (winOverlay  && winOverlay.classList.contains('show'))  winOverlay.classList.remove('show');
+      if (loseOverlay && loseOverlay.classList.contains('show')) loseOverlay.classList.remove('show');
       goToLevels();
     }
   });
@@ -566,5 +618,5 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   renderCards();
   updateStats();
-  resetTimer();
+  resetTimer();   // sets display to "02:00"
 });

@@ -43,7 +43,7 @@
   <div class="gameplay-bottom-row">
     <span class="info-item">Level: <strong id="levelDisplay">1</strong></span>
     <span class="info-item">Moves: <strong id="movesDisplay">0</strong></span>
-    <span class="info-item">Time:  <strong id="timerDisplay">0s</strong></span>
+    <span class="info-item">Time:  <strong id="timerDisplay">02:00</strong></span>
   </div>
 </div>
         </header>
@@ -75,7 +75,7 @@
               <div class="win-reward-item win-reward-coin">
                 <i class="fas fa-coins"></i>
                 <span class="win-reward-value" id="winCoinsEarned">+0</span>
-                <span class="win-reward-label">Coins</span>
+                <span class="win-reward-label">Points</span>
               </div>
             </div>
 
@@ -90,6 +90,41 @@
           </div>
         </div>
 
+ <!-- LOSE OVERLAY -->
+<div id="loseOverlay" class="win-overlay lose-overlay">
+  <div class="win-box lose-box">
+    <span class="win-icon lose-icon">⏰</span>
+    <h2 class="lose-heading">Time's Up!</h2>
+    <p class="lose-text">You ran out of time!</p>
+
+    <!-- TIME — on its own hero row -->
+    <div class="lose-time-hero">
+      <span class="lose-time-value" id="loseTime">00:00</span>
+      <span class="lose-time-label">Time</span>
+    </div>
+
+    <!-- MOVES + PAIRS — two columns -->
+    <div class="win-stats">
+      <div>
+        <span class="num" id="loseMoves">0</span>
+        <span class="label">Moves</span>
+      </div>
+      <div>
+        <span class="num" id="losePairs">0 / 0</span>
+        <span class="label">Pairs</span>
+      </div>
+    </div>
+
+    <div class="win-buttons">
+      <button class="btn-win-home" id="btnLoseLevels">
+        <i class="fas fa-map me-1"></i> Levels
+      </button>
+      <button class="btn-win-play" id="btnLoseRetry">
+        <i class="fas fa-redo me-1"></i> Try Again
+      </button>
+    </div>
+  </div>
+</div>
       </div>
     </div>
   </div>
