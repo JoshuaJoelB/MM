@@ -61,7 +61,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const subject   = urlParams.get('subject') || 'computer';
 
-    // ---- just_unlocked flag (only used for the jojoma walk animation) ----
+    // ---- just_unlocked flag ----
     let justUnlockedLevel = null;
     try {
       const raw = sessionStorage.getItem('mm_just_unlocked');
@@ -111,11 +111,58 @@
     const mapContainer = document.getElementById('levelMap');
     const totalLevels  = 10;
 
+    // ================================================================
+    // LEVEL POSITIONS — winding path (bottom-right → top-left)
+    // ================================================================
     const LEVEL_POSITIONS = [
-      { x: 66, y: 85 }, { x: 56, y: 81 }, { x: 45, y: 78 }, { x: 36, y: 70 },
-      { x: 50, y: 65 }, { x: 66, y: 55 }, { x: 48, y: 51 }, { x: 36, y: 44 },
-      { x: 50, y: 38 }, { x: 60, y: 32 }
+      { x: 72, y: 88 },   // 1
+      { x: 48, y: 82 },   // 2
+      { x: 24, y: 76 },   // 3
+      { x: 14, y: 62 },   // 4
+      { x: 30, y: 52 },   // 5
+      { x: 58, y: 54 },   // 6
+      { x: 82, y: 44 },   // 7
+      { x: 74, y: 30 },   // 8
+      { x: 48, y: 22 },   // 9
+      { x: 22, y: 14 }    // 10
     ];
+
+    // ================================================================
+    // WAVY PATH BUILDER
+    // Alternates the curve direction each segment for a candy-crush
+    // ribbon feel. viewBox is 0..100 on both axes; with
+    // preserveAspectRatio="none" + vector-effect="non-scaling-stroke"
+    // the stroke never distorts.
+    // ================================================================
+    function buildWavyPathD(points, waveAmount) {
+      if (!points.length) return '';
+      let d = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        const p0 = points[i - 1];
+        const p1 = points[i];
+        const mx = (p0.x + p1.x) / 2;
+        const my = (p0.y + p1.y) / 2;
+
+        // Perpendicular to the segment
+        const dx = p1.x - p0.x;
+        const dy = p1.y - p0.y;
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        const px = dy / len;
+        const py = -dx / len;
+
+        // Alternate side (up-down-up-down) for a wavy ribbon
+        const side = (i % 2 === 0) ? 1 : -1;
+        const offset = len * waveAmount * side;
+
+        const cx = mx + px * offset;
+        const cy = my + py * offset;
+
+        d += ` Q ${cx.toFixed(2)} ${cy.toFixed(2)} ${p1.x} ${p1.y}`;
+      }
+      return d;
+    }
+
+    const PATH_D = buildWavyPathD(LEVEL_POSITIONS, 0.22);
 
     function getCurrentLevelForPlayer(unlocked, completed, total) {
       for (let lvl = 1; lvl <= total; lvl++) {
@@ -138,13 +185,51 @@
         if (child !== jojo) child.remove();
       });
 
-      // Background island
-      const bgImg = document.createElement('img');
-      bgImg.src = 'Assets/Platform_Island.png';
-      bgImg.alt = '';
-      bgImg.className = 'level-map-bg';
-      bgImg.draggable = false;
-      mapContainer.appendChild(bgImg);
+      // Subtle star sparkle layer
+      const bg = document.createElement('div');
+      bg.className = 'level-map-bg';
+      mapContainer.appendChild(bg);
+
+      // ---- Candy path (SVG) ----
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('class', 'level-path');
+      svg.setAttribute('viewBox', '0 0 100 100');
+      svg.setAttribute('preserveAspectRatio', 'none');
+      svg.setAttribute('aria-hidden', 'true');
+
+      // Every path gets vector-effect=non-scaling-stroke so the line
+      // width stays visually consistent at every screen size.
+      function makePath(cls, attrs) {
+        const el = document.createElementNS(svgNS, 'path');
+        el.setAttribute('d', PATH_D);
+        el.setAttribute('fill', 'none');
+        el.setAttribute('stroke-linecap', 'round');
+        el.setAttribute('stroke-linejoin', 'round');
+        el.setAttribute('vector-effect', 'non-scaling-stroke');
+        el.setAttribute('class', cls);
+        Object.keys(attrs).forEach(k => el.setAttribute(k, attrs[k]));
+        return el;
+      }
+
+      // Layer 1: navy outer glow
+      svg.appendChild(makePath('path-shadow', {
+        stroke: '#0a1428', 'stroke-width': 13, opacity: '0.55'
+      }));
+      // Layer 2: solid gold base trail
+      svg.appendChild(makePath('path-base', {
+        stroke: '#FFD700', 'stroke-width': 11
+      }));
+      // Layer 3: darker gold dashed stripe
+      svg.appendChild(makePath('path-stripe', {
+        stroke: '#FFA000', 'stroke-width': 5, 'stroke-dasharray': '10 8'
+      }));
+      // Layer 4: bright white dots running through the middle
+      svg.appendChild(makePath('path-dots', {
+        stroke: '#FFFFFF', 'stroke-width': 2, 'stroke-dasharray': '1 8'
+      }));
+
+      mapContainer.appendChild(svg);
 
       const unlocked  = getUnlocked();
       const completed = getCompleted();
@@ -184,13 +269,12 @@
           });
         }
 
-        // Level number
         const number = document.createElement('span');
         number.className = 'island-number';
         number.textContent = level;
         link.appendChild(number);
 
-        // Star rating row (on bottom curve of the pill)
+        // Star rating row on the bottom curve of the pill
         const starsRow = document.createElement('div');
         starsRow.className = 'island-stars';
         for (let s = 1; s <= 3; s++) {
@@ -239,19 +323,14 @@
       const result = window.tryUnlockLevel(subject, level);
 
       if (result.ok) {
-        // localStorage is already saved inside tryUnlockLevel (with read-back verification)
-
-        // Re-render the whole map so the new unlock state is shown
         renderMap();
 
-        // Highlight the newly unlocked level briefly
         const marker = mapContainer.querySelector(`.island-item[data-level="${level}"]`);
         if (marker) {
           marker.classList.add('just-unlocked');
           setTimeout(() => marker.classList.remove('just-unlocked'), 1600);
         }
 
-        // Walk jojoma to the newly unlocked level
         const jojo = mapContainer.querySelector('.jojoma-character');
         const pos  = LEVEL_POSITIONS[level - 1];
         if (jojo && pos) {
@@ -259,12 +338,9 @@
           jojo.style.top  = pos.y + '%';
           jojo.dataset.level = level;
         }
-
-        // Do NOT navigate away — the user can now click the level to play it.
         return;
       }
 
-      // ---- Failure messages ----
       if (result.reason === 'not_enough_points') {
         alert(
           `⭐ Not enough points!\n\n` +
@@ -292,7 +368,6 @@
     function bootMap() {
       renderMap();
 
-      // If we just arrived back from unlocking in Gameplay, animate jojoma
       if (justUnlockedLevel) {
         const targetLevel = justUnlockedLevel;
         justUnlockedLevel = null;
@@ -314,7 +389,6 @@
         }, 400);
       }
 
-      // Re-render on focus/page-show (fresh state from localStorage)
       window.addEventListener('pageshow', function () { renderMap(); });
       window.addEventListener('focus',    function () { renderMap(); });
     }
