@@ -115,24 +115,49 @@
     // LEVEL POSITIONS — winding path (bottom-right → top-left)
     // ================================================================
     const LEVEL_POSITIONS = [
-      { x: 72, y: 88 },   // 1
+      { x: 72, y: 88 },   // 1  — bottom-right
       { x: 48, y: 82 },   // 2
       { x: 24, y: 76 },   // 3
-      { x: 14, y: 62 },   // 4
+      { x: 14, y: 62 },   // 4  — left side
       { x: 30, y: 52 },   // 5
       { x: 58, y: 54 },   // 6
-      { x: 82, y: 44 },   // 7
+      { x: 82, y: 44 },   // 7  — right side
       { x: 74, y: 30 },   // 8
       { x: 48, y: 22 },   // 9
-      { x: 22, y: 14 }    // 10
+      { x: 22, y: 14 }    // 10 — top-left
+    ];
+
+    // ================================================================
+    // DECORATIVE ISLANDS
+    // Purely visual — sit behind the level markers (z-index 0)
+    // ================================================================
+    const DECORATIVE_ISLANDS = [
+      // ---- Castle (left side, behind levels 4–10) ----
+      {
+        id:    'deco-castle',
+        src:   'Assets/island_castle.png',
+        x:     '18%',
+        y:     '34%',
+        width: 'clamp(200px, 26vw, 420px)',
+        aspect:'5 / 4',
+        rotate:'-6deg',
+        opacity: 0.85,
+      },
+      // ---- Single island (right side, behind levels 1–7) ----
+      {
+        id:    'deco-single',
+        src:   'Assets/single_island.png',
+        x:     '86%',
+        y:     '66%',
+        width: 'clamp(180px, 24vw, 380px)',
+        aspect:'16 / 10',
+        rotate:'8deg',
+        opacity: 0.9,
+      },
     ];
 
     // ================================================================
     // WAVY PATH BUILDER
-    // Alternates the curve direction each segment for a candy-crush
-    // ribbon feel. viewBox is 0..100 on both axes; with
-    // preserveAspectRatio="none" + vector-effect="non-scaling-stroke"
-    // the stroke never distorts.
     // ================================================================
     function buildWavyPathD(points, waveAmount) {
       if (!points.length) return '';
@@ -143,14 +168,12 @@
         const mx = (p0.x + p1.x) / 2;
         const my = (p0.y + p1.y) / 2;
 
-        // Perpendicular to the segment
         const dx = p1.x - p0.x;
         const dy = p1.y - p0.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
         const px = dy / len;
         const py = -dx / len;
 
-        // Alternate side (up-down-up-down) for a wavy ribbon
         const side = (i % 2 === 0) ? 1 : -1;
         const offset = len * waveAmount * side;
 
@@ -185,10 +208,41 @@
         if (child !== jojo) child.remove();
       });
 
-      // Subtle star sparkle layer
+      // Layer 0: subtle star sparkle
       const bg = document.createElement('div');
       bg.className = 'level-map-bg';
       mapContainer.appendChild(bg);
+
+      // Layer 1: decorative islands (behind everything else)
+      DECORATIVE_ISLANDS.forEach(function (cfg) {
+        const deco = document.createElement('div');
+        deco.className = 'deco-island';
+        deco.id = cfg.id;
+        deco.setAttribute('aria-hidden', 'true');
+        deco.setAttribute('role', 'presentation');
+
+        Object.assign(deco.style, {
+          position:           'absolute',
+          left:               cfg.x,
+          top:                cfg.y,
+          transform:          `translate(-50%, -50%) rotate(${cfg.rotate})`,
+          width:              cfg.width,
+          aspectRatio:        cfg.aspect,
+          backgroundImage:    `url("${cfg.src}")`,
+          backgroundSize:     'contain',
+          backgroundRepeat:   'no-repeat',
+          backgroundPosition: 'center',
+          pointerEvents:      'none',
+          userSelect:         'none',
+          opacity:            String(cfg.opacity),
+          zIndex:             '0',
+          filter:
+            'drop-shadow(0 20px 50px rgba(30, 144, 255, 0.35)) ' +
+            'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4))',
+        });
+
+        mapContainer.appendChild(deco);
+      });
 
       // ---- Candy path (SVG) ----
       const svgNS = 'http://www.w3.org/2000/svg';
@@ -198,8 +252,6 @@
       svg.setAttribute('preserveAspectRatio', 'none');
       svg.setAttribute('aria-hidden', 'true');
 
-      // Every path gets vector-effect=non-scaling-stroke so the line
-      // width stays visually consistent at every screen size.
       function makePath(cls, attrs) {
         const el = document.createElementNS(svgNS, 'path');
         el.setAttribute('d', PATH_D);
@@ -212,19 +264,15 @@
         return el;
       }
 
-      // Layer 1: navy outer glow
       svg.appendChild(makePath('path-shadow', {
         stroke: '#0a1428', 'stroke-width': 13, opacity: '0.55'
       }));
-      // Layer 2: solid gold base trail
       svg.appendChild(makePath('path-base', {
         stroke: '#FFD700', 'stroke-width': 11
       }));
-      // Layer 3: darker gold dashed stripe
       svg.appendChild(makePath('path-stripe', {
         stroke: '#FFA000', 'stroke-width': 5, 'stroke-dasharray': '10 8'
       }));
-      // Layer 4: bright white dots running through the middle
       svg.appendChild(makePath('path-dots', {
         stroke: '#FFFFFF', 'stroke-width': 2, 'stroke-dasharray': '1 8'
       }));
@@ -274,7 +322,6 @@
         number.textContent = level;
         link.appendChild(number);
 
-        // Star rating row on the bottom curve of the pill
         const starsRow = document.createElement('div');
         starsRow.className = 'island-stars';
         for (let s = 1; s <= 3; s++) {
