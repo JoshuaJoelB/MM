@@ -1,9 +1,11 @@
 /* ================================================================
    ISLAND.JS — 3 fixed floating islands (lower placement)
    ----------------------------------------------------------------
-   All islands now sit between 62% and 82% vertically, well inside
-   the cloud spawn band (38%–88%), so every island constantly has
-   clouds drifting behind and in front of it.
+   - Left / Right islands  → single_island.png
+   - Center hero island    → island_castle.png
+   All islands sit between 62% and 100% vertically, well inside the
+   cloud spawn band, so every island constantly has clouds drifting
+   behind and in front of it.
    ================================================================ */
 
 (function () {
@@ -12,18 +14,21 @@
   // ------------------------------------------------------------------
   // CONFIG
   // ------------------------------------------------------------------
-  const ISLAND_FILE = 'Assets/single_island.png';
   const inSubfolder = window.location.pathname.includes('/Gameplay/');
-  const SRC = inSubfolder ? '../' + ISLAND_FILE : ISLAND_FILE;
+  const resolve = (p) => (inSubfolder ? '../' + p : p);
+
+  const ISLAND_SRC  = resolve('Assets/single_island.png');
+  const CASTLE_SRC  = resolve('Assets/island_castle.png');
 
   /*
     LOCKED POSITIONS — do not change on refresh.
-    Y values pushed down so clouds constantly reach them.
+    Each island now carries its own `src`.
   */
   const ISLANDS = [
-    // ---- Left island (low) ----
+    // ---- Left island (low) ----  → single island
     {
       id:      'islandTopLeft',
+      src:     ISLAND_SRC,
       x:       '17%',
       y:       '68%',
       width:   'clamp(220px, 28vw, 440px)',
@@ -32,9 +37,10 @@
       z:       1,
     },
 
-    // ---- Right island (low) ----
+    // ---- Right island (low) ----  → single island
     {
       id:      'islandMidRight',
+      src:     ISLAND_SRC,
       x:       '82%',
       y:       '72%',
       width:   'clamp(280px, 36vw, 560px)',
@@ -43,11 +49,12 @@
       z:       1,
     },
 
-    // ---- Center hero island (lowest) ----
+        // ---- Center hero island (lower-center) ----  → CASTLE
     {
       id:      'islandCenter',
+      src:     CASTLE_SRC,
       x:       '46%',
-      y:       '100%',
+      y:       '88%',          // ← raised from 100%
       width:   'clamp(440px, 62vw, 900px)',
       rotate:  '0deg',
       opacity: 1,
@@ -87,14 +94,17 @@
     el.setAttribute('aria-hidden', 'true');
     el.setAttribute('role', 'presentation');
 
+    // Castle has a slightly taller silhouette — use 5/4 to preserve it
+    const aspect = (cfg.id === 'islandCenter') ? '5 / 4' : '16 / 10';
+
     Object.assign(el.style, {
       position:           'absolute',
       left:               cfg.x,
       top:                cfg.y,
       transform:          `translate(-50%, -50%) rotate(${cfg.rotate})`,
       width:              cfg.width,
-      aspectRatio:        '16 / 10',
-      backgroundImage:    `url("${SRC}")`,
+      aspectRatio:        aspect,
+      backgroundImage:    `url("${cfg.src}")`,
       backgroundSize:     'contain',
       backgroundRepeat:   'no-repeat',
       backgroundPosition: 'center',
@@ -127,17 +137,20 @@
   function boot() {
     const layer = ensureLayer();
 
-    const probe = new Image();
-    probe.onload  = () => console.log('[island.js] ✅ Image loaded:', SRC);
-    probe.onerror = () => console.warn(
-      '[island.js] ❌ Image FAILED to load. Expected path: ' + SRC
-    );
-    probe.src = SRC;
+    // Probe both images so we can see what loaded in the console
+    [ISLAND_SRC, CASTLE_SRC].forEach((src) => {
+      const probe = new Image();
+      probe.onload  = () => console.log('[island.js] ✅ Image loaded:', src);
+      probe.onerror = () => console.warn(
+        '[island.js] ❌ Image FAILED to load. Expected path: ' + src
+      );
+      probe.src = src;
+    });
 
     ISLANDS.forEach((cfg) => createIsland(cfg, layer));
 
     console.log('[island.js] Islands placed:', ISLANDS.map(
-      (i) => `${i.id} @ ${i.x}, ${i.y}`
+      (i) => `${i.id} → ${i.src.split('/').pop()} @ ${i.x}, ${i.y}`
     ));
 
     applyResponsive();
