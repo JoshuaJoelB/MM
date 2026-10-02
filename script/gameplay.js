@@ -2,10 +2,12 @@
    GAMEPLAY.JS
    - 2-MINUTE COUNTDOWN TIMER (MM:SS)
    - Lose when timer reaches 00:00
-   - POINTS awarded on first completion only
-   - 3-STAR rating based on moves efficiency
+   - Quality bar starts FULL and shrinks as moves increase
+   - 3-STAR rating derived from the SAME quality bar
+   - Bar stars === Win-modal stars (guaranteed identical)
    - Level 1 is free; locked levels cost 15 points
    - Previous level MUST be completed before playing the next
+   - Pause / Resume overlay
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -133,23 +135,56 @@ document.addEventListener('DOMContentLoaded', function() {
   const pointsEarned     = POINTS_BASE + POINTS_PER_LEVEL;
 
   // ============================================================
-  // 3-STAR THRESHOLDS (moves / pairs ratio)
+  // QUALITY / STAR LOGIC (single source of truth)
+  // ------------------------------------------------------------
+  // The bar starts FULL (100%) and shrinks as moves accumulate.
+  //   moves = 0                 → 100%
+  //   moves = 1.4 × pairs       →  66.67%   (3-star boundary)
+  //   moves = 2.0 × pairs       →  33.33%   (2-star boundary)
+  //   moves = 3.0 × pairs       →   0%
+  // Both the navbar bar AND the win modal read from this function.
   // ============================================================
-  const STAR3_RATIO = 1.4;
-  const STAR2_RATIO = 2.0;
+  const T3_RATIO = 1.4;   // 3-star ceiling
+  const T2_RATIO = 2.0;   // 2-star ceiling
+  const T1_RATIO = 3.0;   // 1-star ceiling
 
-  function calculateStars(mv, pairCount) {
-    if (pairCount <= 0) return 1;
-    const ratio = mv / pairCount;
-    if (ratio <= STAR3_RATIO) return 3;
-    if (ratio <= STAR2_RATIO) return 2;
+  function getBarPercentage(mv, pairCount) {
+    if (pairCount <= 0) return 100;
+
+    const t3 = T3_RATIO * pairCount;
+    const t2 = T2_RATIO * pairCount;
+    const t1 = T1_RATIO * pairCount;
+
+    if (mv <= t3) {
+      // 100% → 66.67%
+      return 100 - (mv / t3) * 33.33;
+    }
+    if (mv <= t2) {
+      // 66.67% → 33.33%
+      return 66.67 - ((mv - t3) / (t2 - t3)) * 33.34;
+    }
+    if (mv <= t1) {
+      // 33.33% → 0%
+      return 33.33 - ((mv - t2) / (t1 - t2)) * 33.33;
+    }
+    return 0;
+  }
+
+  function getStarCountFromBar(pct) {
+    if (pct >= 66.66) return 3;
+    if (pct >= 33.33) return 2;
     return 1;
+  }
+
+  // Win-modal star calculation delegates to the SAME logic
+  function calculateStars(mv, pairCount) {
+    return getStarCountFromBar(getBarPercentage(mv, pairCount));
   }
 
   // ============================================================
   // TIMER — 2 MINUTES (120 seconds) COUNTDOWN
   // ============================================================
-  const GAME_DURATION = 120;   // seconds
+  const GAME_DURATION = 120;
   let secondsLeft = GAME_DURATION;
 
   function formatTime(secs) {
@@ -213,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   const grid           = document.getElementById('cardGrid');
   const levelDisplay   = document.getElementById('levelDisplay');
-  const movesDisplay   = document.getElementById('movesDisplay');
   const timerDisplay   = document.getElementById('timerDisplay');
   const winOverlay     = document.getElementById('winOverlay');
   const loseOverlay    = document.getElementById('loseOverlay');
@@ -222,6 +256,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const nextLevelBtn   = document.getElementById('btnNextLevel');
   const winStarsEarned = document.getElementById('winStarsEarned');
   const winCoinsEarned = document.getElementById('winCoinsEarned');
+
+  const starProgressFill  = document.getElementById('starProgressFill');
+  const starProgressStars = document.querySelectorAll('.star-progress-stars i');
+
+  const btnPause        = document.getElementById('btnPause');
+  const pauseOverlay    = document.getElementById('pauseOverlay');
+  const btnPauseResume  = document.getElementById('btnPauseResume');
+  const btnPauseLevels  = document.getElementById('btnPauseLevels');
 
   let winStarsRow = document.getElementById('winStarRating');
 
@@ -234,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let isLocked      = false;
   let timerInterval = null;
   let gameStarted   = false;
-  let gameFinished  = false;   // true after win OR loss
+  let gameFinished  = false;
 
   if (levelDisplay) levelDisplay.textContent = level;
 
@@ -270,7 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
-      // BACK
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
 
@@ -292,7 +333,6 @@ document.addEventListener('DOMContentLoaded', function() {
       back.appendChild(badge);
       inner.appendChild(back);
 
-      // FRONT
       const front = document.createElement('div');
       front.className = 'card-face card-face-front';
 
@@ -324,8 +364,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  function updateStats() {
-    if (movesDisplay) movesDisplay.textContent = moves;
+  // ============================================================
+  // STAR PROGRESS BAR  (single source of truth for rating)
+  // ============================================================
+  function updateStarProgress() {
+    if (!starProgressFill) return;
+
+    const pct = getBarPercentage(moves, pairs);
+    starProgressFill.style.width = pct + '%';
+
+    const starsEarned = getStarCountFromBar(pct);
+
+    starProgressStars.forEach((star, i) => {
+      star.classList.toggle('filled', i < starsEarned);
+    });
   }
 
   // ============================================================
@@ -377,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (flippedCards.length === 2) {
       moves++;
-      updateStats();
+      updateStarProgress();  // ✅ bar updates on every move
       checkMatch();
     }
   }
@@ -415,16 +467,14 @@ document.addEventListener('DOMContentLoaded', function() {
     gameFinished = true;
     isLocked = true;
 
-    // Make sure win overlay isn't showing
     if (winOverlay) winOverlay.classList.remove('show');
 
-    // Show lose overlay
     if (loseOverlay) {
       loseOverlay.classList.add('show');
 
-      const loseTimeEl   = document.getElementById('loseTime');
-      const loseMovesEl  = document.getElementById('loseMoves');
-      const losePairsEl  = document.getElementById('losePairs');
+      const loseTimeEl  = document.getElementById('loseTime');
+      const loseMovesEl = document.getElementById('loseMoves');
+      const losePairsEl = document.getElementById('losePairs');
 
       if (loseTimeEl)  loseTimeEl.textContent  = formatTime(0);
       if (loseMovesEl) loseMovesEl.textContent = moves;
@@ -445,14 +495,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (winTime)  winTime.textContent  = formatTime(elapsed);
 
     const wasCompletedBefore = wasLevelCompletedBefore();
+
+    // ---- Star rating comes FROM THE BAR — guaranteed identical ----
     const starsEarned = calculateStars(moves, pairs);
 
-    // Save best star rating
     if (typeof window.recordLevelStars === 'function') {
       window.recordLevelStars(subject, level, starsEarned);
     }
 
-    // Award points on first completion only
     if (!wasCompletedBefore) {
       if (typeof window.addPoints === 'function') {
         window.addPoints(pointsEarned);
@@ -466,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function() {
       winCoinsEarned.textContent = wasCompletedBefore ? '+0' : '+' + pointsEarned;
     }
 
-    // Build star rating row (once)
+    // Build star row (once)
     if (!winStarsRow) {
       const container = winOverlay ? winOverlay.querySelector('.win-box') : null;
       if (container) {
@@ -596,7 +646,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnLevels = document.getElementById('btnLevels');
   if (btnLevels) btnLevels.addEventListener('click', goToLevels);
 
-  // Lose modal buttons
   const btnLoseRetry  = document.getElementById('btnLoseRetry');
   const btnLoseLevels = document.getElementById('btnLoseLevels');
 
@@ -605,10 +654,46 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   if (btnLoseLevels) btnLoseLevels.addEventListener('click', goToLevels);
 
-  document.addEventListener('keydown', function(e) {
+  // ============================================================
+  // PAUSE / RESUME
+  // ============================================================
+  let wasRunningBeforePause = false;
+
+  function openPause() {
+    if (gameFinished) return;
+    if (pauseOverlay && pauseOverlay.classList.contains('show')) return;
+
+    wasRunningBeforePause = timerInterval !== null;
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    if (pauseOverlay) pauseOverlay.classList.add('show');
+  }
+
+  function closePause() {
+    if (pauseOverlay) pauseOverlay.classList.remove('show');
+
+    if (wasRunningBeforePause && !gameFinished && timerInterval === null) {
+      startTimer();
+    }
+    wasRunningBeforePause = false;
+  }
+
+  if (btnPause)       btnPause.addEventListener('click', openPause);
+  if (btnPauseResume) btnPauseResume.addEventListener('click', closePause);
+  if (btnPauseLevels) btnPauseLevels.addEventListener('click', goToLevels);
+
+  // ============================================================
+  // KEYBOARD
+  // ============================================================
+  document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      if (winOverlay  && winOverlay.classList.contains('show'))  winOverlay.classList.remove('show');
-      if (loseOverlay && loseOverlay.classList.contains('show')) loseOverlay.classList.remove('show');
+      if (pauseOverlay && pauseOverlay.classList.contains('show')) { closePause(); return; }
+      if (winOverlay && winOverlay.classList.contains('show'))      { winOverlay.classList.remove('show'); return; }
+      if (loseOverlay && loseOverlay.classList.contains('show'))    { loseOverlay.classList.remove('show'); return; }
+      if (!gameFinished) { openPause(); return; }
       goToLevels();
     }
   });
@@ -617,6 +702,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // BOOT
   // ============================================================
   renderCards();
-  updateStats();
-  resetTimer();   // sets display to "02:00"
+  resetTimer();
+  updateStarProgress();  // starts at 100% / 3 stars
 });
