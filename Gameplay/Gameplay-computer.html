@@ -17,71 +17,68 @@
     <div class="home-bg">
       <div class="gameplay-overlay">
 
-    <!-- ============ NAVBAR (nav only — no title, no star bar) ============ -->
-<header class="gameplay-navbar">
-  <div class="gameplay-navbar-inner">
+        <!-- ============ NAVBAR ============ -->
+        <header class="gameplay-navbar">
+          <div class="gameplay-navbar-inner">
 
-    <!-- Back -->
-    <a href="../Level.html?subject=computer" class="btn-back-circle" aria-label="Back to levels">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a0f2e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </a>
+            <a href="../Level.html?subject=computer" class="btn-back-circle" aria-label="Back to levels">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a0f2e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </a>
 
-    <!-- Timer -->
-    <div class="gameplay-timer" id="timerDisplay">02:00</div>
+            <div class="gameplay-timer" id="timerDisplay">02:00</div>
 
-    <!-- Level + Pause -->
-    <div class="gameplay-right">
-      <span class="gameplay-level">LEVEL <strong id="levelDisplay">1</strong></span>
-      <button type="button" class="btn-pause-circle" id="btnPause" aria-label="Pause">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="#1a0f2e">
-          <rect x="6"  y="5" width="4" height="14" rx="1.5"></rect>
-          <rect x="14" y="5" width="4" height="14" rx="1.5"></rect>
-        </svg>
-      </button>
-    </div>
+            <div class="gameplay-right">
+              <span class="gameplay-level">LEVEL <strong id="levelDisplay">1</strong></span>
+              <button type="button" class="btn-pause-circle" id="btnPause" aria-label="Pause">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#1a0f2e">
+                  <rect x="6"  y="5" width="4" height="14" rx="1.5"></rect>
+                  <rect x="14" y="5" width="4" height="14" rx="1.5"></rect>
+                </svg>
+              </button>
+            </div>
 
-  </div>
-</header>
+          </div>
+        </header>
 
-<!-- ============ SUBHEADER (below navbar) ============ -->
-<div class="gameplay-subheader">
-  <h2 class="gameplay-subject-title">Computer</h2>
+        <!-- ============ SUBHEADER ============ -->
+        <div class="gameplay-subheader">
+          <h2 class="gameplay-subject-title">Computer</h2>
 
-  <div class="star-progress" id="starProgress">
-    <div class="star-progress-track">
-      <div class="star-progress-fill" id="starProgressFill"></div>
-    </div>
-    <div class="star-progress-stars">
-      <i class="fas fa-star" data-milestone="1"></i>
-      <i class="fas fa-star" data-milestone="2"></i>
-      <i class="fas fa-star" data-milestone="3"></i>
-    </div>
-  </div>
-</div>
+          <div class="star-progress" id="starProgress">
+            <div class="star-progress-track">
+              <div class="star-progress-fill" id="starProgressFill"></div>
+            </div>
+            <div class="star-progress-stars">
+              <i class="fas fa-star" data-milestone="1"></i>
+              <i class="fas fa-star" data-milestone="2"></i>
+              <i class="fas fa-star" data-milestone="3"></i>
+            </div>
+          </div>
+        </div>
 
         <!-- GAME BOARD -->
         <main class="gameplay-board">
           <div class="card-grid" id="cardGrid"></div>
         </main>
 
-<!-- PAUSE OVERLAY -->
-<div id="pauseOverlay" class="pause-overlay">
-  <div class="pause-box">
-    <h2 class="pause-heading">Paused</h2>
-    <p class="pause-text">Take a break!</p>
+        <!-- PAUSE OVERLAY -->
+        <div id="pauseOverlay" class="pause-overlay">
+          <div class="pause-box">
+            <h2 class="pause-heading">Paused</h2>
+            <p class="pause-text">Take a break!</p>
 
-    <div class="pause-buttons">
-      <button class="btn-pause-levels" id="btnPauseLevels">
-        <i class="fas fa-map me-1"></i> Levels
-      </button>
-      <button class="btn-pause-resume" id="btnPauseResume">
-        <i class="fas fa-play me-1"></i> Resume
-      </button>
-    </div>
-  </div>
-</div>
+            <div class="pause-buttons">
+              <button class="btn-pause-levels" id="btnPauseLevels">
+                <i class="fas fa-map me-1"></i> Levels
+              </button>
+              <button class="btn-pause-resume" id="btnPauseResume">
+                <i class="fas fa-play me-1"></i> Resume
+              </button>
+            </div>
+          </div>
+        </div>
 
         <!-- WIN OVERLAY -->
         <div id="winOverlay" class="win-overlay">
@@ -91,17 +88,10 @@
             <p>You matched all the cards!</p>
 
             <div class="win-stats">
-              <div>
-                <span class="num" id="winMoves">0</span>
-                <span class="label">Moves</span>
-              </div>
-              <div>
-                <span class="num" id="winTime">0s</span>
-                <span class="label">Time</span>
-              </div>
+              <div><span class="num" id="winMoves">0</span><span class="label">Moves</span></div>
+              <div><span class="num" id="winTime">0s</span><span class="label">Time</span></div>
             </div>
 
-            <!-- REWARDS EARNED -->
             <div class="win-rewards-title">Your Points</div>
             <div class="win-rewards">
               <div class="win-reward-item win-reward-star">
@@ -112,56 +102,63 @@
               <div class="win-reward-item win-reward-coin">
                 <i class="fas fa-coins"></i>
                 <span class="win-reward-value" id="winCoinsEarned">+0</span>
-                <span class="win-reward-label">Coins</span>
+                <span class="win-reward-label">Points</span>
               </div>
             </div>
 
             <div class="win-buttons">
-              <button class="btn-win-home" id="btnLevels">
+              <button class="btn-win-home btn-win-levels" id="btnLevels">
                 <i class="fas fa-map me-1"></i> Levels
               </button>
-              <button class="btn-win-play" id="btnNextLevel">
-                Next Level <i class="fas fa-arrow-right ms-1"></i>
-              </button>
+
+              <div class="win-buttons-row">
+                <button class="btn-win-restart" id="btnRestartLevel">
+                  <i class="fas fa-redo me-1"></i> Restart
+                </button>
+                <button class="btn-win-play" id="btnNextLevel">
+                  Next Level <i class="fas fa-arrow-right ms-1"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-<!-- LOSE OVERLAY -->
-<div id="loseOverlay" class="win-overlay lose-overlay">
-  <div class="win-box lose-box">
-    <span class="win-icon lose-icon">⏰</span>
-    <h2 class="lose-heading">Time's Up!</h2>
-    <p class="lose-text">You ran out of time!</p>
+        <!-- LOSE OVERLAY -->
+        <div id="loseOverlay" class="win-overlay lose-overlay">
+          <div class="win-box lose-box">
+            <span class="win-icon lose-icon">⏰</span>
+            <h2 class="lose-heading">Time's Up!</h2>
+            <p class="lose-text">You ran out of time!</p>
 
-    <!-- TIME — on its own hero row -->
-    <div class="lose-time-hero">
-      <span class="lose-time-value" id="loseTime">00:00</span>
-      <span class="lose-time-label">Time</span>
-    </div>
+            <div class="lose-time-hero">
+              <span class="lose-time-value" id="loseTime">00:00</span>
+              <span class="lose-time-label">Time</span>
+            </div>
 
-    <!-- MOVES + PAIRS — two columns -->
-    <div class="win-stats">
-      <div>
-        <span class="num" id="loseMoves">0</span>
-        <span class="label">Moves</span>
-      </div>
-      <div>
-        <span class="num" id="losePairs">0 / 0</span>
-        <span class="label">Pairs</span>
-      </div>
-    </div>
+            <div class="win-stats">
+              <div>
+                <span class="num" id="loseMoves">0</span>
+                <span class="label">Moves</span>
+              </div>
+              <div>
+                <span class="num" id="losePairs">0 / 0</span>
+                <span class="label">Pairs</span>
+              </div>
+            </div>
 
-    <div class="win-buttons">
-      <button class="btn-win-home" id="btnLoseLevels">
-        <i class="fas fa-map me-1"></i> Levels
-      </button>
-      <button class="btn-win-play" id="btnLoseRetry">
-        <i class="fas fa-redo me-1"></i> Try Again
-      </button>
-    </div>
-  </div>
-</div>
+            <div class="win-buttons">
+              <button class="btn-win-home btn-win-levels" id="btnLoseLevels">
+                <i class="fas fa-map me-1"></i> Levels
+              </button>
+
+              <div class="win-buttons-row">
+                <button class="btn-win-restart" id="btnLoseRetry">
+                  <i class="fas fa-redo me-1"></i> Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -169,7 +166,6 @@
 
   <script src="../script/player-level.js"></script>
   <script src="../script/gameplay.js"></script>
-  <!-- Clouds -->
   <script src="../script/cloud-loader.js"></script>
   <script src="../script/clouds.js"></script>
   <script src="../script/island.js"></script>
