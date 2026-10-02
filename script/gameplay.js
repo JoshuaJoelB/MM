@@ -1,14 +1,4 @@
-/* ================================================================
-   GAMEPLAY.JS
-   - 2-MINUTE COUNTDOWN TIMER (MM:SS)
-   - Lose when timer reaches 00:00
-   - Quality bar starts FULL and shrinks as moves increase
-   - 3-STAR rating derived from the SAME quality bar
-   - Bar stars === Win-modal stars (guaranteed identical)
-   - Level 1 is free; locked levels cost 15 points
-   - Previous level MUST be completed before playing the next
-   - Pause / Resume overlay
-   ================================================================ */
+
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -648,6 +638,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const btnLoseRetry  = document.getElementById('btnLoseRetry');
   const btnLoseLevels = document.getElementById('btnLoseLevels');
+    // ---- Restart Level (win modal) ----
+  const btnRestartLevel = document.getElementById('btnRestartLevel');
+  if (btnRestartLevel) {
+    btnRestartLevel.addEventListener('click', function () {
+      window.location.reload();
+    });
+  }
 
   if (btnLoseRetry)  btnLoseRetry.addEventListener('click', function () {
     window.location.reload();

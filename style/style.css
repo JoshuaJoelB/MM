@@ -1804,19 +1804,104 @@ body::before {
 .win-reward-star i { color: #FFD700; }
 .win-reward-coin i { color: #FFD700; }
 
+/* ================================================================
+   WIN MODAL — Levels / Restart / Next Level  layout
+   ================================================================ */
 .win-box .win-buttons {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 10px;
   width: 100%;
   margin: 0 auto;
 }
-.win-box .btn-win-play,
-.win-box .btn-win-home {
+
+/* Row 1: Levels — full width */
+.win-box .btn-win-levels {
   width: 100%;
   padding: 12px 24px;
   font-size: 1rem;
+}
+
+/* Row 2: Restart | Next Level — side by side */
+.win-box .win-buttons-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.win-box .win-buttons-row .btn-win-restart,
+.win-box .win-buttons-row .btn-win-play {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  min-height: 52px;
+}
+
+/* Restart button — outline style to differentiate from Next */
+.btn-win-restart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none !important;
+
+  color: #FFD700;
+  background: rgba(30, 144, 255, 0.15);
+  border: 3px solid rgba(255, 215, 0, 0.6);
+  border-radius: 100px;
+
+  box-shadow:
+    0 5px 0 #7a4b00,
+    0 8px 22px rgba(0, 0, 0, 0.35),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15);
+
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+}
+
+.btn-win-restart i {
+  color: #FFD700 !important;
+}
+
+.btn-win-restart:hover {
+  background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
+  border-color: #1a0f2e;
+  color: #1a0f2e;
+  transform: translateY(-2px);
+  box-shadow:
+    0 7px 0 #7a4b00,
+    0 12px 28px rgba(255, 184, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
+}
+.btn-win-restart:hover i {
+  color: #1a0f2e !important;
+}
+
+.btn-win-restart:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 2px 0 #7a4b00,
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive — stack on very small screens */
+@media (max-width: 400px) {
+  .win-box .win-buttons-row {
+    grid-template-columns: 1fr;
+  }
+  .win-box .win-buttons-row .btn-win-restart,
+  .win-box .win-buttons-row .btn-win-play {
+    font-size: 0.9rem;
+  }
 }
 
 /* ================================================================
