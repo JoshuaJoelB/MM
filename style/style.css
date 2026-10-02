@@ -3339,6 +3339,35 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ================================================================
+   TOPIC TITLE — shown below the subject name in the subheader
+   ================================================================ */
+.gameplay-topic-title {
+  margin: 2px 0 0;
+  text-align: center;
+
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+
+  color: #F0E68C;
+  text-shadow:
+    0 2px 0 rgba(10, 20, 40, 0.75),
+    0 0 14px rgba(255, 215, 0, 0.55);
+}
+
+@media (max-width: 768px) {
+  .gameplay-topic-title { font-size: 0.82rem; letter-spacing: 1px; }
+}
+@media (max-width: 575px) {
+  .gameplay-topic-title { font-size: 0.72rem; letter-spacing: 0.8px; }
+}
+@media (max-width: 480px) {
+  .gameplay-topic-title { font-size: 0.65rem; letter-spacing: 0.5px; }
+}
+
+/* ================================================================
    SCROLLBAR
    ================================================================ */
 ::-webkit-scrollbar { width: 6px; }
