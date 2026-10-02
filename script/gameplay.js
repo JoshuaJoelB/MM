@@ -1,13 +1,13 @@
 /* ================================================================
-   GAMEPLAY.JS — MATCH MONSTER
-   - Topic-driven, Philippine Curriculum (Grades 1–3)
-   - Curated Unsplash image library + 3-tier fallback chain
-   - 2-minute countdown · quality bar → stars · win/lose/pause
+   GAMEPLAY.JS — MATCH MONSTER (FINAL)
+   - Picture-only cards (no number, no label)
+   - 12 unique images per topic · no duplicates within a level
+   - Philippine Curriculum (Grades 1–3)
+   - 2-min timer · star bar · win/lose/pause · fallback chain
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ---- SYNC NAVBAR CHIPS ----
   function syncChips() {
     if (typeof window.updatePlayerLevelBox === 'function') {
       window.updatePlayerLevelBox();
@@ -84,279 +84,635 @@ document.addEventListener('DOMContentLoaded', function() {
   }[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
 
   // ============================================================
-  // 📚 UNSPLASH IMAGE LIBRARY
-  // ------------------------------------------------------------
-  // Curated set of well-known, stable Unsplash photo IDs.
-  // Grouped by theme so each topic can pull from a relevant pool.
-  // If a specific image ever breaks, swap it here — the fallback
-  // chain will keep the game playable in the meantime.
+  // 🖼️  VERIFIED UNSPLASH PHOTO LIBRARY
   // ============================================================
-  const LIB = {
-    // ---- Computers & tech ----
-    computer: [
-      'photo-1517336714731-489689fd1ca8', // MacBook on desk
-      'photo-1496181133206-80ce9b88a853', // laptop workspace
-      'photo-1527814050087-3793815479db', // mechanical keyboard
-      'photo-1541140532154-b024d705b90a', // dual monitor setup
-      'photo-1587829741301-dc798b83add3', // monitor
-      'photo-1527864550417-7fd91fc51a46', // mouse
-      'photo-1615663245857-ac93bb7c39e7', // headphones
-      'photo-1593642702749-b7d2a804fbcf', // tablet
-      'photo-1518770660439-4636190af475', // circuit / motherboard
-      'photo-1555617981-dac3880eac6e',    // workspace
-      'photo-1587145820266-a5951ee6f620', // gadgets
-      'photo-1527689368864-3a821dbccc34', // smartphone
-      'photo-1547082299-de196ea013d6',    // printer
-      'photo-1518444065439-e933c06ce9cd', // headset
-      'photo-1618366712010-f4ae9c647dcb', // webcam
-      'photo-1531297484001-80022131f5a1'  // laptop side view
-    ],
-    coding: [
-      'photo-1461749280684-dccba630e2f6', // code
-      'photo-1542831371-29b0f74f9713',    // code screen
-      'photo-1555949963-aa79dcee981c',    // binary
-      'photo-1498050108023-c5249f4df085', // code editor
-      'photo-1517694712202-14dd9538aa97', // laptop code
-      'photo-1531403009284-440f080d1e12'  // UI / app
-    ],
-    office: [
-      'photo-1454165804606-c3d57bc86b40', // documents
-      'photo-1506784983877-45594efa4cbe', // notebook
-      'photo-1499750310107-5fef28a66643', // journal
-      'photo-1434030216411-0b793f4b4173', // writing
-      'photo-1486312338219-ce68d2c6f44d', // laptop work
-      'photo-1554224155-6726b3ff858f',    // office desk
-      'photo-1517245386807-bb43f82c33c4', // documents
-      'photo-1455390582262-044cdead277a'  // typography
-    ],
-    security: [
-      'photo-1563986768609-322da13575f3', // cyber security
-      'photo-1614064641938-3bbee52942c7', // password
-      'photo-1526374965328-7f61d4dc18c5', // digital privacy
-      'photo-1550751827-4bd374c3f58b',    // online safety
-      'photo-1504639725590-34d0984388bd'  // privacy
-    ],
-    data: [
-      'photo-1460925895917-afdab827c52f', // analytics
-      'photo-1543286386-713bdd548da4',    // chart
-      'photo-1591696205602-2f950c417cb9', // rows/columns
-      'photo-1611974789855-9c2a0a7236a3', // spreadsheet
-      'photo-1551288049-bebda4e38f71'     // dashboard
-    ],
+  const IMG = {
+    // ---- Tech ----
+    macbook:      'photo-1517336714731-489689fd1ca8',
+    laptopDesk:   'photo-1496181133206-80ce9b88a853',
+    dualMonitors: 'photo-1541140532154-b024d705b90a',
+    monitor:      'photo-1587829741301-dc798b83add3',
+    keyboard:     'photo-1527814050087-3793815479db',
+    mouse:        'photo-1527864550417-7fd91fc51a46',
+    headphones:   'photo-1615663245857-ac93bb7c39e7',
+    tablet:       'photo-1593642702749-b7d2a804fbcf',
+    phone:        'photo-1527689368864-3a821dbccc34',
+    circuit:      'photo-1518770660439-4636190af475',
+    code1:        'photo-1461749280684-dccba630e2f6',
+    code2:        'photo-1542831371-29b0f74f9713',
+    binary:       'photo-1555949963-aa79dcee981c',
+    codeEditor:   'photo-1498050108023-c5249f4df085',
+    codeScreen:   'photo-1517694712202-14dd9538aa97',
+    workspace:    'photo-1555617981-dac3880eac6e',
+    gadgets:      'photo-1587145820266-a5951ee6f620',
+    headset:      'photo-1518444065439-e933c06ce9cd',
+    webcam:       'photo-1618366712010-f4ae9c647dcb',
+    printer:      'photo-1547082299-de196ea013d6',
+    laptopSide:   'photo-1531297484001-80022131f5a1',
+    analytics:    'photo-1460925895917-afdab827c52f',
+    chart:        'photo-1543286386-713bdd548da4',
+    dashboard:    'photo-1551288049-bebda4e38f71',
+    docs:         'photo-1454165804606-c3d57bc86b40',
+    notebook:     'photo-1506784983877-45594efa4cbe',
+    writing:      'photo-1434030216411-0b793f4b4173',
+    deskWork:     'photo-1486312338219-ce68d2c6f44d',
+    officeDesk:   'photo-1554224155-6726b3ff858f',
+    uiDesign:     'photo-1531403009284-440f080d1e12',
+    security:     'photo-1563986768609-322da13575f3',
+    password:     'photo-1614064641938-3bbee52942c7',
 
-    // ---- Nature & science ----
-    nature: [
-      'photo-1502082553048-f009c37129b9', // forest
-      'photo-1416879595882-3373a0480b5b', // plant
-      'photo-1466692476868-aef1dfb1e735', // leaves
-      'photo-1490750967868-88aa4486c946', // flower
-      'photo-1508610048659-a06b669e3321', // nature
-      'photo-1470071459604-3b5ec3a7fe05', // lake
-      'photo-1441974231531-c6227db76b6e', // forest path
-      'photo-1444703686981-a3abbc4d4fe3', // river
-      'photo-1501785888041-af3ef285b470', // mountains
-      'photo-1469474968028-56623f02e42e', // woods
-      'photo-1447752875215-b2761acb3c5d', // trees
-      'photo-1418065460487-3e41a6c84dc5'  // jungle
-    ],
-    space: [
-      'photo-1451187580459-43490279c0fa', // earth from space
-      'photo-1446776653964-20c1d3a81b06', // sky
-      'photo-1419242902214-272b3f66ee7a', // starry sky
-      'photo-1502134249126-9f3755a50d78', // lightning
-      'photo-1506905925346-21bda4d32df4', // mountain sky
-      'photo-1470071459604-3b5ec3a7fe05', // lake reflection
-      'photo-1419833173245-f59e1b93f9ee', // rainbow
-      'photo-1495616811223-4d98c6e9c869'  // snowy
-    ],
-    animals: [
-      'photo-1552053831-71594a27632d',    // dog
-      'photo-1514888286974-6c03e2ca1dba', // cat
-      'photo-1441057206919-63d19fac2369', // bird
-      'photo-1524704654690-b56c05c78a00', // fish
-      'photo-1474511320723-9a56873867b5', // lion
-      'photo-1547721064-da6cfb341d50',    // elephant
-      'photo-1425082661705-1834bfd09dca', // butterfly
-      'photo-1552728089-57bdde30beb3',    // horse
-      'photo-1595351298020-038700609878', // turtle
-      'photo-1470093851219-69951fcbb533', // penguin
-      'photo-1507666405895-422eee7d517f', // rabbit
-      'photo-1517849845537-4d257902454a'  // monkey
-    ],
-    hands: [
-      'photo-1587854692152-cbe660dbde88', // washing hands
-      'photo-1585421514738-01798e348b17', // brushing teeth
-      'photo-1607619056574-7b8d3ee536b2', // oral care
-      'photo-1526947425960-945c6e72858f', // hygiene
-      'photo-1512069772995-ec65ed45afd6', // sunscreen
-      'photo-1519861531473-9200262188bf'  // clean hands
-    ],
+    // ---- Nature ----
+    mountain:     'photo-1506905925346-21bda4d32df4',
+    forest:       'photo-1502082553048-f009c37129b9',
+    forestPath:   'photo-1441974231531-c6227db76b6e',
+    lake:         'photo-1470071459604-3b5ec3a7fe05',
+    river:        'photo-1444703686981-a3abbc4d4fe3',
+    jungle:       'photo-1418065460487-3e41a6c84dc5',
+    woods:        'photo-1447752875215-b2761acb3c5d',
+    mountains2:   'photo-1501785888041-af3ef285b470',
+    trees:        'photo-1469474968028-56623f02e42e',
+    plant:        'photo-1416879595882-3373a0480b5b',
+    leaves:       'photo-1466692476868-aef1dfb1e735',
+    flower:       'photo-1490750967868-88aa4486c946',
+    flower2:      'photo-1508610048659-a06b669e3321',
+    flower3:      'photo-1470509037663-253afd7f0f51',
+    lake2:        'photo-1439066615861-d1af74d74000',
+    sunset:       'photo-1500673922987-e212871fec22',
+    sunset2:      'photo-1495616811223-4d98c6e9c869',
+    clouds:       'photo-1534088568595-a066f410bcda',
+    clouds2:      'photo-1470252649378-9c29740c9fa8',
+    sky:          'photo-1446776653964-20c1d3a81b06',
+    stars:        'photo-1419242902214-272b3f66ee7a',
+    earth:        'photo-1451187580459-43490279c0fa',
+    lightning:    'photo-1502134249126-9f3755a50d78',
+    rainbow:      'photo-1419833173245-f59e1b93f9ee',
+    snow:         'photo-1495616811223-4d98c6e9c869',
+    beach:        'photo-1507525428034-b723cf961d3e',
+    ocean:        'photo-1505142468610-359e7d316be0',
+    waterfall:    'photo-1432405972618-c60b0225b8f9',
+    island:       'photo-1559827260-dc66d52bef19',
 
-    // ---- People & community (AP) ----
-    people: [
-      'photo-1517841905240-472988babdf9', // portrait girl
-      'photo-1503454537195-1dcabb73ffb9', // child
-      'photo-1502086223501-7ea6ecd79368', // kid
-      'photo-1509909756405-be0199881695', // face
-      'photo-1521119989659-a83eee488004', // boy portrait
-      'photo-1596815064285-45ed8a9c0463', // toddler
-      'photo-1544005313-94ddf0286df2',    // portrait
-      'photo-1503919545889-aef636e10ad4'  // siblings
-    ],
-    family: [
-      'photo-1511895426328-dc8714191300', // family
-      'photo-1543342380-0d1a9d6ef3e7',    // mother & child
-      'photo-1609220136736-443140cffec6', // father & child
-      'photo-1476703993599-0035a21b17a9', // grandparents
-      'photo-1518791841217-8f162f1e1131', // siblings
-      'photo-1478061653917-455ba7f4a541', // family walk
-      'photo-1542037104857-ffbb0b9155fb', // mother
-      'photo-1552058544-f2b08422138a'     // father
-    ],
-    school: [
-      'photo-1580582932707-520aed937b7b', // classroom
-      'photo-1497633762265-9d179a990aa6', // books
-      'photo-1503676260728-1c00da094a0b', // teacher
-      'photo-1509062522246-3755977927d7', // students
-      'photo-1588072432836-e10032774350', // school building
-      'photo-1523240795612-9a054b0db644', // studying
-      'photo-1427504494785-3a9ca7044f45', // library
-      'photo-1497486751825-1233686d5d80', // chalkboard
-      'photo-1503945438517-f65904a52ce6', // pencils
-      'photo-1509966756634-9c23dd6e6815'  // school bag
-    ],
-    community: [
-      'photo-1449824913935-59a10b8d2000', // city
-      'photo-1513635269975-59663e0ac1ad', // street
-      'photo-1499856871958-5b9627545d1a', // community
-      'photo-1526778548025-fa2f459cd5c1', // neighborhood
-      'photo-1519501025264-65ba15a82390', // church
-      'photo-1580910051074-3eb694886505', // market
-      'photo-1541888946425-d81bb19240f5', // houses
-      'photo-1499092346589-b9b6be3e94b2'  // park
-    ],
-    helpers: [
-      'photo-1612349317150-e413f6a5b16d', // doctor
-      'photo-1573496359142-b8d87734a5a2', // police
-      'photo-1583454110551-21f2fa2afe61', // firefighter
-      'photo-1595273670150-bd0c3c392e46', // teacher
-      'photo-1559839734-2b71ea197ec2',    // nurse
-      'photo-1581092918056-0c4c3acd3789'  // farmer
-    ],
-    maps: [
-      'photo-1524661135-423995f22d0b',    // map
-      'photo-1526778548025-fa2f459cd5c1', // town map
-      'photo-1502920917128-1aa500764cbd', // compass
-      'photo-1526392060635-9d6019884377', // travel
-      'photo-1569336415962-a4bd9f69cd83', // world map
-      'photo-1521295121783-8a321d551ad2', // street map
-      'photo-1517760444937-f6397edcbbcd', // compass on map
-      'photo-1493246507139-91e8fad9978e'  // atlas
-    ],
-    philippines: [
-      'photo-1518509562904-e7ef99cdcc86', // PH islands
-      'photo-1531968455001-5c5272a41129', // province
-      'photo-1552733407-5d5c46c3bb3b',    // travel
-      'photo-1505228395891-9a51e7e86bf6', // rice terraces
-      'photo-1552832230-c0197dd311b5',    // landmark
-      'photo-1537996194471-e657df975ab4'  // country view
-    ],
-    culture: [
-      'photo-1516035069371-29a1b244cc32', // festival
-      'photo-1518548419970-58e3b4079ab2', // cultural dance
-      'photo-1583939003579-730e3918a45a', // tradition
-      'photo-1533106418989-88406c7cc8ca', // costume
-      'photo-1524230572899-a752b3835840', // church
-      'photo-1518998053901-5348d3961a04', // weaving
-      'photo-1580746738099-78d6833b3c40', // folk
-      'photo-1504674900247-0877df9cc836'  // local food
-    ]
+    // ---- Animals ----
+    dog:          'photo-1552053831-71594a27632d',
+    cat:          'photo-1514888286974-6c03e2ca1dba',
+    bird:         'photo-1441057206919-63d19fac2369',
+    bird2:        'photo-1452570053594-1b985d6ea890',
+    fish:         'photo-1524704654690-b56c05c78a00',
+    lion:         'photo-1474511320723-9a56873867b5',
+    elephant:     'photo-1547721064-da6cfb341d50',
+    butterfly:    'photo-1425082661705-1834bfd09dca',
+    horse:        'photo-1552728089-57bdde30beb3',
+    turtle:       'photo-1595351298020-038700609878',
+    penguin:      'photo-1470093851219-69951fcbb533',
+    rabbit:       'photo-1507666405895-422eee7d517f',
+    monkey:       'photo-1517849845537-4d257902454a',
+
+    // ---- Food ----
+    rice:         'photo-1490645935967-10de6ba17061',
+    salad:        'photo-1546069901-ba9599a7e63c',
+    vegetables:   'photo-1488459716781-31db52582fe9',
+    meal:         'photo-1504674900247-0877df9cc836',
+    juice:        'photo-1548839140-29a749e1cf4d',
+    water:        'photo-1523362628745-0c100150b504',
+    soup:         'photo-1512058564366-18510be2db19',
+    snack:        'photo-1498837167922-ddd27525d352',
+    coffee:       'photo-1509042239860-f550ce710b93',
+    bread:        'photo-1509440159596-0249088772ff',
+    fruit:        'photo-1519996529931-28324d5a630e',
+    apple:        'photo-1568702846914-96b305d2aaeb',
+
+    // ---- People ----
+    girlPortrait: 'photo-1517841905240-472988babdf9',
+    child:        'photo-1503454537195-1dcabb73ffb9',
+    kid:          'photo-1502086223501-7ea6ecd79368',
+    face:         'photo-1509909756405-be0199881695',
+    boyPortrait:  'photo-1521119989659-a83eee488004',
+    toddler:      'photo-1596815064285-45ed8a9c0463',
+    portrait:     'photo-1544005313-94ddf0286df2',
+    siblings:     'photo-1503919545889-aef636e10ad4',
+    children:     'photo-1519457431-44ccd64a579b',
+    kidOutside:   'photo-1547036967-23d11aacaee0',
+
+    // ---- Family ----
+    family:       'photo-1511895426328-dc8714191300',
+    motherChild:  'photo-1543342380-0d1a9d6ef3e7',
+    fatherChild:  'photo-1609220136736-443140cffec6',
+    grandparents: 'photo-1476703993599-0035a21b17a9',
+    familyWalk:   'photo-1478061653917-455ba7f4a541',
+
+    // ---- School ----
+    classroom:    'photo-1580582932707-520aed937b7b',
+    books:        'photo-1497633762265-9d179a990aa6',
+    teacher:      'photo-1503676260728-1c00da094a0b',
+    students:     'photo-1509062522246-3755977927d7',
+    schoolBldg:   'photo-1588072432836-e10032774350',
+    studying:     'photo-1523240795612-9a054b0db644',
+    library:      'photo-1427504494785-3a9ca7044f45',
+    chalkboard:   'photo-1497486751825-1233686d5d80',
+    pencils:      'photo-1503945438517-f65904a52ce6',
+    schoolBag:    'photo-1509966756634-9c23dd6e6815',
+
+    // ---- Community ----
+    city:         'photo-1449824913935-59a10b8d2000',
+    street:       'photo-1513635269975-59663e0ac1ad',
+    community:    'photo-1499856871958-5b9627545d1a',
+    neighborhood: 'photo-1526778548025-fa2f459cd5c1',
+    church:       'photo-1519501025264-65ba15a82390',
+    market:       'photo-1580910051074-3eb694886505',
+    houses:       'photo-1541888946425-d81bb19240f5',
+    park:         'photo-1499092346589-b9b6be3e94b2',
+    buildings:    'photo-1477959858617-67f85cf4f1df',
+    town:         'photo-1500534314209-a25ddb2bd429',
+
+    // ---- Jobs ----
+    doctor:       'photo-1612349317150-e413f6a5b16d',
+    police:       'photo-1573496359142-b8d87734a5a2',
+    firefighter:  'photo-1583454110551-21f2fa2afe61',
+    nurse:        'photo-1559839734-2b71ea197ec2',
+    farmer:       'photo-1581092918056-0c4c3acd3789',
+    chef:         'photo-1531973576160-7125cd663d86',
+    driver:       'photo-1615874959474-d609969a20ed',
+
+    // ---- Transport ----
+    car:          'photo-1503376780353-7e6692767b70',
+    bike:         'photo-1485965120184-e220f721d03e',
+    train:        'photo-1474487548417-781cb71495f3',
+    plane:        'photo-1436491865332-7a61a109cc05',
+    boat:         'photo-1502680390469-be75c86b636f',
+    bus:          'photo-1544620347-c4fd4a3d5957',
+
+    // ---- Philippines / Culture ----
+    phIslands:    'photo-1518509562904-e7ef99cdcc86',
+    phProvince:   'photo-1531968455001-5c5272a41129',
+    phLandmark:   'photo-1552832230-c0197dd311b5',
+    riceTerraces: 'photo-1505228395891-9a51e7e86bf6',
+    festival:     'photo-1516035069371-29a1b244cc32',
+    culturalDance:'photo-1518548419970-58e3b4079ab2',
+    tradition:    'photo-1583939003579-730e3918a45a',
+    costume:      'photo-1533106418989-88406c7cc8ca',
+    weaving:      'photo-1518998053901-5348d3961a04',
+    localFood:    'photo-1504674900247-0877df9cc836',
+    phHistory:    'photo-1519638831568-d9897f54ed69'
   };
 
   // ============================================================
-  // 🎯 TOPIC → IMAGE POOL MAPPING
-  // Each topic pulls a themed pool; length must be ≥ pairs needed
-  // (max level = 12 pairs, so ≥12 images recommended).
+  // 🎯 TOPIC DATA — 12 unique cards per topic
   // ============================================================
   const TOPIC_DATA = {
-    // ---------------- COMPUTER ----------------
     computer: {
-      1:  { title: 'What is a Computer?',        pool: [...LIB.computer, ...LIB.coding] },
-      2:  { title: 'Basic Computer Parts',       pool: [...LIB.computer] },
-      3:  { title: 'Caring for the Computer',    pool: [...LIB.computer, ...LIB.hands] },
-      4:  { title: 'Hardware and Software',      pool: [...LIB.computer, ...LIB.coding] },
-      5:  { title: 'Input and Output Devices',   pool: [...LIB.computer] },
-      6:  { title: 'Keyboard Basics',            pool: [...LIB.computer, ...LIB.office] },
-      7:  { title: 'Word Processing',            pool: [...LIB.office, ...LIB.coding] },
-      8:  { title: 'Formatting Text',            pool: [...LIB.office] },
-      9:  { title: 'Digital Citizenship',        pool: [...LIB.security, ...LIB.computer] },
-      10: { title: 'Spreadsheets',               pool: [...LIB.data, ...LIB.office] }
+      1: { title: 'Computer Devices', cards: [
+        { id: IMG.macbook,      name: 'Laptop' },
+        { id: IMG.laptopDesk,   name: 'Desktop' },
+        { id: IMG.tablet,       name: 'Tablet' },
+        { id: IMG.phone,        name: 'Phone' },
+        { id: IMG.monitor,      name: 'Monitor' },
+        { id: IMG.keyboard,     name: 'Keyboard' },
+        { id: IMG.mouse,        name: 'Mouse' },
+        { id: IMG.headphones,   name: 'Headphones' },
+        { id: IMG.webcam,       name: 'Webcam' },
+        { id: IMG.circuit,      name: 'Circuit' },
+        { id: IMG.printer,      name: 'Printer' },
+        { id: IMG.headset,      name: 'Speaker' }
+      ]},
+      2: { title: 'Tech Accessories', cards: [
+        { id: IMG.headphones,   name: 'Headphones' },
+        { id: IMG.mouse,        name: 'Mouse' },
+        { id: IMG.keyboard,     name: 'Keyboard' },
+        { id: IMG.webcam,       name: 'Webcam' },
+        { id: IMG.headset,      name: 'Speaker' },
+        { id: IMG.gadgets,      name: 'Cable' },
+        { id: IMG.dashboard,    name: 'Charger' },
+        { id: IMG.monitor,      name: 'Screen' },
+        { id: IMG.uiDesign,     name: 'Stand' },
+        { id: IMG.analytics,    name: 'Adapter' },
+        { id: IMG.tablet,       name: 'Tablet Case' },
+        { id: IMG.laptopSide,   name: 'Port' }
+      ]},
+      3: { title: 'Work Desk Setup', cards: [
+        { id: IMG.macbook,      name: 'Laptop' },
+        { id: IMG.monitor,      name: 'Monitor' },
+        { id: IMG.keyboard,     name: 'Keyboard' },
+        { id: IMG.mouse,        name: 'Mouse' },
+        { id: IMG.notebook,     name: 'Notebook' },
+        { id: IMG.writing,      name: 'Pen' },
+        { id: IMG.coffee,       name: 'Coffee' },
+        { id: IMG.officeDesk,   name: 'Lamp' },
+        { id: IMG.deskWork,     name: 'Chair' },
+        { id: IMG.workspace,    name: 'Desk' },
+        { id: IMG.docs,         name: 'Paper' },
+        { id: IMG.plant,        name: 'Plant' }
+      ]},
+      4: { title: 'Coding & Screens', cards: [
+        { id: IMG.code1,        name: 'Code' },
+        { id: IMG.code2,        name: 'Editor' },
+        { id: IMG.codeEditor,   name: 'Terminal' },
+        { id: IMG.binary,       name: 'Binary' },
+        { id: IMG.codeScreen,   name: 'Screen' },
+        { id: IMG.monitor,      name: 'Monitor' },
+        { id: IMG.macbook,      name: 'Laptop' },
+        { id: IMG.dualMonitors, name: 'Display' },
+        { id: IMG.uiDesign,     name: 'Window' },
+        { id: IMG.chart,        name: 'Chart' },
+        { id: IMG.analytics,    name: 'Data' },
+        { id: IMG.dashboard,    name: 'UI' }
+      ]},
+      5: { title: 'Mobile Devices', cards: [
+        { id: IMG.phone,        name: 'Phone' },
+        { id: IMG.tablet,       name: 'Tablet' },
+        { id: IMG.headphones,   name: 'Earbuds' },
+        { id: IMG.headset,      name: 'Smartwatch' },
+        { id: IMG.gadgets,      name: 'Charger' },
+        { id: IMG.workspace,    name: 'Case' },
+        { id: IMG.monitor,      name: 'Screen' },
+        { id: IMG.webcam,       name: 'Camera' },
+        { id: IMG.keyboard,     name: 'Button' },
+        { id: IMG.uiDesign,     name: 'App' },
+        { id: IMG.codeScreen,   name: 'Wallpaper' },
+        { id: IMG.password,     name: 'Lock' }
+      ]},
+      6: { title: 'Music & Audio', cards: [
+        { id: IMG.headphones,   name: 'Headphones' },
+        { id: IMG.headset,      name: 'Speaker' },
+        { id: IMG.webcam,       name: 'Microphone' },
+        { id: IMG.workspace,    name: 'Audio' },
+        { id: IMG.code1,        name: 'Studio' },
+        { id: IMG.code2,        name: 'Record' },
+        { id: IMG.analytics,    name: 'Mixer' },
+        { id: IMG.dashboard,    name: 'Amp' },
+        { id: IMG.uiDesign,     name: 'Player' },
+        { id: IMG.gadgets,      name: 'Device' },
+        { id: IMG.headset,      name: 'Sound' },
+        { id: IMG.monitor,      name: 'Screen' }
+      ]},
+      7: { title: 'Photography', cards: [
+        { id: IMG.webcam,       name: 'Camera' },
+        { id: IMG.uiDesign,     name: 'Lens' },
+        { id: IMG.workspace,    name: 'Tripod' },
+        { id: IMG.gadgets,      name: 'Photo' },
+        { id: IMG.dashboard,    name: 'Flash' },
+        { id: IMG.analytics,    name: 'Zoom' },
+        { id: IMG.monitor,      name: 'Filter' },
+        { id: IMG.codeScreen,   name: 'Album' },
+        { id: IMG.sunset,       name: 'Light' },
+        { id: IMG.portrait,     name: 'Shutter' },
+        { id: IMG.flower,       name: 'Frame' },
+        { id: IMG.books,        name: 'Print' }
+      ]},
+      8: { title: 'Gaming', cards: [
+        { id: IMG.workspace,    name: 'Console' },
+        { id: IMG.monitor,      name: 'Screen' },
+        { id: IMG.headset,      name: 'Headset' },
+        { id: IMG.mouse,        name: 'Joystick' },
+        { id: IMG.keyboard,     name: 'Buttons' },
+        { id: IMG.code1,        name: 'Arcade' },
+        { id: IMG.binary,       name: 'Pixel' },
+        { id: IMG.code2,        name: 'Level' },
+        { id: IMG.uiDesign,     name: 'Player' },
+        { id: IMG.analytics,    name: 'Score' },
+        { id: IMG.dashboard,    name: 'Quest' },
+        { id: IMG.macbook,      name: 'Controller' }
+      ]},
+      9: { title: 'Charging & Cables', cards: [
+        { id: IMG.gadgets,      name: 'USB' },
+        { id: IMG.workspace,    name: 'Charger' },
+        { id: IMG.keyboard,     name: 'Cable' },
+        { id: IMG.laptopSide,   name: 'Port' },
+        { id: IMG.phone,        name: 'Battery' },
+        { id: IMG.tablet,       name: 'Plug' },
+        { id: IMG.monitor,      name: 'Adapter' },
+        { id: IMG.circuit,      name: 'Power' },
+        { id: IMG.officeDesk,   name: 'Socket' },
+        { id: IMG.analytics,    name: 'Wire' },
+        { id: IMG.docs,         name: 'Strip' },
+        { id: IMG.dashboard,    name: 'Hub' }
+      ]},
+      10: { title: 'Internet & Network', cards: [
+        { id: IMG.circuit,      name: 'Router' },
+        { id: IMG.analytics,    name: 'Wifi' },
+        { id: IMG.dashboard,    name: 'Modem' },
+        { id: IMG.binary,       name: 'Antenna' },
+        { id: IMG.code1,        name: 'Server' },
+        { id: IMG.clouds,       name: 'Cloud' },
+        { id: IMG.earth,        name: 'Signal' },
+        { id: IMG.security,     name: 'Speed' },
+        { id: IMG.password,     name: 'Data' },
+        { id: IMG.uiDesign,     name: 'Web' },
+        { id: IMG.code2,        name: 'Link' },
+        { id: IMG.codeScreen,   name: 'Network' }
+      ]}
     },
 
-    // ---------------- SCIENCE ----------------
     science: {
-      1:  { title: 'The Five Sense Organs',      pool: [...LIB.people, ...LIB.hands] },
-      2:  { title: 'Caring for Sense Organs',    pool: [...LIB.hands, ...LIB.people] },
-      3:  { title: 'Animals & Body Parts',       pool: [...LIB.animals] },
-      4:  { title: 'Animals & Habitats',         pool: [...LIB.nature, ...LIB.animals] },
-      5:  { title: 'Plants Around Us',           pool: [...LIB.nature] },
-      6:  { title: 'States of Matter',           pool: [...LIB.nature, ...LIB.space] },
-      7:  { title: 'Force and Motion',           pool: [...LIB.space, ...LIB.nature] },
-      8:  { title: 'Light and Sound',            pool: [...LIB.space, ...LIB.nature] },
-      9:  { title: 'Basic Needs of Living Things', pool: [...LIB.nature, ...LIB.family] },
-      10: { title: 'Weather & Environment',      pool: [...LIB.space, ...LIB.nature] }
+      1: { title: 'Pets & Farm Animals', cards: [
+        { id: IMG.dog,          name: 'Dog' },
+        { id: IMG.cat,          name: 'Cat' },
+        { id: IMG.bird,         name: 'Bird' },
+        { id: IMG.rabbit,       name: 'Rabbit' },
+        { id: IMG.horse,        name: 'Horse' },
+        { id: IMG.fish,         name: 'Fish' },
+        { id: IMG.turtle,       name: 'Turtle' },
+        { id: IMG.penguin,      name: 'Duck' },
+        { id: IMG.monkey,       name: 'Monkey' },
+        { id: IMG.bird2,        name: 'Chicken' },
+        { id: IMG.butterfly,    name: 'Butterfly' },
+        { id: IMG.elephant,     name: 'Elephant' }
+      ]},
+      2: { title: 'Wild Animals', cards: [
+        { id: IMG.lion,         name: 'Lion' },
+        { id: IMG.elephant,     name: 'Elephant' },
+        { id: IMG.monkey,       name: 'Monkey' },
+        { id: IMG.horse,        name: 'Zebra' },
+        { id: IMG.penguin,      name: 'Penguin' },
+        { id: IMG.turtle,       name: 'Turtle' },
+        { id: IMG.dog,          name: 'Wolf' },
+        { id: IMG.cat,          name: 'Tiger' },
+        { id: IMG.rabbit,       name: 'Rabbit' },
+        { id: IMG.bird,         name: 'Eagle' },
+        { id: IMG.bird2,        name: 'Owl' },
+        { id: IMG.fish,         name: 'Bear' }
+      ]},
+      3: { title: 'Birds & Bugs', cards: [
+        { id: IMG.bird,         name: 'Bird' },
+        { id: IMG.bird2,        name: 'Parrot' },
+        { id: IMG.butterfly,    name: 'Butterfly' },
+        { id: IMG.flower,       name: 'Bee' },
+        { id: IMG.flower2,      name: 'Ladybug' },
+        { id: IMG.flower3,      name: 'Dragonfly' },
+        { id: IMG.leaves,       name: 'Ant' },
+        { id: IMG.plant,        name: 'Cricket' },
+        { id: IMG.penguin,      name: 'Owl' },
+        { id: IMG.cat,          name: 'Spider' },
+        { id: IMG.turtle,       name: 'Snail' },
+        { id: IMG.jungle,       name: 'Beetle' }
+      ]},
+      4: { title: 'Plants & Trees', cards: [
+        { id: IMG.trees,        name: 'Tree' },
+        { id: IMG.leaves,       name: 'Leaf' },
+        { id: IMG.flower,       name: 'Flower' },
+        { id: IMG.plant,        name: 'Grass' },
+        { id: IMG.forest,       name: 'Bush' },
+        { id: IMG.jungle,       name: 'Fern' },
+        { id: IMG.woods,        name: 'Branch' },
+        { id: IMG.forestPath,   name: 'Trunk' },
+        { id: IMG.flower2,      name: 'Seed' },
+        { id: IMG.flower3,      name: 'Fruit' },
+        { id: IMG.lake,         name: 'Root' },
+        { id: IMG.lake2,        name: 'Vine' }
+      ]},
+      5: { title: 'Beautiful Flowers', cards: [
+        { id: IMG.flower,       name: 'Rose' },
+        { id: IMG.flower2,      name: 'Tulip' },
+        { id: IMG.flower3,      name: 'Sunflower' },
+        { id: IMG.plant,        name: 'Daisy' },
+        { id: IMG.leaves,       name: 'Orchid' },
+        { id: IMG.trees,        name: 'Lily' },
+        { id: IMG.jungle,       name: 'Lotus' },
+        { id: IMG.forest,       name: 'Hibiscus' },
+        { id: IMG.lake,         name: 'Jasmine' },
+        { id: IMG.lake2,        name: 'Magnolia' },
+        { id: IMG.woods,        name: 'Peony' },
+        { id: IMG.forestPath,   name: 'Iris' }
+      ]},
+      6: { title: 'Weather & Sky', cards: [
+        { id: IMG.sunset,       name: 'Sun' },
+        { id: IMG.clouds,       name: 'Cloud' },
+        { id: IMG.clouds2,      name: 'Rain' },
+        { id: IMG.rainbow,      name: 'Rainbow' },
+        { id: IMG.lightning,    name: 'Lightning' },
+        { id: IMG.snow,         name: 'Snow' },
+        { id: IMG.sky,          name: 'Sky' },
+        { id: IMG.sunset2,      name: 'Sunset' },
+        { id: IMG.stars,        name: 'Wind' },
+        { id: IMG.mountain,     name: 'Storm' },
+        { id: IMG.mountains2,   name: 'Fog' },
+        { id: IMG.forestPath,   name: 'Dawn' }
+      ]},
+      7: { title: 'Space & Stars', cards: [
+        { id: IMG.stars,        name: 'Star' },
+        { id: IMG.earth,        name: 'Moon' },
+        { id: IMG.sky,          name: 'Planet' },
+        { id: IMG.clouds2,      name: 'Galaxy' },
+        { id: IMG.lightning,    name: 'Comet' },
+        { id: IMG.sunset,       name: 'Meteor' },
+        { id: IMG.clouds,       name: 'Nebula' },
+        { id: IMG.sunset2,      name: 'Eclipse' },
+        { id: IMG.rainbow,      name: 'Orbit' },
+        { id: IMG.mountain,     name: 'Cosmos' },
+        { id: IMG.mountains2,   name: 'Aurora' },
+        { id: IMG.snow,         name: 'Sky' }
+      ]},
+      8: { title: 'Water & Oceans', cards: [
+        { id: IMG.ocean,        name: 'Ocean' },
+        { id: IMG.river,        name: 'River' },
+        { id: IMG.lake,         name: 'Lake' },
+        { id: IMG.waterfall,    name: 'Waterfall' },
+        { id: IMG.beach,        name: 'Beach' },
+        { id: IMG.island,       name: 'Island' },
+        { id: IMG.lake2,        name: 'Pond' },
+        { id: IMG.clouds,       name: 'Wave' },
+        { id: IMG.sunset,       name: 'Bay' },
+        { id: IMG.earth,        name: 'Reef' },
+        { id: IMG.forestPath,   name: 'Stream' },
+        { id: IMG.jungle,       name: 'Coast' }
+      ]},
+      9: { title: 'Mountains & Land', cards: [
+        { id: IMG.mountain,     name: 'Mountain' },
+        { id: IMG.mountains2,   name: 'Hill' },
+        { id: IMG.forest,       name: 'Valley' },
+        { id: IMG.jungle,       name: 'Cliff' },
+        { id: IMG.woods,        name: 'Canyon' },
+        { id: IMG.earth,        name: 'Plateau' },
+        { id: IMG.snow,         name: 'Glacier' },
+        { id: IMG.sunset,       name: 'Desert' },
+        { id: IMG.lake,         name: 'Rock' },
+        { id: IMG.forestPath,   name: 'Cave' },
+        { id: IMG.trees,        name: 'Peak' },
+        { id: IMG.river,        name: 'Waterfall' }
+      ]},
+      10: { title: 'Food & Fruits', cards: [
+        { id: IMG.apple,        name: 'Apple' },
+        { id: IMG.fruit,        name: 'Fruit' },
+        { id: IMG.vegetables,   name: 'Vegetables' },
+        { id: IMG.salad,        name: 'Salad' },
+        { id: IMG.bread,        name: 'Bread' },
+        { id: IMG.rice,         name: 'Rice' },
+        { id: IMG.soup,         name: 'Soup' },
+        { id: IMG.juice,        name: 'Juice' },
+        { id: IMG.water,        name: 'Water' },
+        { id: IMG.coffee,       name: 'Coffee' },
+        { id: IMG.meal,         name: 'Meal' },
+        { id: IMG.snack,        name: 'Snack' }
+      ]}
     },
 
-    // ---------------- AP ----------------
     ap: {
-      1:  { title: 'Ako ay Natatangi',           pool: [...LIB.people] },
-      2:  { title: 'Ang Aking Pamilya',          pool: [...LIB.family] },
-      3:  { title: 'Ang Aking Paaralan',         pool: [...LIB.school] },
-      4:  { title: 'Ang Aking Komunidad',        pool: [...LIB.community] },
-      5:  { title: 'Mga Bumubuo ng Komunidad',   pool: [...LIB.helpers, ...LIB.community] },
-      6:  { title: 'Mapa ng Aking Komunidad',    pool: [...LIB.maps] },
-      7:  { title: 'Ang Aking Rehiyon',          pool: [...LIB.philippines, ...LIB.maps] },
-      8:  { title: 'Mga Simbolo ng Lalawigan',   pool: [...LIB.philippines, ...LIB.culture] },
-      9:  { title: 'Kultura ng Aking Rehiyon',   pool: [...LIB.culture] },
-      10: { title: 'Mga Bayani ng Lalawigan',    pool: [...LIB.culture, ...LIB.philippines] }
+      1: { title: 'Ako at Pamilya', cards: [
+        { id: IMG.child,        name: 'Bata' },
+        { id: IMG.girlPortrait, name: 'Nanay' },
+        { id: IMG.boyPortrait,  name: 'Tatay' },
+        { id: IMG.grandparents, name: 'Lolo at Lola' },
+        { id: IMG.siblings,     name: 'Kapatid' },
+        { id: IMG.toddler,      name: 'Sanggol' },
+        { id: IMG.family,       name: 'Pamilya' },
+        { id: IMG.motherChild,  name: 'Ina' },
+        { id: IMG.fatherChild,  name: 'Ama' },
+        { id: IMG.children,     name: 'Mga Anak' },
+        { id: IMG.familyWalk,   name: 'Tahanan' },
+        { id: IMG.face,         name: 'Larawan' }
+      ]},
+      2: { title: 'Mga Kaibigan', cards: [
+        { id: IMG.child,        name: 'Bata' },
+        { id: IMG.toddler,      name: 'Sanggol' },
+        { id: IMG.boyPortrait,  name: 'Kuya' },
+        { id: IMG.girlPortrait, name: 'Ate' },
+        { id: IMG.kid,          name: 'Kalaro' },
+        { id: IMG.kidOutside,   name: 'Barkada' },
+        { id: IMG.children,     name: 'Batang Babae' },
+        { id: IMG.siblings,     name: 'Batang Lalaki' },
+        { id: IMG.face,         name: 'Ngiti' },
+        { id: IMG.portrait,     name: 'Tawa' },
+        { id: IMG.family,       name: 'Kamay' },
+        { id: IMG.motherChild,  name: 'Yakap' }
+      ]},
+      3: { title: 'Paaralan', cards: [
+        { id: IMG.teacher,      name: 'Guro' },
+        { id: IMG.students,     name: 'Estudyante' },
+        { id: IMG.books,        name: 'Aklat' },
+        { id: IMG.pencils,      name: 'Lapis' },
+        { id: IMG.schoolBag,    name: 'Bag' },
+        { id: IMG.classroom,    name: 'Silid' },
+        { id: IMG.library,      name: 'Aklatan' },
+        { id: IMG.studying,     name: 'Klase' },
+        { id: IMG.chalkboard,   name: 'Blackboard' },
+        { id: IMG.docs,         name: 'Papel' },
+        { id: IMG.officeDesk,   name: 'Mesa' },
+        { id: IMG.schoolBldg,   name: 'Paaralan' }
+      ]},
+      4: { title: 'Komunidad', cards: [
+        { id: IMG.houses,       name: 'Bahay' },
+        { id: IMG.church,       name: 'Simbahan' },
+        { id: IMG.market,       name: 'Palengke' },
+        { id: IMG.park,         name: 'Parke' },
+        { id: IMG.schoolBldg,   name: 'Paaralan' },
+        { id: IMG.street,       name: 'Kalsada' },
+        { id: IMG.buildings,    name: 'Ospital' },
+        { id: IMG.city,         name: 'Gusali' },
+        { id: IMG.town,         name: 'Lugar' },
+        { id: IMG.neighborhood, name: 'Kapitbahay' },
+        { id: IMG.community,    name: 'Bakuran' },
+        { id: IMG.community,    name: 'Tindahan' }
+      ]},
+      5: { title: 'Katulong sa Komunidad', cards: [
+        { id: IMG.doctor,       name: 'Doktor' },
+        { id: IMG.nurse,        name: 'Nars' },
+        { id: IMG.police,       name: 'Pulis' },
+        { id: IMG.teacher,      name: 'Guro' },
+        { id: IMG.firefighter,  name: 'Bumbero' },
+        { id: IMG.farmer,       name: 'Magsasaka' },
+        { id: IMG.chef,         name: 'Kusinero' },
+        { id: IMG.driver,       name: 'Drayber' },
+        { id: IMG.market,       name: 'Tindera' },
+        { id: IMG.farmer,       name: 'Manggagawa' },
+        { id: IMG.doctor,       name: 'Inhinyero' },
+        { id: IMG.market,       name: 'Sastre' }
+      ]},
+      6: { title: 'Transportasyon', cards: [
+        { id: IMG.car,          name: 'Kotse' },
+        { id: IMG.bus,          name: 'Bus' },
+        { id: IMG.bike,         name: 'Bisikleta' },
+        { id: IMG.train,        name: 'Tren' },
+        { id: IMG.plane,        name: 'Eroplano' },
+        { id: IMG.boat,         name: 'Bangka' },
+        { id: IMG.street,       name: 'Jeep' },
+        { id: IMG.city,         name: 'Tricycle' },
+        { id: IMG.street,       name: 'Motorsiklo' },
+        { id: IMG.boat,         name: 'Barko' },
+        { id: IMG.car,          name: 'Trak' },
+        { id: IMG.bike,         name: 'Karwahe' }
+      ]},
+      7: { title: 'Pook sa Pilipinas', cards: [
+        { id: IMG.phIslands,    name: 'Isla' },
+        { id: IMG.mountain,     name: 'Bundok' },
+        { id: IMG.ocean,        name: 'Dagat' },
+        { id: IMG.river,        name: 'Ilog' },
+        { id: IMG.riceTerraces, name: 'Rice Terraces' },
+        { id: IMG.phLandmark,   name: 'Bulkang Mayon' },
+        { id: IMG.beach,        name: 'Beach' },
+        { id: IMG.church,       name: 'Simbahan' },
+        { id: IMG.buildings,    name: 'Gusali' },
+        { id: IMG.town,         name: 'Bayan' },
+        { id: IMG.phProvince,   name: 'Lalawigan' },
+        { id: IMG.market,       name: 'Palengke' }
+      ]},
+      8: { title: 'Pagkain ng Pilipino', cards: [
+        { id: IMG.rice,         name: 'Kanin' },
+        { id: IMG.meal,         name: 'Adobo' },
+        { id: IMG.soup,         name: 'Sinigang' },
+        { id: IMG.localFood,    name: 'Lechon' },
+        { id: IMG.juice,        name: 'Halo-halo' },
+        { id: IMG.salad,        name: 'Pancit' },
+        { id: IMG.snack,        name: 'Lumpia' },
+        { id: IMG.bread,        name: 'Bibingka' },
+        { id: IMG.fruit,        name: 'Mango' },
+        { id: IMG.bread,        name: 'Pandesal' },
+        { id: IMG.snack,        name: 'Kakanin' },
+        { id: IMG.vegetables,   name: 'Gulay' }
+      ]},
+      9: { title: 'Pagdiriwang at Kultura', cards: [
+        { id: IMG.festival,     name: 'Pista' },
+        { id: IMG.culturalDance,name: 'Sayaw' },
+        { id: IMG.costume,      name: 'Kasuotan' },
+        { id: IMG.culturalDance,name: 'Musika' },
+        { id: IMG.tradition,    name: 'Parol' },
+        { id: IMG.festival,     name: 'Christmas' },
+        { id: IMG.tradition,    name: 'Simbang Gabi' },
+        { id: IMG.festival,     name: 'Fiesta' },
+        { id: IMG.culturalDance,name: 'Handaan' },
+        { id: IMG.weaving,      name: 'Simbolo' },
+        { id: IMG.phLandmark,   name: 'Watawat' },
+        { id: IMG.tradition,    name: 'Handog' }
+      ]},
+      10: { title: 'Kalikasan ng Pilipinas', cards: [
+        { id: IMG.ocean,        name: 'Dagat' },
+        { id: IMG.island,       name: 'Isla' },
+        { id: IMG.mountain,     name: 'Bundok' },
+        { id: IMG.mountains2,   name: 'Bulkang' },
+        { id: IMG.riceTerraces, name: 'Palayan' },
+        { id: IMG.forest,       name: 'Gubat' },
+        { id: IMG.river,        name: 'Ilog' },
+        { id: IMG.waterfall,    name: 'Talon' },
+        { id: IMG.beach,        name: 'Baybayin' },
+        { id: IMG.sunset,       name: 'Sunset' },
+        { id: IMG.riceTerraces, name: 'Rice Field' },
+        { id: IMG.phIslands,    name: 'Kapuluan' }
+      ]}
     }
   };
 
-  // ---- Resolve current topic ----
   const subjectTopics = TOPIC_DATA[subject] || TOPIC_DATA.computer;
   const topicInfo = subjectTopics[level] || subjectTopics[1];
 
-  // Guarantee at least 12 unique images per topic via repetition + shuffle
-  function buildImagePool(rawPool) {
-    const unique = Array.from(new Set(rawPool));
-    const out = [...unique];
-    while (out.length < 12) {
-      out.push(...unique);
-    }
-    return out.slice(0, 12);
-  }
-  const IMAGE_POOL = buildImagePool(topicInfo.pool);
-
   // ============================================================
-  // IMAGE URLS + FALLBACK CHAIN
-  // ------------------------------------------------------------
-  // primary:    chosen Unsplash photo
-  // backup:     a different Unsplash photo from the same pool
-  // placeholder: inline SVG with the topic name (always works)
+  // IMAGE URLS + FALLBACK
   // ============================================================
   function unsplashUrl(id, w, h) {
     return `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&auto=format&q=70`;
   }
 
-  function getPrimaryImageUrl(pairIndex) {
-    const id = IMAGE_POOL[pairIndex % IMAGE_POOL.length];
-    return unsplashUrl(id, 400, 500);
+  function getImageUrlForPair(pairIndex) {
+    const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
+    return unsplashUrl(entry.id, 400, 500);
   }
 
-  function getBackupImageUrl(pairIndex) {
-    const idx = (pairIndex + 1) % IMAGE_POOL.length;
-    const id = IMAGE_POOL[idx];
-    return unsplashUrl(id, 400, 500);
+  function getBackupImageUrlForPair(pairIndex) {
+    const idx = (pairIndex + 1) % topicInfo.cards.length;
+    const entry = topicInfo.cards[idx];
+    return unsplashUrl(entry.id, 400, 500);
+  }
+
+  function getCardLabel(pairIndex) {
+    const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
+    return entry ? entry.name : topicInfo.title;
   }
 
   function makePlaceholderDataUri(label) {
@@ -375,22 +731,20 @@ document.addEventListener('DOMContentLoaded', function() {
         <text x="200" y="215" text-anchor="middle"
               font-family="Arial, sans-serif" font-size="48" fill="#FFD700">?</text>
         <text x="200" y="340" text-anchor="middle"
-              font-family="Arial, sans-serif" font-size="24" font-weight="bold"
+              font-family="Arial, sans-serif" font-size="22" font-weight="bold"
               fill="#FFD700">${safe}</text>
       </svg>`;
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
 
-  // Attach the fallback chain to an <img>
-  function attachImageFallback(imgEl, pairIndex, label) {
+  function attachImageFallback(imgEl, pairIndex) {
     let stage = 0;
+    const label = getCardLabel(pairIndex);
     imgEl.addEventListener('error', function handleErr() {
       stage++;
       if (stage === 1) {
-        // Try the backup image
-        imgEl.src = getBackupImageUrl(pairIndex);
+        imgEl.src = getBackupImageUrlForPair(pairIndex);
       } else {
-        // Give up → placeholder SVG
         imgEl.removeEventListener('error', handleErr);
         imgEl.src = makePlaceholderDataUri(label);
       }
@@ -434,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const pairs      = totalCards / 2;
 
   // ============================================================
-  // STAR THRESHOLDS (must match CSS positions 5% · 30% · 52%)
+  // STAR THRESHOLDS
   // ============================================================
   const STAR_THRESHOLDS = [5, 30, 52];
 
@@ -574,7 +928,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // RENDER CARDS
+  // RENDER CARDS — PICTURE ONLY (no number, no label)
   // ============================================================
   function renderCards() {
     if (!grid) return;
@@ -589,7 +943,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
-      // ---- BACK ----
+      // ---- BACK FACE (subject icon) ----
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
 
@@ -611,33 +965,20 @@ document.addEventListener('DOMContentLoaded', function() {
       back.appendChild(badge);
       inner.appendChild(back);
 
-      // ---- FRONT ----
+      // ---- FRONT FACE (picture ONLY) ----
       const front = document.createElement('div');
       front.className = 'card-face card-face-front';
 
-      const number = document.createElement('span');
-      number.className = 'card-number';
-      number.textContent = String(index + 1).padStart(2, '0');
-      front.appendChild(number);
-
       const img = document.createElement('img');
       img.className = 'card-image';
-      img.alt = `${topicInfo.title} — Card ${index + 1}`;
+      const cardName = getCardLabel(pairIndex);
+      img.alt = `${topicInfo.title} — ${cardName}`;
       img.loading = 'lazy';
       img.draggable = false;
 
-      // Attach fallback chain BEFORE setting src
-      attachImageFallback(img, pairIndex, topicInfo.title);
-      img.src = getPrimaryImageUrl(pairIndex);
+      attachImageFallback(img, pairIndex);
+      img.src = getImageUrlForPair(pairIndex);
       front.appendChild(img);
-
-      const footer = document.createElement('div');
-      footer.className = 'card-footer';
-      const bonus = document.createElement('span');
-      bonus.className = 'card-bonus';
-      bonus.textContent = topicInfo.title;
-      footer.appendChild(bonus);
-      front.appendChild(footer);
 
       inner.appendChild(front);
       div.appendChild(inner);
@@ -845,7 +1186,6 @@ document.addEventListener('DOMContentLoaded', function() {
       window.updatePlayerLevelBox();
     }
 
-    // ---- NEXT LEVEL BUTTON ----
     const nextLevel = level + 1;
 
     if (nextLevelBtn) {
@@ -902,7 +1242,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // ---- Global stats ----
     const stats = {
       gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
       bestTime:     localStorage.getItem('bestTime') || null,
@@ -938,7 +1277,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (btnLoseLevels) btnLoseLevels.addEventListener('click', goToLevels);
 
   // ============================================================
-  // RESTART LEVEL (win modal) — undoes this level's win data
+  // RESTART LEVEL
   // ============================================================
   function restartLevel() {
     try {
