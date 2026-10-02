@@ -61,6 +61,21 @@
     const urlParams = new URLSearchParams(window.location.search);
     const subject   = urlParams.get('subject') || 'computer';
 
+    // ================================================================
+    // GAMEPLAY FILE MAP — explicit filenames, exact case
+    // (fixes 404s on case-sensitive file systems)
+    // ================================================================
+    const GAMEPLAY_FILES = {
+      computer: 'Gameplay/Gameplay-computer.html',
+      science:  'Gameplay/Gameplay-science.html',
+      ap:       'Gameplay/Gameplay-AP.html'
+    };
+
+    function getGameplayUrl(level) {
+      const file = GAMEPLAY_FILES[subject] || GAMEPLAY_FILES.computer;
+      return `${file}?level=${level}&subject=${subject}`;
+    }
+
     // ---- just_unlocked flag ----
     let justUnlockedLevel = null;
     try {
@@ -112,27 +127,25 @@
     const totalLevels  = 10;
 
     // ================================================================
-    // LEVEL POSITIONS — winding path (bottom-right → top-left)
+    // LEVEL POSITIONS
     // ================================================================
     const LEVEL_POSITIONS = [
-      { x: 72, y: 88 },   // 1  — bottom-right
+      { x: 72, y: 88 },   // 1
       { x: 48, y: 82 },   // 2
       { x: 24, y: 76 },   // 3
-      { x: 14, y: 62 },   // 4  — left side
+      { x: 14, y: 62 },   // 4
       { x: 30, y: 52 },   // 5
       { x: 58, y: 54 },   // 6
-      { x: 82, y: 44 },   // 7  — right side
+      { x: 82, y: 44 },   // 7
       { x: 74, y: 30 },   // 8
       { x: 48, y: 22 },   // 9
-      { x: 22, y: 14 }    // 10 — top-left
+      { x: 22, y: 14 }    // 10
     ];
 
     // ================================================================
     // DECORATIVE ISLANDS
-    // Purely visual — sit behind the level markers (z-index 0)
     // ================================================================
     const DECORATIVE_ISLANDS = [
-      // ---- Castle (left side, behind levels 4–10) ----
       {
         id:    'deco-castle',
         src:   'Assets/island_castle.png',
@@ -143,7 +156,6 @@
         rotate:'-6deg',
         opacity: 0.85,
       },
-      // ---- Single island (right side, behind levels 1–7) ----
       {
         id:    'deco-single',
         src:   'Assets/single_island.png',
@@ -203,17 +215,16 @@
     function renderMap() {
       const jojo = mapContainer.querySelector('.jojoma-character');
 
-      // Remove all children except jojoma
       Array.from(mapContainer.children).forEach(child => {
         if (child !== jojo) child.remove();
       });
 
-      // Layer 0: subtle star sparkle
+      // Layer 0: star sparkle
       const bg = document.createElement('div');
       bg.className = 'level-map-bg';
       mapContainer.appendChild(bg);
 
-      // Layer 1: decorative islands (behind everything else)
+      // Layer 1: decorative islands
       DECORATIVE_ISLANDS.forEach(function (cfg) {
         const deco = document.createElement('div');
         deco.className = 'deco-island';
@@ -244,7 +255,7 @@
         mapContainer.appendChild(deco);
       });
 
-      // ---- Candy path (SVG) ----
+      // Layer 2: candy path
       const svgNS = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(svgNS, 'svg');
       svg.setAttribute('class', 'level-path');
@@ -304,7 +315,8 @@
         link.className = 'island-link';
 
         if (isUnlocked) {
-          link.href = `Gameplay/Gameplay-${subject}.html?level=${level}&subject=${subject}`;
+          // ✅ Use the file-map helper here
+          link.href = getGameplayUrl(level);
           link.addEventListener('click', function (e) {
             e.preventDefault();
             fadeAndNavigate(this.href);
