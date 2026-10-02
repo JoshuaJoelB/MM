@@ -17,39 +17,71 @@
     <div class="home-bg">
       <div class="gameplay-overlay">
 
-        <!-- NAVBAR -->
-        <header class="gameplay-navbar">
-          <div class="gameplay-navbar-inner">
-            <div class="gameplay-top-row">
-              <div class="gameplay-left">
-                <a href="../Level.html?subject=ap" class="btn btn-back-top">
-                  <i class="fas fa-arrow-left me-1"></i> Levels
-                </a>
-                <h1 class="gameplay-title">AP</h1>
-              </div>
-              <div class="gameplay-points">
-                <div class="point-chip point-chip-star" title="Stars earned">
-                  <i class="fas fa-star"></i>
-                  <span data-nav-stars>0</span>
-                </div>
-                <div class="point-chip point-chip-coin" title="Points">
-                  <i class="fas fa-coins"></i>
-                  <span data-nav-points>0</span>
-                </div>
-              </div>
-            </div>
-            <div class="gameplay-bottom-row">
-              <span class="info-item">Level: <strong id="levelDisplay">1</strong></span>
-              <span class="info-item">Moves: <strong id="movesDisplay">0</strong></span>
-              <span class="info-item">Time:  <strong id="timerDisplay">02:00</strong></span>
-            </div>
-          </div>
-        </header>
+        <!-- ============ NAVBAR (nav only — no title, no star bar) ============ -->
+<header class="gameplay-navbar">
+  <div class="gameplay-navbar-inner">
+
+    <!-- Back -->
+    <a href="../Level.html?subject=computer" class="btn-back-circle" aria-label="Back to levels">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a0f2e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </a>
+
+    <!-- Timer -->
+    <div class="gameplay-timer" id="timerDisplay">02:00</div>
+
+    <!-- Level + Pause -->
+    <div class="gameplay-right">
+      <span class="gameplay-level">LEVEL <strong id="levelDisplay">1</strong></span>
+      <button type="button" class="btn-pause-circle" id="btnPause" aria-label="Pause">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="#1a0f2e">
+          <rect x="6"  y="5" width="4" height="14" rx="1.5"></rect>
+          <rect x="14" y="5" width="4" height="14" rx="1.5"></rect>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- ============ SUBHEADER (below navbar) ============ -->
+<div class="gameplay-subheader">
+  <h2 class="gameplay-subject-title">Computer</h2>
+
+  <div class="star-progress" id="starProgress">
+    <div class="star-progress-track">
+      <div class="star-progress-fill" id="starProgressFill"></div>
+    </div>
+    <div class="star-progress-stars">
+      <i class="fas fa-star" data-milestone="1"></i>
+      <i class="fas fa-star" data-milestone="2"></i>
+      <i class="fas fa-star" data-milestone="3"></i>
+    </div>
+  </div>
+</div>
 
         <!-- GAME BOARD -->
         <main class="gameplay-board">
           <div class="card-grid" id="cardGrid"></div>
         </main>
+
+<!-- PAUSE OVERLAY -->
+<div id="pauseOverlay" class="pause-overlay">
+  <div class="pause-box">
+    <h2 class="pause-heading">Paused</h2>
+    <p class="pause-text">Take a break!</p>
+
+    <div class="pause-buttons">
+      <button class="btn-pause-levels" id="btnPauseLevels">
+        <i class="fas fa-map me-1"></i> Levels
+      </button>
+      <button class="btn-pause-resume" id="btnPauseResume">
+        <i class="fas fa-play me-1"></i> Resume
+      </button>
+    </div>
+  </div>
+</div>
 
         <!-- WIN OVERLAY -->
         <div id="winOverlay" class="win-overlay">
@@ -121,6 +153,9 @@
             </div>
           </div>
         </div>
+
+
+        
 
       </div>
     </div>
