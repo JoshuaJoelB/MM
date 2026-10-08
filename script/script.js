@@ -711,3 +711,61 @@ function initHomePage() {
     if (wrap) wrap.classList.remove('open');
   });
 })();
+
+/* ================================================================
+   LEADERBOARD MODAL — populate when opened
+   ================================================================ */
+(function () {
+  'use strict';
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function renderLeaderboard() {
+    const listEl  = document.getElementById('navLbList');
+    const emptyEl = document.getElementById('navLbEmpty');
+    if (!listEl || !emptyEl) return;
+    if (!window.MMPlayer) return;
+
+    const scores = MMPlayer.getLeaderboard(10);
+    listEl.innerHTML = '';
+
+    if (!scores.length) {
+      emptyEl.hidden = false;
+      return;
+    }
+    emptyEl.hidden = true;
+
+    scores.forEach(function (entry, i) {
+      const li = document.createElement('li');
+      li.className = 'lb-row' + (i === 0 ? ' top1' : i === 1 ? ' top2' : i === 2 ? ' top3' : '');
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+
+      li.innerHTML =
+        '<span class="lb-rank">' + medal + '</span>' +
+        '<span class="lb-name">' + escapeHtml(entry.nickname) + '</span>' +
+        '<span class="lb-score">' + entry.score + '</span>';
+
+      listEl.appendChild(li);
+    });
+  }
+
+  // Re-render every time the leaderboard modal is shown
+  document.addEventListener('shown.bs.modal', function (e) {
+    if (e.target && e.target.id === 'leaderboardModal') {
+      renderLeaderboard();
+    }
+  });
+
+  // Also re-render when the navbar is (re)loaded
+  window.addEventListener('navbarLoaded', renderLeaderboard);
+
+  // Initial render (in case modal is opened via script before navbar fires)
+  document.addEventListener('DOMContentLoaded', renderLeaderboard);
+})();

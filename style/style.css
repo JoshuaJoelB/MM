@@ -3368,6 +3368,91 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ================================================================
+   LEADERBOARD MODAL — list rows
+   ================================================================ */
+.lb-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(30, 144, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 14px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.lb-row:hover {
+  background: rgba(255, 215, 0, 0.12);
+  transform: translateX(3px);
+}
+.lb-row.top1 { border-color: #FFD700; box-shadow: 0 0 14px rgba(255, 215, 0, 0.35); }
+.lb-row.top2 { border-color: rgba(255, 215, 0, 0.7); }
+.lb-row.top3 { border-color: rgba(255, 215, 0, 0.5); }
+
+.lb-rank {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem;
+  background: #1a0f2e;
+  color: #FFD700;
+  border: 2px solid rgba(255, 215, 0, 0.5);
+}
+.lb-row.top1 .lb-rank { background: linear-gradient(180deg, #FFE066, #FFA000); color: #1a0f2e; border-color: #1a0f2e; }
+.lb-row.top2 .lb-rank { background: linear-gradient(180deg, #f0f0f0, #b0b0b0); color: #1a0f2e; border-color: #1a0f2e; }
+.lb-row.top3 .lb-rank { background: linear-gradient(180deg, #e0a060, #b07030); color: #1a0f2e; border-color: #1a0f2e; }
+
+.lb-name {
+  flex: 1;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem;
+  color: #FFD700;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb-score {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1rem;
+  color: #FFD700;
+  text-shadow: 0 1px 0 #7a4b00;
+}
+
+.lb-empty {
+  text-align: center;
+  color: #F0E68C;
+  font-size: 0.85rem;
+  padding: 20px 10px;
+  letter-spacing: 0.5px;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+}
+.lb-note {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 0.72rem;
+  color: #F0E68C;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* ================================================================
    SCROLLBAR
    ================================================================ */
 ::-webkit-scrollbar { width: 6px; }

@@ -3,7 +3,7 @@
 <!-- ============================================================= -->
 <nav class="navbar-custom">
   <div class="nav-left">
-    <!-- Player Level Box (hangs below the navbar) -->
+    <!-- Player Level Box -->
     <div class="player-level-box">
       <div class="player-level-top">
         <div class="player-level-badge">
@@ -18,31 +18,29 @@
     </div>
   </div>
 
-  <!-- RIGHT: points + actions -->
   <div class="nav-right">
 
-    <!-- Stars — total rating -->
+    <!-- Stars -->
     <div class="point-chip point-chip-star" title="Star Rating">
       <i class="fas fa-star"></i>
       <span data-nav-stars>0</span>
     </div>
 
-    <!-- Points — used to unlock levels -->
+    <!-- Points -->
     <div class="point-chip point-chip-coin" title="Points — used to unlock levels">
       <i class="fas fa-coins"></i>
       <span data-nav-points>0</span>
     </div>
 
     <!-- ============================================================
-         DESKTOP: Inbox + Settings as separate buttons (≥768px)
+         DESKTOP: Leaderboard + Settings (≥768px)
          ============================================================ -->
     <div class="nav-actions-desktop d-none d-md-flex">
       <button class="btn-icon"
               data-bs-toggle="modal"
-              data-bs-target="#inboxModal"
-              aria-label="Inbox">
-        <i class="fas fa-inbox"></i>
-        <span class="badge-notif">3</span>
+              data-bs-target="#leaderboardModal"
+              aria-label="Leaderboard">
+        <i class="fas fa-trophy"></i>
       </button>
 
       <button class="btn-icon"
@@ -54,7 +52,7 @@
     </div>
 
     <!-- ============================================================
-         MOBILE: Hamburger dropdown (below 768px)
+         MOBILE: Hamburger dropdown (<768px)
          ============================================================ -->
     <div class="dropdown nav-actions-mobile d-md-none">
       <button class="btn-icon"
@@ -73,10 +71,9 @@
           <button class="dropdown-item nav-mobile-item"
                   type="button"
                   data-bs-toggle="modal"
-                  data-bs-target="#inboxModal">
-            <i class="fas fa-inbox"></i>
-            <span>Inbox</span>
-            <span class="nav-mobile-badge">3</span>
+                  data-bs-target="#leaderboardModal">
+            <i class="fas fa-trophy"></i>
+            <span>Leaderboard</span>
           </button>
         </li>
         <li>
@@ -95,48 +92,23 @@
 </nav>
 
 <!-- ============================================================= -->
-<!-- INBOX MODAL                                                   -->
+<!-- LEADERBOARD MODAL                                             -->
 <!-- ============================================================= -->
-<div class="modal fade" id="inboxModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="leaderboardModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-inbox me-2"></i>Inbox</h5>
+        <h5 class="modal-title"><i class="fas fa-trophy me-2"></i>Leaderboard</h5>
         <button type="button" class="btn-modal-close" data-bs-dismiss="modal" aria-label="Close">
           <i class="fas fa-times"></i>
         </button>
       </div>
       <div class="modal-body">
-        <ul class="inbox-list">
-          <li class="inbox-item">
-            <div class="inbox-icon inbox-icon-star"><i class="fas fa-star"></i></div>
-            <div class="inbox-text">
-              <strong>Welcome!</strong>
-              <span>Start your monster matching adventure!</span>
-            </div>
-          </li>
-          <li class="inbox-item">
-            <div class="inbox-icon inbox-icon-coin"><i class="fas fa-coins"></i></div>
-            <div class="inbox-text">
-              <strong>Reward!</strong>
-              <span>You earned 50 points for your first match.</span>
-            </div>
-          </li>
-          <li class="inbox-item">
-            <div class="inbox-icon inbox-icon-unlock"><i class="fas fa-unlock"></i></div>
-            <div class="inbox-text">
-              <strong>New Monster!</strong>
-              <span>You unlocked the <em>Dragon</em> skin.</span>
-            </div>
-          </li>
-          <li class="inbox-item">
-            <div class="inbox-icon inbox-icon-gem"><i class="fas fa-gem"></i></div>
-            <div class="inbox-text">
-              <strong>Daily Bonus</strong>
-              <span>Log in tomorrow for a free reward.</span>
-            </div>
-          </li>
-        </ul>
+        <ol class="lb-list" id="navLbList"></ol>
+        <p class="lb-empty" id="navLbEmpty" hidden>
+          No scores yet — be the first! 🎉
+        </p>
+        <p class="lb-note">Scores are saved only on this device.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-modal-close" data-bs-dismiss="modal">
