@@ -1,9 +1,6 @@
-<!-- ============================================================= -->
-<!-- NAVIGATION BAR                                                -->
-<!-- ============================================================= -->
+<!-- NAVIGATION BAR -->
 <nav class="navbar-custom">
   <div class="nav-left">
-    <!-- Player Level Box -->
     <div class="player-level-box">
       <div class="player-level-top">
         <div class="player-level-badge">
@@ -19,83 +16,62 @@
   </div>
 
   <div class="nav-right">
-
-    <!-- Stars -->
     <div class="point-chip point-chip-star" title="Star Rating">
       <i class="fas fa-star"></i>
       <span data-nav-stars>0</span>
     </div>
 
-    <!-- Points -->
     <div class="point-chip point-chip-coin" title="Points — used to unlock levels">
       <i class="fas fa-coins"></i>
       <span data-nav-points>0</span>
     </div>
 
-    <!-- ============================================================
-         DESKTOP: Leaderboard + Settings (≥768px)
-         ============================================================ -->
+    <!-- DESKTOP -->
     <div class="nav-actions-desktop d-none d-md-flex">
-      <button class="btn-icon"
-              data-bs-toggle="modal"
-              data-bs-target="#leaderboardModal"
-              aria-label="Leaderboard">
+      <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#leaderboardModal" aria-label="Leaderboard">
         <i class="fas fa-trophy"></i>
       </button>
-
-      <button class="btn-icon"
-              data-bs-toggle="modal"
-              data-bs-target="#settingsModal"
-              aria-label="Settings">
+      <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Settings">
         <i class="fas fa-cog"></i>
+      </button>
+      <button class="btn-icon btn-icon-logout" id="logoutBtn" aria-label="Log out">
+        <i class="fas fa-right-from-bracket"></i>
       </button>
     </div>
 
-    <!-- ============================================================
-         MOBILE: Hamburger dropdown (<768px)
-         ============================================================ -->
+    <!-- MOBILE -->
     <div class="dropdown nav-actions-mobile d-md-none">
-      <button class="btn-icon"
-              type="button"
-              id="navMobileMenu"
-              data-bs-toggle="dropdown"
-              data-bs-auto-close="true"
-              aria-expanded="false"
-              aria-label="Open menu">
+      <button class="btn-icon" type="button" id="navMobileMenu"
+              data-bs-toggle="dropdown" data-bs-auto-close="true"
+              aria-expanded="false" aria-label="Open menu">
         <i class="fas fa-bars"></i>
       </button>
-
-      <ul class="dropdown-menu dropdown-menu-end nav-mobile-dropdown"
-          aria-labelledby="navMobileMenu">
+      <ul class="dropdown-menu dropdown-menu-end nav-mobile-dropdown" aria-labelledby="navMobileMenu">
         <li>
-          <button class="dropdown-item nav-mobile-item"
-                  type="button"
-                  data-bs-toggle="modal"
-                  data-bs-target="#leaderboardModal">
-            <i class="fas fa-trophy"></i>
-            <span>Leaderboard</span>
+          <button class="dropdown-item nav-mobile-item" type="button"
+                  data-bs-toggle="modal" data-bs-target="#leaderboardModal">
+            <i class="fas fa-trophy"></i><span>Leaderboard</span>
           </button>
         </li>
         <li>
-          <button class="dropdown-item nav-mobile-item"
-                  type="button"
-                  data-bs-toggle="modal"
-                  data-bs-target="#settingsModal">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
+          <button class="dropdown-item nav-mobile-item" type="button"
+                  data-bs-toggle="modal" data-bs-target="#settingsModal">
+            <i class="fas fa-cog"></i><span>Settings</span>
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item nav-mobile-item" type="button" id="logoutBtnMobile">
+            <i class="fas fa-right-from-bracket"></i><span>Log Out</span>
           </button>
         </li>
       </ul>
     </div>
-
   </div>
 </nav>
 
-<!-- ============================================================= -->
-<!-- LEADERBOARD MODAL                                             -->
-<!-- ============================================================= -->
+<!-- LEADERBOARD MODAL -->
 <div class="modal fade" id="leaderboardModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="fas fa-trophy me-2"></i>Leaderboard</h5>
@@ -103,13 +79,23 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
+
       <div class="modal-body">
+        <div class="lb-podium" id="lbPodium" hidden>
+          <div class="lb-podium-slot lb-podium-2" data-slot="2"></div>
+          <div class="lb-podium-slot lb-podium-1" data-slot="1"></div>
+          <div class="lb-podium-slot lb-podium-3" data-slot="3"></div>
+        </div>
+
         <ol class="lb-list" id="navLbList"></ol>
+
         <p class="lb-empty" id="navLbEmpty" hidden>
           No scores yet — be the first! 🎉
         </p>
+
         <p class="lb-note">Scores are saved only on this device.</p>
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn-modal-close" data-bs-dismiss="modal">
           <i class="fas fa-check me-2"></i> Got it!
@@ -119,9 +105,7 @@
   </div>
 </div>
 
-<!-- ============================================================= -->
-<!-- SETTINGS MODAL                                                -->
-<!-- ============================================================= -->
+<!-- SETTINGS MODAL -->
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">

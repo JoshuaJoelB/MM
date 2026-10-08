@@ -713,59 +713,255 @@ function initHomePage() {
 })();
 
 /* ================================================================
-   LEADERBOARD MODAL — populate when opened
+   LEADERBOARD MODAL — render podium + rows
    ================================================================ */
 (function () {
   'use strict';
 
   function escapeHtml(str) {
     return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
 
-  function renderLeaderboard() {
-    const listEl  = document.getElementById('navLbList');
-    const emptyEl = document.getElementById('navLbEmpty');
-    if (!listEl || !emptyEl) return;
-    if (!window.MMPlayer) return;
+  function starString(n) {
+    return '⭐'.repeat(Math.max(0, Math.min(3, n || 0)));
+  }
 
-    const scores = MMPlayer.getLeaderboard(10);
+  function formatScore(n) {
+    return Number(n || 0).toLocaleString();
+  }
+
+  function currentNickname() {
+    return (window.MMPlayer && MMPlayer.getNickname) ? MMPlayer.getNickname() : '';
+  }
+
+  function renderPodium(players) {
+    const podiumEl = document.getElementById('lbPodium');
+    if (!podiumEl) return;
+
+    if (players.length < 3) { podiumEl.hidden = true; return; }
+    podiumEl.hidden = false;
+
+    const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
+
+    [1, 2, 3].forEach(function (rank) {
+      const slot = podiumEl.querySelector('[data-slot="' + rank + '"]');
+      if (!slot) return;
+      const p = players[rank - 1];
+      if (!p) { slot.innerHTML = ''; return; }
+
+      slot.innerHTML =
+        '<span class="lb-podium-medal">' + medals[rank] + '</span>' +
+        '<span class="lb-podium-name">'  + escapeHtml(p.nickname) + '</span>' +
+        '<span class="lb-podium-score">' + formatScore(p.score) + '</span>' +
+        '<span class="lb-podium-stars">' + starString(p.totalStars) + ' · Lv ' + p.highestLevel + '</span>';
+    });
+  }
+
+  function renderRows(players, startRank) {
+    const listEl = document.getElementById('navLbList');
+    if (!listEl) return;
     listEl.innerHTML = '';
 
-    if (!scores.length) {
-      emptyEl.hidden = false;
-      return;
-    }
-    emptyEl.hidden = true;
+    const me = currentNickname().toLowerCase();
 
-    scores.forEach(function (entry, i) {
+    players.forEach(function (p, i) {
+      const rank = (startRank || 4) + i;
       const li = document.createElement('li');
-      li.className = 'lb-row' + (i === 0 ? ' top1' : i === 1 ? ' top2' : i === 2 ? ' top3' : '');
-      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      li.className = 'lb-row' + (p.nickname.toLowerCase() === me ? ' me' : '');
 
       li.innerHTML =
-        '<span class="lb-rank">' + medal + '</span>' +
-        '<span class="lb-name">' + escapeHtml(entry.nickname) + '</span>' +
-        '<span class="lb-score">' + entry.score + '</span>';
+        '<span class="lb-rank">'  + rank + '</span>' +
+        '<span class="lb-name">'  + escapeHtml(p.nickname) + '</span>' +
+        '<span class="lb-sub">'   + starString(p.totalStars) + ' · Lv ' + p.highestLevel + '</span>' +
+        '<span class="lb-score">' + formatScore(p.score) + '</span>';
 
       listEl.appendChild(li);
     });
   }
 
-  // Re-render every time the leaderboard modal is shown
-  document.addEventListener('shown.bs.modal', function (e) {
-    if (e.target && e.target.id === 'leaderboardModal') {
-      renderLeaderboard();
+  function renderLeaderboard() {
+    const emptyEl = document.getElementById('navLbEmpty');
+    if (!emptyEl || !window.MMLeaderboard) return;
+
+    const all = MMLeaderboard.getAllPlayers();
+
+    if (!all.length) {
+      emptyEl.hidden = false;
+      renderPodium([]);
+      renderRows([]);
+      return;
     }
+    emptyEl.hidden = true;
+
+    renderPodium(all.slice(0, 3));
+    renderRows(all.slice(3, MMLeaderboard.DISPLAY_LIMIT));
+  }
+
+  document.addEventListener('shown.bs.modal', function (e) {
+    if (e.target && e.target.id === 'leaderboardModal') renderLeaderboard();
   });
 
-  // Also re-render when the navbar is (re)loaded
   window.addEventListener('navbarLoaded', renderLeaderboard);
-
-  // Initial render (in case modal is opened via script before navbar fires)
   document.addEventListener('DOMContentLoaded', renderLeaderboard);
+})();
+
+/* ================================================================
+   LOGOUT — clears nickname, sends player back to Start.html
+   ================================================================ */
+(function () {
+  'use strict';
+
+  function doLogout() {
+    var ok = confirm('Log out? Your scores stay saved on this device.');
+    if (!ok) return;
+
+    // Clear only the nickname — leaderboard entries stay
+    if (window.MMPlayer && typeof MMPlayer.clearNickname === 'function') {
+      MMPlayer.clearNickname();
+    } else {
+      try { localStorage.removeItem('mm_player_nickname'); } catch (e) {}
+    }
+
+    // Redirect to login
+    window.location.replace('Start.html');
+  }
+
+  // Event delegation — works even after navbar re-injects
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('#logoutBtn, #logoutBtnMobile');
+    if (!btn) return;
+    e.preventDefault();
+    doLogout();
+  });
+})();
+
+/* ================================================================
+   HOME WELCOME / HELLO GREETING
+   - "Hello, {name}!"         → just logged in
+   - "Welcome back, {name}!"  → returning to Home in same session
+   ================================================================ */
+(function () {
+  'use strict';
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function initGreeting() {
+    var wrap  = document.getElementById('homeWelcome');
+    var icon  = document.getElementById('homeWelcomeIcon');
+    var text  = document.getElementById('homeWelcomeText');
+    if (!wrap || !icon || !text) return;
+
+    var name = '';
+    try { name = localStorage.getItem('mm_player_nickname') || ''; } catch (e) {}
+
+    // No nickname → hide greeting (shouldn't happen on Home)
+    if (!name) { wrap.hidden = true; return; }
+
+    // Was this a fresh login?
+    var justLoggedIn = false;
+    try {
+      justLoggedIn = sessionStorage.getItem('mm_just_logged_in') === '1';
+      sessionStorage.removeItem('mm_just_logged_in');
+    } catch (e) {}
+
+    var greeting = justLoggedIn ? 'Hello' : 'Welcome back';
+    var emoji    = justLoggedIn ? '👋' : '🎉';
+
+    icon.textContent = emoji;
+    text.innerHTML =
+      greeting + ', <span class="home-welcome-name">' +
+      escapeHtml(name) + '</span>!';
+
+    wrap.hidden = false;
+  }
+
+  // Run once script.js is loaded (Home page only)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGreeting);
+  } else {
+    initGreeting();
+  }
+})();
+
+/* ================================================================
+   HOME WELCOME / HELLO GREETING
+   ================================================================ */
+(function () {
+  'use strict';
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function initGreeting() {
+    var wrap = document.getElementById('homeWelcome');
+    var icon = document.getElementById('homeWelcomeIcon');
+    var text = document.getElementById('homeWelcomeText');
+    if (!wrap || !icon || !text) return;
+
+    var name = '';
+    try { name = localStorage.getItem('mm_player_nickname') || ''; } catch (e) {}
+
+    if (!name) { wrap.hidden = true; return; }
+
+    var justLoggedIn = false;
+    try {
+      justLoggedIn = sessionStorage.getItem('mm_just_logged_in') === '1';
+      sessionStorage.removeItem('mm_just_logged_in');
+    } catch (e) {}
+
+    var greeting = justLoggedIn ? 'Hello' : 'Welcome back';
+    var emoji    = justLoggedIn ? '👋' : '🎉';
+
+    icon.textContent = emoji;
+    text.innerHTML =
+      greeting + ', <span class="home-welcome-name">' +
+      escapeHtml(name) + '</span>!';
+
+    wrap.hidden = false;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGreeting);
+  } else {
+    initGreeting();
+  }
+})();
+
+/* ================================================================
+   LOGOUT — clears nickname, sends player back to Start.html
+   ================================================================ */
+(function () {
+  'use strict';
+
+  function doLogout() {
+    var ok = confirm('Log out? Your scores stay saved on this device.');
+    if (!ok) return;
+
+    if (window.MMPlayer && typeof MMPlayer.clearNickname === 'function') {
+      MMPlayer.clearNickname();
+    } else {
+      try { localStorage.removeItem('mm_player_nickname'); } catch (e) {}
+    }
+
+    try { sessionStorage.removeItem('mm_just_logged_in'); } catch (e) {}
+
+    window.location.replace('Start.html');
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('#logoutBtn, #logoutBtnMobile');
+    if (!btn) return;
+    e.preventDefault();
+    doLogout();
+  });
 })();

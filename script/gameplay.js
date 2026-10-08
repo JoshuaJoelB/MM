@@ -1180,8 +1180,24 @@ document.addEventListener('DOMContentLoaded', function() {
     celebrateWin();
 
     if (typeof window.completeLevel === 'function') {
-      window.completeLevel(subject, level);
-    }
+  window.completeLevel(subject, level);
+}
+
+// ---- Save to leaderboard ----
+if (window.MMLeaderboard && window.MMPlayer) {
+  const nickname = MMPlayer.getNickname();
+  if (nickname) {
+    MMLeaderboard.recordWin({
+      nickname:     nickname,
+      subject:      subject,
+      level:        level,
+      stars:        starsEarned,
+      time:         elapsed,
+      pointsEarned: wasCompletedBefore ? 0 : pointsEarned
+    });
+    MMLeaderboard.prune();
+  }
+}
     if (typeof window.updatePlayerLevelBox === 'function') {
       window.updatePlayerLevelBox();
     }

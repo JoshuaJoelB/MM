@@ -12,17 +12,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style/style.css" />
 
+  <!-- ✅ AUTO-REDIRECT: If already logged in, skip the login page.
+       Runs BEFORE the body renders, so no flash of the login card. -->
+  <script>
+    (function () {
+      try {
+        var name = localStorage.getItem('mm_player_nickname');
+        if (name && name.length >= 3) {
+          window.location.replace('Home.html');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <style>
     /* ---------- Login card ---------- */
     .login-wrap {
-      max-width: 440px;
+      max-width: 420px;
       width: 100%;
       background: rgba(30, 144, 255, 0.08);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 215, 0, 0.35);
       border-radius: 32px;
-      padding: 32px 26px 26px;
+      padding: 36px 26px 28px;
       box-shadow:
         0 20px 80px rgba(0, 0, 0, 0.5),
         inset 0 2px 0 rgba(255, 255, 255, 0.08);
@@ -30,55 +43,13 @@
       animation: fadeUp 0.6s ease;
     }
 
-    /* ---------- Logo ---------- */
-    .login-logo-ring {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      margin: 0 auto 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 215, 0, 0.22) 0%, transparent 70%);
-    }
-    .login-logo-ring::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 3px solid transparent;
-      border-top-color: #FFD700;
-      border-right-color: rgba(255, 215, 0, 0.6);
-      border-left-color: rgba(255, 215, 0, 0.6);
-      animation: logoSpin 1.6s linear infinite;
-    }
-    .login-logo-img {
-      width: 84px;
-      height: 84px;
-      object-fit: contain;
-      position: relative;
-      z-index: 2;
-      animation: logoPulse 2s ease-in-out infinite;
-      filter: drop-shadow(0 6px 24px rgba(255, 215, 0, 0.6));
-    }
-    .login-logo-fallback {
-      display: none;
-      font-size: 3.4rem;
-      position: relative;
-      z-index: 2;
-      filter: drop-shadow(0 6px 24px rgba(255, 215, 0, 0.6));
-    }
-
-    /* ---------- Titles ---------- */
     .login-title {
       font-family: 'DynaPuff', system-ui, sans-serif !important;
       font-weight: 700 !important;
-      font-size: 2rem;
+      font-size: 2.2rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin: 4px 0 6px;
-
+      margin: 0 0 6px;
       color: #1a0f2e;
       background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
       -webkit-background-clip: text;
@@ -97,26 +68,9 @@
       color: #FFD700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin: 0 0 20px;
+      margin: 0 0 24px;
       text-shadow: 0 2px 0 rgba(10, 20, 40, 0.55);
     }
-
-    /* ---------- Form ---------- */
-    .login-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-family: 'DynaPuff', system-ui, sans-serif !important;
-      font-weight: 700 !important;
-      font-size: 0.8rem;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #F0E68C;
-      margin-bottom: 10px;
-      text-shadow: 0 2px 0 rgba(10, 20, 40, 0.6);
-    }
-    .login-label i { color: #FFD700; }
 
     .login-input-wrap {
       position: relative;
@@ -183,7 +137,7 @@
       font-size: 0.72rem;
       letter-spacing: 0.3px;
       color: #F0E68C;
-      margin: 10px 2px 16px;
+      margin: 10px 2px 20px;
       line-height: 1.5;
       text-shadow: 0 1px 0 rgba(10, 20, 40, 0.55);
     }
@@ -191,7 +145,6 @@
     .login-hint.error-msg { color: #FFB0B0; }
     .login-hint.error-msg strong { color: #FF5A5A; }
 
-    /* ---------- Play button ---------- */
     .btn-play-now {
       display: inline-flex;
       align-items: center;
@@ -200,24 +153,20 @@
       width: 100%;
       padding: 18px 32px;
       min-height: 64px;
-
       font-family: 'DynaPuff', system-ui, sans-serif !important;
       font-weight: 700 !important;
       font-size: 1.3rem;
       letter-spacing: 2px;
       text-transform: uppercase;
       text-decoration: none !important;
-
       color: #1a0f2e;
       background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
       border: 3px solid #1a0f2e;
       border-radius: 100px;
-
       box-shadow:
         0 6px 0 #7a4b00,
         0 12px 30px rgba(255, 184, 0, 0.4),
         inset 0 2px 0 rgba(255, 255, 255, 0.55);
-
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
@@ -240,23 +189,20 @@
         inset 0 2px 0 rgba(255, 255, 255, 0.5);
     }
 
-    /* ---------- Parent link ---------- */
     .login-parent-link {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      margin-top: 18px;
-      padding: 9px 18px;
+      margin-top: 22px;
+      padding: 10px 22px;
       background: transparent;
       border: 2px solid rgba(255, 215, 0, 0.35);
       border-radius: 100px;
-
       font-family: 'DynaPuff', system-ui, sans-serif !important;
       font-weight: 700 !important;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       letter-spacing: 1px;
       text-transform: uppercase;
-
       color: #FFD700;
       cursor: pointer;
       transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
@@ -268,41 +214,6 @@
       transform: translateY(-1px);
     }
 
-    /* ---------- Welcome back banner ---------- */
-    .login-returning {
-      margin-top: 14px;
-      padding: 10px 14px;
-      background: rgba(255, 215, 0, 0.1);
-      border: 1px dashed rgba(255, 215, 0, 0.5);
-      border-radius: 14px;
-
-      font-family: 'DynaPuff', system-ui, sans-serif !important;
-      font-weight: 700 !important;
-      font-size: 0.78rem;
-      color: #F0E68C;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .login-returning strong { color: #FFD700; }
-    .login-link-small {
-      background: transparent;
-      border: none;
-      color: #FFD700;
-      font-family: 'DynaPuff', system-ui, sans-serif !important;
-      font-weight: 700 !important;
-      font-size: 0.72rem;
-      text-decoration: underline;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      padding: 0;
-    }
-    .login-link-small:hover { color: #FFF3C4; }
-
-    /* ---------- Parent modal ---------- */
     .mm-modal-backdrop {
       position: fixed;
       inset: 0;
@@ -357,6 +268,10 @@
     .mm-modal-close:hover { transform: translateY(-2px); }
     .mm-modal-close:active { transform: translateY(2px); }
     .mm-modal-close i { color: #1a0f2e !important; }
+    .mm-modal-close i,
+    .mm-modal-close svg,
+    .mm-modal-close * { pointer-events: none; }
+
     .mm-modal-icon {
       font-size: 2.4rem;
       color: #FFD700;
@@ -394,11 +309,9 @@
     }
 
     @media (max-width: 480px) {
-      .login-wrap { padding: 26px 18px 20px; border-radius: 24px; }
-      .login-title { font-size: 1.7rem; -webkit-text-stroke-width: 2px; }
-      .login-sub { font-size: 0.75rem; letter-spacing: 1.5px; }
-      .login-logo-ring { width: 90px; height: 90px; }
-      .login-logo-img { width: 68px; height: 68px; }
+      .login-wrap { padding: 28px 18px 22px; border-radius: 24px; }
+      .login-title { font-size: 1.8rem; -webkit-text-stroke-width: 2px; }
+      .login-sub { font-size: 0.75rem; letter-spacing: 1.5px; margin-bottom: 20px; }
       .btn-play-now { font-size: 1.1rem; min-height: 58px; padding: 16px 24px; }
       .login-input { font-size: 0.95rem; padding: 14px 56px 14px 44px; }
     }
@@ -406,34 +319,18 @@
 </head>
 <body>
 
-  <!-- Clouds layer -->
   <div id="cloudLayer"></div>
 
-  <!-- ============================================================
-       LOGIN PAGE
-       ============================================================ -->
   <div id="startPage" class="page active-page">
     <div class="start-bg">
       <div class="start-overlay">
         <div class="container h-100 d-flex align-items-center justify-content-center">
           <div class="login-wrap">
 
-            <!-- Logo -->
-            <div class="login-logo-ring">
-              <img src="Assets/top_icon.png" alt="Match Monsters" class="login-logo-img" id="loginLogoImg" />
-              <span class="login-logo-fallback" id="loginLogoFallback">🐲</span>
-            </div>
-
-            <!-- Titles -->
             <h1 class="login-title">Match Monsters</h1>
             <p class="login-sub">Enter a fun nickname to play</p>
 
-            <!-- Form -->
             <form id="loginForm" novalidate autocomplete="off">
-              <label for="nicknameInput" class="login-label">
-                <i class="fas fa-user-astronaut"></i> Your Fun Nickname
-              </label>
-
               <div class="login-input-wrap">
                 <i class="fas fa-dragon login-input-icon"></i>
                 <input
@@ -461,15 +358,6 @@
               </button>
             </form>
 
-            <!-- Returning player banner -->
-            <div class="login-returning" id="returningBox" hidden>
-              <span>Welcome back, <strong id="returningName">Player</strong>!</span>
-              <button type="button" class="login-link-small" id="switchPlayerBtn">
-                Switch player
-              </button>
-            </div>
-
-            <!-- Parent info link -->
             <button type="button" class="login-parent-link" id="parentInfoBtn">
               <i class="fas fa-shield-heart"></i> For Parents
             </button>
@@ -480,9 +368,6 @@
     </div>
   </div>
 
-  <!-- ============================================================
-       PARENT / GUARDIAN INFO MODAL
-       ============================================================ -->
   <div class="mm-modal-backdrop" id="parentModal">
     <div class="mm-modal" role="dialog" aria-modal="true" aria-labelledby="parentTitle">
       <button class="mm-modal-close" type="button" data-close aria-label="Close">
@@ -507,9 +392,6 @@
     </div>
   </div>
 
-  <!-- ============================================================
-       SCRIPTS
-       ============================================================ -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="script/player.js"></script>
   <script src="script/script.js"></script>
@@ -517,36 +399,23 @@
   <script src="script/clouds.js"></script>
   <script src="script/island.js"></script>
 
-  <!-- Login page logic -->
   <script>
     (function () {
       'use strict';
 
-      const form         = document.getElementById('loginForm');
-      const input        = document.getElementById('nicknameInput');
-      const charCount    = document.getElementById('charCount');
-      const hint         = document.getElementById('loginHint');
-      const returningBox = document.getElementById('returningBox');
-      const returningName = document.getElementById('returningName');
-      const switchBtn    = document.getElementById('switchPlayerBtn');
-      const parentModal  = document.getElementById('parentModal');
-      const logoImg      = document.getElementById('loginLogoImg');
-      const logoFallback = document.getElementById('loginLogoFallback');
-      const playBtn      = document.getElementById('playBtn');
+      const form        = document.getElementById('loginForm');
+      const input       = document.getElementById('nicknameInput');
+      const charCount   = document.getElementById('charCount');
+      const hint        = document.getElementById('loginHint');
+      const parentModal = document.getElementById('parentModal');
+      const parentBtn   = document.getElementById('parentInfoBtn');
+      const parentClose = parentModal.querySelector('.mm-modal-close');
+      const playBtn     = document.getElementById('playBtn');
 
       const DEFAULT_HINT =
         'Use a fun name — <strong>not your real name!</strong><br />' +
         'Letters and numbers only.';
 
-      /* ---- Logo fallback ---- */
-      if (logoImg) {
-        logoImg.addEventListener('error', function () {
-          logoImg.style.display = 'none';
-          if (logoFallback) logoFallback.style.display = 'block';
-        });
-      }
-
-      /* ---- Live sanitize + counter ---- */
       function refreshInput() {
         const clean = MMPlayer.sanitizeNickname(input.value);
         if (clean !== input.value) input.value = clean;
@@ -557,25 +426,6 @@
       }
       input.addEventListener('input', refreshInput);
 
-      /* ---- Prefill returning player ---- */
-      const saved = MMPlayer.getNickname();
-      if (saved) {
-        input.value = saved;
-        refreshInput();
-        returningName.textContent = saved;
-        returningBox.hidden = false;
-      }
-
-      /* ---- Switch player ---- */
-      switchBtn.addEventListener('click', function () {
-        MMPlayer.clearNickname();
-        input.value = '';
-        refreshInput();
-        returningBox.hidden = true;
-        input.focus();
-      });
-
-      /* ---- Submit ---- */
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -593,6 +443,9 @@
           showError('Something went wrong. Please try again.');
           return;
         }
+
+        // ✅ Mark as a fresh login → triggers "Hello!" on Home
+        try { sessionStorage.setItem('mm_just_logged_in', '1'); } catch (e) {}
 
         playBtn.innerHTML = '<i class="fas fa-check"></i> Loading…';
         playBtn.disabled = true;
@@ -612,21 +465,32 @@
         input.focus();
       }
 
-      /* ---- Parent modal ---- */
-      document.getElementById('parentInfoBtn').addEventListener('click', function () {
+      function openParentModal() {
         parentModal.classList.add('show');
         document.body.style.overflow = 'hidden';
+      }
+      function closeParentModal() {
+        parentModal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+
+      parentBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openParentModal();
       });
+      if (parentClose) {
+        parentClose.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeParentModal();
+        });
+      }
       parentModal.addEventListener('click', function (e) {
-        if (e.target === parentModal || e.target.closest('[data-close]')) {
-          parentModal.classList.remove('show');
-          document.body.style.overflow = '';
-        }
+        if (e.target === parentModal) closeParentModal();
       });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && parentModal.classList.contains('show')) {
-          parentModal.classList.remove('show');
-          document.body.style.overflow = '';
+          closeParentModal();
         }
       });
 
