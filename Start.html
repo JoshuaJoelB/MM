@@ -78,22 +78,13 @@
       display: flex;
       align-items: center;
     }
-    .login-input-icon {
-      position: absolute;
-      left: 18px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #FFD700;
-      font-size: 1rem;
-      pointer-events: none;
-      z-index: 2;
-    }
+
     .login-input {
       width: 100%;
       background: rgba(10, 20, 40, 0.7);
       border: 2px solid rgba(255, 215, 0, 0.45);
       border-radius: 100px;
-      padding: 16px 62px 16px 48px;
+      padding: 16px 62px 16px 22px;
       font-family: 'DynaPuff', system-ui, sans-serif !important;
       font-weight: 700 !important;
       font-size: 1.05rem;
@@ -331,32 +322,31 @@
             <p class="login-sub">Enter a fun nickname to play</p>
 
             <form id="loginForm" novalidate autocomplete="off">
-              <div class="login-input-wrap">
-                <i class="fas fa-dragon login-input-icon"></i>
-                <input
-                  type="text"
-                  id="nicknameInput"
-                  class="login-input"
-                  placeholder="e.g. StarDragon"
-                  maxlength="12"
-                  autocomplete="off"
-                  autocapitalize="off"
-                  autocorrect="off"
-                  spellcheck="false"
-                  aria-label="Fun nickname"
-                />
-                <span class="login-char-count"><span id="charCount">0</span>/12</span>
-              </div>
+  <div class="login-input-wrap">
+    <input
+      type="text"
+      id="nicknameInput"
+      class="login-input"
+      placeholder="e.g. StarDragon"
+      maxlength="12"
+      autocomplete="off"
+      autocapitalize="off"
+      autocorrect="off"
+      spellcheck="false"
+      aria-label="Fun nickname"
+    />
+    <span class="login-char-count"><span id="charCount">0</span>/12</span>
+  </div>
 
-              <p class="login-hint" id="loginHint">
-                Use a fun name — <strong>not your real name!</strong><br />
-                Letters and numbers only.
-              </p>
+  <p class="login-hint" id="loginHint">
+    Use a fun name — <strong>not your real name!</strong><br />
+    Letters and numbers only.
+  </p>
 
-              <button type="submit" class="btn-play-now" id="playBtn">
-                <i class="fas fa-rocket"></i> Let's Play!
-              </button>
-            </form>
+  <button type="submit" class="btn-play-now" id="playBtn">
+    <i class="fas fa-rocket"></i> Let's Play!
+  </button>
+</form>
 
             <button type="button" class="login-parent-link" id="parentInfoBtn">
               <i class="fas fa-shield-heart"></i> For Parents
