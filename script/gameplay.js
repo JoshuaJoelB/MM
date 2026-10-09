@@ -77,11 +77,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 || (window.location.pathname.match(/Gameplay-(\w+)\.html/)?.[1])
                 || 'computer';
 
-  const subjectInfo = {
-    ap:       { name: 'AP',       icon: '../Assets/icons/ap_icon.png' },
-    computer: { name: 'Computer', icon: '../Assets/icons/computer_icon.png' },
-    science:  { name: 'Science',  icon: '../Assets/icons/science_icon.png' }
-  }[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
+const subjectInfo = {
+  ap:       { name: 'AP',       icon: '../Assets/icons/ap_icon.png' },
+  computer: { name: 'EPP',      icon: '../Assets/icons/computer_icon.png' },
+  science:  { name: 'Science',  icon: '../Assets/icons/science_icon.png' }
+}[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
 
   // ============================================================
   // 🖼️  VERIFIED UNSPLASH PHOTO LIBRARY

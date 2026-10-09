@@ -31,7 +31,7 @@
             <span class="btn-text">Subjects</span>
           </a>
 
-          <h1 class="level-main-title" id="subjectMapTitle">Computer Map</h1>
+          <h1 class="level-main-title" id="subjectMapTitle">EPP Map</h1>
 
           <div class="player-level-box point-box-floating">
             <div class="point-chip point-chip-star" title="Star Rating">
@@ -87,7 +87,7 @@
       }
     } catch (e) {}
 
-    const subjectNames = { computer: 'Computer', science: 'Science', ap: 'AP' };
+const subjectNames = { computer: 'EPP', science: 'Science', ap: 'AP' };
     const titleEl = document.getElementById('subjectMapTitle');
     if (titleEl) titleEl.textContent = (subjectNames[subject] || 'Subject') + ' Map';
 
