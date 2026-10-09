@@ -359,9 +359,23 @@ function initSettings() {
   document.addEventListener('change', function (e) {
     const target = e.target;
 
-    if (target.classList && target.classList.contains('settings-toggle')) {
+        if (target.classList && target.classList.contains('settings-toggle')) {
       const key = target.dataset.key;
-      if (key) localStorage.setItem(key, target.checked);
+      if (key) {
+        localStorage.setItem(key, target.checked);
+
+        // ✅ Notify audio + sfx modules in real time
+        if (key === 'musicEnabled') {
+          window.dispatchEvent(new CustomEvent('musicToggled', {
+            detail: { enabled: target.checked }
+          }));
+        }
+        if (key === 'soundEnabled') {
+          window.dispatchEvent(new CustomEvent('soundToggled', {
+            detail: { enabled: target.checked }
+          }));
+        }
+      }
       return;
     }
 
@@ -849,7 +863,7 @@ function initHomePage() {
 })();
 
 /* ================================================================
-   LOGOUT — clears nickname only (player data stays on device)
+   LOGOUT — clears nickname + stops music + resets session
    ================================================================ */
 (function () {
   'use strict';
@@ -857,13 +871,24 @@ function initHomePage() {
   function doLogout() {
     if (!confirm('Log out? Your progress stays saved. Enter your nickname again to resume.')) return;
 
+    // ✅ Stop + destroy the AudioContext
+    if (window.MMBgMusic && typeof MMBgMusic.stop === 'function') {
+      MMBgMusic.stop();
+    }
+
+    // ✅ Clear session music/login flags
+    try {
+      sessionStorage.removeItem('mm_music_pos');
+      sessionStorage.removeItem('mm_logged_in');
+      sessionStorage.removeItem('mm_just_logged_in');
+    } catch (e) {}
+
+    // ✅ Clear nickname (player data stays in localStorage)
     if (window.MMPlayer && typeof MMPlayer.clearNickname === 'function') {
       MMPlayer.clearNickname();
     } else {
       try { localStorage.removeItem('mm_player_nickname'); } catch (e) {}
     }
-
-    try { sessionStorage.removeItem('mm_just_logged_in'); } catch (e) {}
 
     window.location.replace('Start.html');
   }
@@ -875,7 +900,6 @@ function initHomePage() {
     doLogout();
   });
 })();
-
 /* ================================================================
    HOME WELCOME / HELLO GREETING
    ================================================================ */
