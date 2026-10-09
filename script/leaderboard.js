@@ -19,9 +19,7 @@
   const MAX_KEEP       = 50;
   const DISPLAY_LIMIT  = 10;
 
-  /* ---------------- ONE-TIME WIPE OF OLD SEED DATA ----------------
-     Bump CURRENT_SEED_VER whenever you want to force a clean slate
-     on every device that already has old data. */
+  /* ---------------- ONE-TIME WIPE OF OLD SEED DATA ---------------- */
   const SEED_VERSION_KEY = 'mm_leaderboard_seed_ver';
   const CURRENT_SEED_VER = '2';
 
@@ -30,7 +28,6 @@
       const last = localStorage.getItem(SEED_VERSION_KEY);
       if (last === CURRENT_SEED_VER) return;
 
-      // First run of this version → clear all old leaderboard storage
       localStorage.removeItem(KEY);
       localStorage.removeItem(OLD_KEY);
       localStorage.removeItem(OLD_KEY2);
@@ -210,7 +207,7 @@
     writeAll(store);
   }
 
-  /* ---------------- CLEAR ---------------- */
+  /* ---------------- CLEAR / REMOVE ---------------- */
   function clearAll() {
     try { localStorage.removeItem(KEY); } catch (e) {}
   }
@@ -223,10 +220,20 @@
     }
   }
 
+  function removePlayer(nickname) {
+    if (!nickname) return;
+    const store = readAll();
+    const key   = nickname.toLowerCase();
+    SUBJECTS.forEach(function (sub) {
+      if (store[sub] && store[sub][key]) delete store[sub][key];
+    });
+    writeAll(store);
+  }
+
   /* ---------------- BOOT ---------------- */
-  wipeOldSeedOnce();   // ← runs FIRST, clears old seed on version change
+  wipeOldSeedOnce();
   migrateOldData();
-  seedIfEmpty();       // no-op
+  seedIfEmpty();
 
   /* ---------------- EXPORT ---------------- */
   window.MMLeaderboard = {
@@ -237,6 +244,7 @@
     prune:             prune,
     clearAll:          clearAll,
     clearSubject:      clearSubject,
+    removePlayer:      removePlayer,
     SUBJECTS:          SUBJECTS,
     DISPLAY_LIMIT:     DISPLAY_LIMIT
   };

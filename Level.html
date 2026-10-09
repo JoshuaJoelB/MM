@@ -53,23 +53,39 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       DATA LAYER — must load first
+       ============================================================ -->
+  <script src="script/player.js"></script>
+  <script src="script/leaderboard-data.js"></script>
+  <script src="script/leaderboard.js"></script>
+
+  <!-- Level / points / stars -->
   <script src="script/player-level.js"></script>
   <script src="script/platform-loader.js"></script>
 
+  <!-- ============================================================
+       LEVEL PAGE LOGIC
+       ============================================================ -->
   <script>
-  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     const subject   = urlParams.get('subject') || 'computer';
 
+    // ✅ Save this as the player's last-visited subject (for login resume)
+    if (window.MMPlayer && MMPlayer.pSet) {
+      MMPlayer.pSet('lastSubject', subject);
+    }
+
     // ================================================================
     // GAMEPLAY FILE MAP — explicit filenames, exact case
-    // (fixes 404s on case-sensitive file systems)
     // ================================================================
     const GAMEPLAY_FILES = {
       computer: 'Gameplay/Gameplay-computer.html',
       science:  'Gameplay/Gameplay-science.html',
       ap:       'Gameplay/Gameplay-AP.html'
     };
+    // ... rest stays unchanged
 
     function getGameplayUrl(level) {
       const file = GAMEPLAY_FILES[subject] || GAMEPLAY_FILES.computer;
@@ -88,27 +104,34 @@
     } catch (e) {}
 
     const subjectNames = { computer: 'EPP', science: 'Science', ap: 'AP' };
-        const titleEl = document.getElementById('subjectMapTitle');
-        if (titleEl) titleEl.textContent = (subjectNames[subject] || 'Subject') + ' Map';
+    const titleEl = document.getElementById('subjectMapTitle');
+    if (titleEl) titleEl.textContent = (subjectNames[subject] || 'Subject') + ' Map';
 
-    // ---- Storage helpers ----
+    // ================================================================
+    // STORAGE HELPERS — per-player via MMPlayer
+    // ================================================================
+    function pJSON(key, fallback) {
+      if (window.MMPlayer && MMPlayer.pJSON) return MMPlayer.pJSON(key, fallback);
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        return JSON.parse(raw);
+      } catch (e) { return fallback; }
+    }
+
     function getUnlocked() {
-      try {
-        const arr = JSON.parse(localStorage.getItem('matchMonster_unlocked_' + subject) || '[1]');
-        return Array.isArray(arr) && arr.length ? arr : [1];
-      } catch (e) { return [1]; }
+      const arr = pJSON('unlocked_' + subject, [1]);
+      return Array.isArray(arr) && arr.length ? arr : [1];
     }
+
     function getCompleted() {
-      try {
-        const arr = JSON.parse(localStorage.getItem('matchMonster_completed_' + subject) || '[]');
-        return Array.isArray(arr) ? arr : [];
-      } catch (e) { return []; }
+      const arr = pJSON('completed_' + subject, []);
+      return Array.isArray(arr) ? arr : [];
     }
+
     function getBestStars(level) {
-      try {
-        const map = JSON.parse(localStorage.getItem('matchMonster_stars_' + subject) || '{}');
-        return Number(map[level]) || 0;
-      } catch (e) { return 0; }
+      const map = pJSON('stars_' + subject, {});
+      return Number(map[level]) || 0;
     }
 
     function fadeAndNavigate(url) {

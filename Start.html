@@ -416,6 +416,35 @@
         'Use a fun name — <strong>not your real name!</strong><br />' +
         'Letters and numbers only.';
 
+      /* Decide where a player lands after login:
+         - Returning player → their last-played subject map
+         - New player       → Subject.html (subject picker)          */
+      function getLandingPage(nickname) {
+        if (!nickname) return 'Level.html?subject=computer';
+
+        var prefix = 'mm_' + nickname.toLowerCase() + '_';
+        var subjects = ['computer', 'science', 'ap'];
+
+        try {
+          var last = localStorage.getItem(prefix + 'lastSubject');
+          if (last && subjects.indexOf(last) !== -1) {
+            return 'Level.html?subject=' + last;
+          }
+
+          for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            if (k && k.indexOf(prefix + 'unlocked_') === 0) {
+              var subj = k.slice((prefix + 'unlocked_').length);
+              if (subjects.indexOf(subj) !== -1) {
+                return 'Level.html?subject=' + subj;
+              }
+            }
+          }
+        } catch (e) {}
+
+        return 'Level.html?subject=computer';
+      }
+
       function refreshInput() {
         const clean = MMPlayer.sanitizeNickname(input.value);
         if (clean !== input.value) input.value = clean;
@@ -426,7 +455,7 @@
       }
       input.addEventListener('input', refreshInput);
 
-      form.addEventListener('submit', function (e) {
+       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
         const name = MMPlayer.sanitizeNickname(input.value).trim();
@@ -444,12 +473,13 @@
           return;
         }
 
-        // ✅ Mark as a fresh login → triggers "Hello!" on Home
+        // Mark as fresh login → triggers "Hello!" on Home
         try { sessionStorage.setItem('mm_just_logged_in', '1'); } catch (e) {}
 
         playBtn.innerHTML = '<i class="fas fa-check"></i> Loading…';
         playBtn.disabled = true;
 
+        // ✅ Always go to Home
         setTimeout(function () {
           window.location.href = 'Home.html';
         }, 450);
