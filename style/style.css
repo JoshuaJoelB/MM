@@ -3662,6 +3662,70 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ================================================================
+   LEADERBOARD TABS
+   ================================================================ */
+.lb-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lb-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 18px;
+  border-radius: 100px;
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  background: rgba(30, 144, 255, 0.1);
+
+  color: #FFD700;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.82rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.lb-tab i {
+  color: #FFD700 !important;
+  font-size: 0.85rem;
+}
+
+.lb-tab:hover {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: #FFD700;
+  transform: translateY(-1px);
+}
+
+.lb-tab.active {
+  background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
+  border-color: #1a0f2e;
+  color: #1a0f2e;
+  box-shadow:
+    0 3px 0 #7a4b00,
+    inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+.lb-tab.active i {
+  color: #1a0f2e !important;
+}
+
+@media (max-width: 480px) {
+  .lb-tabs { gap: 6px; margin-bottom: 14px; }
+  .lb-tab  { padding: 7px 13px; font-size: 0.72rem; }
+  .lb-tab i { font-size: 0.78rem; }
+}
+
+
+/* ================================================================
    HOME WELCOME / HELLO GREETING
    ================================================================ */
 .home-welcome {

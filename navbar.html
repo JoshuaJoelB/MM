@@ -69,7 +69,6 @@
   </div>
 </nav>
 
-<!-- LEADERBOARD MODAL -->
 <div class="modal fade" id="leaderboardModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
@@ -81,6 +80,18 @@
       </div>
 
       <div class="modal-body">
+        <div class="lb-tabs" role="tablist">
+          <button type="button" class="lb-tab active" data-subject="computer" role="tab">
+            <i class="fas fa-laptop"></i> EPP
+          </button>
+          <button type="button" class="lb-tab" data-subject="science" role="tab">
+            <i class="fas fa-flask"></i> Science
+          </button>
+          <button type="button" class="lb-tab" data-subject="ap" role="tab">
+            <i class="fas fa-globe-asia"></i> AP
+          </button>
+        </div>
+
         <div class="lb-podium" id="lbPodium" hidden>
           <div class="lb-podium-slot lb-podium-2" data-slot="2"></div>
           <div class="lb-podium-slot lb-podium-1" data-slot="1"></div>
@@ -90,7 +101,7 @@
         <ol class="lb-list" id="navLbList"></ol>
 
         <p class="lb-empty" id="navLbEmpty" hidden>
-          No scores yet — be the first! 🎉
+          No scores yet for this subject — be the first! 🎉
         </p>
 
         <p class="lb-note">Scores are saved only on this device.</p>
@@ -104,7 +115,6 @@
     </div>
   </div>
 </div>
-
 <!-- SETTINGS MODAL -->
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
