@@ -1,27 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": null,
-  "entries": [
-    {
-      "nickname": "StarDragon",
-      "score": 320,
-      "stars": 3,
-      "time": 45,
-      "date": "2025-01-01"
-    },
-    {
-      "nickname": "PixelPanda",
-      "score": 280,
-      "stars": 2,
-      "time": 62,
-      "date": "2025-01-02"
-    },
-    {
-      "nickname": "BlueComet",
-      "score": 250,
-      "stars": 2,
-      "time": 70,
-      "date": "2025-01-03"
-    }
-  ]
+  "entries": []
 }

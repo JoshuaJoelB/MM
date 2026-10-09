@@ -1,5 +1,5 @@
 /* ================================================================
-   SCRIPT.JS – shared logic for all pages
+   SCRIPT.JS – shared logic for all pages (FINAL)
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -265,7 +265,7 @@ function initSettings() {
     }
   }, 100);
 
-  // ---- Reset Progress ----
+  // ---- Reset Progress (also clears leaderboards) ----
   document.addEventListener('click', function (e) {
     const resetBtn = e.target.closest('#resetProgressBtn');
     if (!resetBtn) return;
@@ -279,45 +279,67 @@ function initSettings() {
       '• All unlocked & completed levels\n' +
       '• All star ratings\n' +
       '• All points\n' +
-      '• Everything for Computer, Science, and AP\n\n' +
+      '• ALL leaderboard scores for EPP, Science, and AP\n\n' +
       'This cannot be undone!'
     );
     if (!ok) return;
 
-    // Clear global stats
+    /* -------- Clear global stats -------- */
     localStorage.removeItem('gamesPlayed');
     localStorage.removeItem('bestTime');
     localStorage.removeItem('totalMatches');
     localStorage.removeItem('rewardsCount');
 
-    // Clear currency (new + legacy keys)
+    /* -------- Clear currency (new + legacy keys) -------- */
     localStorage.removeItem('pointsTotal');
     localStorage.removeItem('coinsTotal');
     localStorage.removeItem('starsTotal');
 
-    // Clear per-subject progress + stars
+    /* -------- Clear per-subject progress + stars -------- */
     ['computer', 'science', 'ap'].forEach(function (sub) {
       localStorage.removeItem('matchMonster_unlocked_' + sub);
       localStorage.removeItem('matchMonster_completed_' + sub);
       localStorage.removeItem('matchMonster_stars_' + sub);
     });
 
-    // Refresh UI
+    /* -------- Clear ALL leaderboards -------- */
+    localStorage.removeItem('mm_leaderboard');
+    localStorage.removeItem('mm_leaderboard_v2');
+    localStorage.removeItem('mm_leaderboard_players');
+
+    // Use MMLeaderboard API if available (cleaner)
+    if (window.MMLeaderboard && typeof MMLeaderboard.clearAll === 'function') {
+      try { MMLeaderboard.clearAll(); } catch (err) {}
+    }
+
+    /* -------- Refresh UI -------- */
     if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
     if (typeof window.updatePlayerLevelBox === 'function') {
       window.updatePlayerLevelBox();
     }
 
-    // Close settings modal
+    // Re-render the leaderboard modal (if it's open)
+    const lbModal = document.getElementById('leaderboardModal');
+    if (lbModal && window.bootstrap) {
+      // Trigger re-render on next open
+      const listEl  = document.getElementById('navLbList');
+      const emptyEl = document.getElementById('navLbEmpty');
+      const podium  = document.getElementById('lbPodium');
+      if (listEl)  listEl.innerHTML = '';
+      if (podium)  podium.hidden = true;
+      if (emptyEl) emptyEl.hidden = false;
+    }
+
+    /* -------- Close settings modal -------- */
     const modalEl = document.getElementById('settingsModal');
     if (modalEl && window.bootstrap) {
       const modal = bootstrap.Modal.getInstance(modalEl);
       if (modal) modal.hide();
     }
 
-    // Toast
+    /* -------- Toast -------- */
     const toast = document.createElement('div');
-    toast.textContent = '✅ Progress reset! Level 1 is unlocked.';
+    toast.textContent = '✅ Progress + leaderboards reset!';
     toast.style.cssText = `
       position: fixed;
       bottom: 24px;
@@ -338,7 +360,7 @@ function initSettings() {
     document.body.appendChild(toast);
     setTimeout(function () { toast.remove(); }, 2600);
 
-    // Reset home board view
+    /* -------- Reset home board view -------- */
     const homeLobby      = document.getElementById('homeLobby');
     const homeGameScreen = document.getElementById('homeGameScreen');
     if (homeLobby)      homeLobby.style.display = 'block';
@@ -639,21 +661,16 @@ function initHomePage() {
 
 /* ================================================================
    NAVBAR HAMBURGER MENU
-   - Toggle open/close on button click
-   - Close on outside click, Escape, or menu item select
-   - Menu items open the Inbox / Settings modals
    ================================================================ */
 (function () {
   'use strict';
 
-  // ---- Toggle open/close ----
   document.addEventListener('click', function (e) {
     const wrap = document.getElementById('navMenuWrap');
     if (!wrap) return;
 
     const toggle = e.target.closest('#navMenuToggle');
 
-    // Click on the toggle button
     if (toggle) {
       e.preventDefault();
       e.stopPropagation();
@@ -662,7 +679,6 @@ function initHomePage() {
       return;
     }
 
-    // Click on a menu item → close menu, then open the modal
     const item = e.target.closest('.nav-menu-item');
     if (item) {
       wrap.classList.remove('open');
@@ -684,7 +700,6 @@ function initHomePage() {
       return;
     }
 
-    // Click outside → close
     if (!e.target.closest('#navMenuWrap')) {
       if (wrap.classList.contains('open')) {
         wrap.classList.remove('open');
@@ -694,7 +709,6 @@ function initHomePage() {
     }
   });
 
-  // ---- Close on Escape ----
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     const wrap = document.getElementById('navMenuWrap');
@@ -705,7 +719,6 @@ function initHomePage() {
     }
   });
 
-  // ---- Close when navbar reloads (page navigation, etc.) ----
   window.addEventListener('navbarLoaded', function () {
     const wrap = document.getElementById('navMenuWrap');
     if (wrap) wrap.classList.remove('open');
@@ -713,24 +726,30 @@ function initHomePage() {
 })();
 
 /* ================================================================
-   LEADERBOARD MODAL — render podium + rows
+   LEADERBOARD MODAL — tabs + podium + rows (3 subjects)
    ================================================================ */
 (function () {
   'use strict';
 
+  let currentSubject = 'computer';
+
   function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
   }
 
   function starString(n) {
     return '⭐'.repeat(Math.max(0, Math.min(3, n || 0)));
   }
 
-  function formatScore(n) {
-    return Number(n || 0).toLocaleString();
+  function formatTime(sec) {
+    if (sec === null || sec === undefined) return '--';
+    sec = Math.max(0, Math.floor(sec));
+    if (sec === 0) return '--';
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return String(m).padStart(1, '0') + ':' + String(s).padStart(2, '0');
   }
 
   function currentNickname() {
@@ -755,8 +774,8 @@ function initHomePage() {
       slot.innerHTML =
         '<span class="lb-podium-medal">' + medals[rank] + '</span>' +
         '<span class="lb-podium-name">'  + escapeHtml(p.nickname) + '</span>' +
-        '<span class="lb-podium-score">' + formatScore(p.score) + '</span>' +
-        '<span class="lb-podium-stars">' + starString(p.totalStars) + ' · Lv ' + p.highestLevel + '</span>';
+        '<span class="lb-podium-score">Lv ' + p.highestLevel + '</span>' +
+        '<span class="lb-podium-stars">⏱ ' + formatTime(p.bestTime) + ' · ' + starString(p.totalStars) + '</span>';
     });
   }
 
@@ -768,15 +787,15 @@ function initHomePage() {
     const me = currentNickname().toLowerCase();
 
     players.forEach(function (p, i) {
-      const rank = (startRank || 4) + i;
+      const rank = (startRank || 1) + i;
       const li = document.createElement('li');
       li.className = 'lb-row' + (p.nickname.toLowerCase() === me ? ' me' : '');
 
       li.innerHTML =
         '<span class="lb-rank">'  + rank + '</span>' +
         '<span class="lb-name">'  + escapeHtml(p.nickname) + '</span>' +
-        '<span class="lb-sub">'   + starString(p.totalStars) + ' · Lv ' + p.highestLevel + '</span>' +
-        '<span class="lb-score">' + formatScore(p.score) + '</span>';
+        '<span class="lb-sub">Lv ' + p.highestLevel + ' · ⏱ ' + formatTime(p.bestTime) + '</span>' +
+        '<span class="lb-score">' + starString(p.totalStars) + '</span>';
 
       listEl.appendChild(li);
     });
@@ -786,7 +805,7 @@ function initHomePage() {
     const emptyEl = document.getElementById('navLbEmpty');
     if (!emptyEl || !window.MMLeaderboard) return;
 
-    const all = MMLeaderboard.getAllPlayers();
+    const all = MMLeaderboard.getAllForSubject(currentSubject);
 
     if (!all.length) {
       emptyEl.hidden = false;
@@ -796,9 +815,32 @@ function initHomePage() {
     }
     emptyEl.hidden = true;
 
-    renderPodium(all.slice(0, 3));
-    renderRows(all.slice(3, MMLeaderboard.DISPLAY_LIMIT));
+    if (all.length >= 3) {
+      renderPodium(all.slice(0, 3));
+      renderRows(all.slice(3, MMLeaderboard.DISPLAY_LIMIT), 4);
+    } else {
+      renderPodium([]);
+      renderRows(all, 1);
+    }
   }
+
+  document.addEventListener('click', function (e) {
+    const tab = e.target.closest('.lb-tab');
+    if (!tab) return;
+    e.preventDefault();
+
+    const subj = tab.dataset.subject;
+    if (!subj || !window.MMLeaderboard) return;
+    if (MMLeaderboard.SUBJECTS.indexOf(subj) === -1) return;
+
+    currentSubject = subj;
+
+    document.querySelectorAll('.lb-tab').forEach(function (t) {
+      t.classList.toggle('active', t === tab);
+    });
+
+    renderLeaderboard();
+  });
 
   document.addEventListener('shown.bs.modal', function (e) {
     if (e.target && e.target.id === 'leaderboardModal') renderLeaderboard();
@@ -815,137 +857,7 @@ function initHomePage() {
   'use strict';
 
   function doLogout() {
-    var ok = confirm('Log out? Your scores stay saved on this device.');
-    if (!ok) return;
-
-    // Clear only the nickname — leaderboard entries stay
-    if (window.MMPlayer && typeof MMPlayer.clearNickname === 'function') {
-      MMPlayer.clearNickname();
-    } else {
-      try { localStorage.removeItem('mm_player_nickname'); } catch (e) {}
-    }
-
-    // Redirect to login
-    window.location.replace('Start.html');
-  }
-
-  // Event delegation — works even after navbar re-injects
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('#logoutBtn, #logoutBtnMobile');
-    if (!btn) return;
-    e.preventDefault();
-    doLogout();
-  });
-})();
-
-/* ================================================================
-   HOME WELCOME / HELLO GREETING
-   - "Hello, {name}!"         → just logged in
-   - "Welcome back, {name}!"  → returning to Home in same session
-   ================================================================ */
-(function () {
-  'use strict';
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
-    });
-  }
-
-  function initGreeting() {
-    var wrap  = document.getElementById('homeWelcome');
-    var icon  = document.getElementById('homeWelcomeIcon');
-    var text  = document.getElementById('homeWelcomeText');
-    if (!wrap || !icon || !text) return;
-
-    var name = '';
-    try { name = localStorage.getItem('mm_player_nickname') || ''; } catch (e) {}
-
-    // No nickname → hide greeting (shouldn't happen on Home)
-    if (!name) { wrap.hidden = true; return; }
-
-    // Was this a fresh login?
-    var justLoggedIn = false;
-    try {
-      justLoggedIn = sessionStorage.getItem('mm_just_logged_in') === '1';
-      sessionStorage.removeItem('mm_just_logged_in');
-    } catch (e) {}
-
-    var greeting = justLoggedIn ? 'Hello' : 'Welcome back';
-    var emoji    = justLoggedIn ? '👋' : '🎉';
-
-    icon.textContent = emoji;
-    text.innerHTML =
-      greeting + ', <span class="home-welcome-name">' +
-      escapeHtml(name) + '</span>!';
-
-    wrap.hidden = false;
-  }
-
-  // Run once script.js is loaded (Home page only)
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGreeting);
-  } else {
-    initGreeting();
-  }
-})();
-
-/* ================================================================
-   HOME WELCOME / HELLO GREETING
-   ================================================================ */
-(function () {
-  'use strict';
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
-    });
-  }
-
-  function initGreeting() {
-    var wrap = document.getElementById('homeWelcome');
-    var icon = document.getElementById('homeWelcomeIcon');
-    var text = document.getElementById('homeWelcomeText');
-    if (!wrap || !icon || !text) return;
-
-    var name = '';
-    try { name = localStorage.getItem('mm_player_nickname') || ''; } catch (e) {}
-
-    if (!name) { wrap.hidden = true; return; }
-
-    var justLoggedIn = false;
-    try {
-      justLoggedIn = sessionStorage.getItem('mm_just_logged_in') === '1';
-      sessionStorage.removeItem('mm_just_logged_in');
-    } catch (e) {}
-
-    var greeting = justLoggedIn ? 'Hello' : 'Welcome back';
-    var emoji    = justLoggedIn ? '👋' : '🎉';
-
-    icon.textContent = emoji;
-    text.innerHTML =
-      greeting + ', <span class="home-welcome-name">' +
-      escapeHtml(name) + '</span>!';
-
-    wrap.hidden = false;
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGreeting);
-  } else {
-    initGreeting();
-  }
-})();
-
-/* ================================================================
-   LOGOUT — clears nickname, sends player back to Start.html
-   ================================================================ */
-(function () {
-  'use strict';
-
-  function doLogout() {
-    var ok = confirm('Log out? Your scores stay saved on this device.');
-    if (!ok) return;
+    if (!confirm('Log out? Your scores stay saved on this device.')) return;
 
     if (window.MMPlayer && typeof MMPlayer.clearNickname === 'function') {
       MMPlayer.clearNickname();
@@ -964,4 +876,47 @@ function initHomePage() {
     e.preventDefault();
     doLogout();
   });
+})();
+
+/* ================================================================
+   HOME WELCOME / HELLO GREETING
+   ================================================================ */
+(function () {
+  'use strict';
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function initGreeting() {
+    var wrap = document.getElementById('homeWelcome');
+    var icon = document.getElementById('homeWelcomeIcon');
+    var text = document.getElementById('homeWelcomeText');
+    if (!wrap || !icon || !text) return;
+
+    var name = '';
+    try { name = localStorage.getItem('mm_player_nickname') || ''; } catch (e) {}
+    if (!name) { wrap.hidden = true; return; }
+
+    var justLoggedIn = false;
+    try {
+      justLoggedIn = sessionStorage.getItem('mm_just_logged_in') === '1';
+      sessionStorage.removeItem('mm_just_logged_in');
+    } catch (e) {}
+
+    icon.textContent = justLoggedIn ? '👋' : '🎉';
+    text.innerHTML =
+      (justLoggedIn ? 'Hello' : 'Welcome back') +
+      ', <span class="home-welcome-name">' + esc(name) + '</span>!';
+
+    wrap.hidden = false;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGreeting);
+  } else {
+    initGreeting();
+  }
 })();
