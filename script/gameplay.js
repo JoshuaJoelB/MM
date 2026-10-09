@@ -1,5 +1,5 @@
 /* ================================================================
-   GAMEPLAY.JS — MATCH MONSTER (per-player aware)
+   GAMEPLAY.JS — MATCH MONSTER (per-player + SFX)
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1004,6 +1004,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(showWin, 400);
       }
     } else {
+      // 🔊 Wrong card SFX
+      if (window.MMSfx && MMSfx.wrong) MMSfx.wrong();
+
       setTimeout(() => {
         first.el.classList.remove('flipped');
         second.el.classList.remove('flipped');
@@ -1017,6 +1020,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gameFinished) return;
     gameFinished = true;
     isLocked = true;
+
+    // 🔊 Game over SFX
+    if (window.MMSfx && MMSfx.gameover) MMSfx.gameover();
 
     if (winOverlay) winOverlay.classList.remove('show');
 
