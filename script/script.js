@@ -97,15 +97,14 @@ document.addEventListener('DOMContentLoaded', function () {
 function initQuickActions() {
 
   function getStats() {
+    const pGet = (k, d) => (window.MMPlayer && MMPlayer.pGet) ? MMPlayer.pGet(k, d) : localStorage.getItem(k);
     return {
-      gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
-      totalMatches: parseInt(localStorage.getItem('totalMatches') || '0', 10),
-      rewards:      parseInt(localStorage.getItem('rewardsCount') || '0', 10),
-      points:       parseInt(localStorage.getItem('pointsTotal')  || '0', 10),
-      stars: (typeof window.getStarsTotal === 'function')
-             ? window.getStarsTotal()
-             : 0,
-      bestTime:     localStorage.getItem('bestTime') || null,
+      gamesPlayed:  parseInt(pGet('gamesPlayed',  '0'), 10) || 0,
+      totalMatches: parseInt(pGet('totalMatches', '0'), 10) || 0,
+      rewards:      parseInt(pGet('rewardsCount', '0'), 10) || 0,
+      points:       parseInt(pGet('pointsTotal',  '0'), 10) || 0,
+      stars: (typeof window.getStarsTotal === 'function') ? window.getStarsTotal() : 0,
+      bestTime:     pGet('bestTime', null),
     };
   }
 
@@ -265,51 +264,43 @@ function initSettings() {
     }
   }, 100);
 
-  // ---- Reset Progress (also clears leaderboards) ----
+  // ---- Reset Progress — per-player only ----
   document.addEventListener('click', function (e) {
     const resetBtn = e.target.closest('#resetProgressBtn');
     if (!resetBtn) return;
 
     e.preventDefault();
 
+    const nickname = (window.MMPlayer && MMPlayer.getNickname)
+      ? MMPlayer.getNickname()
+      : '';
+
     const ok = confirm(
-      '⚠️ Reset all progress?\n\n' +
+      '⚠️ Reset ALL progress for ' + (nickname || 'this account') + '?\n\n' +
       'This will erase:\n' +
-      '• All stats (games, matches, best time)\n' +
-      '• All unlocked & completed levels\n' +
-      '• All star ratings\n' +
-      '• All points\n' +
-      '• ALL leaderboard scores for EPP, Science, and AP\n\n' +
+      '• Your levels, stars, points, stats\n' +
+      '• Your leaderboard entries for EPP, Science, and AP\n\n' +
+      'Other players on this device are NOT affected.\n' +
       'This cannot be undone!'
     );
     if (!ok) return;
 
-    /* -------- Clear global stats -------- */
-    localStorage.removeItem('gamesPlayed');
-    localStorage.removeItem('bestTime');
-    localStorage.removeItem('totalMatches');
-    localStorage.removeItem('rewardsCount');
+    /* -------- Wipe current player's prefixed keys -------- */
+    if (window.MMPlayer && MMPlayer.wipePlayerData) {
+      MMPlayer.wipePlayerData(nickname);
+    } else if (nickname) {
+      const prefix = 'mm_' + nickname.toLowerCase() + '_';
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf(prefix) === 0) keys.push(k);
+      }
+      keys.forEach(k => localStorage.removeItem(k));
+    }
 
-    /* -------- Clear currency (new + legacy keys) -------- */
-    localStorage.removeItem('pointsTotal');
-    localStorage.removeItem('coinsTotal');
-    localStorage.removeItem('starsTotal');
-
-    /* -------- Clear per-subject progress + stars -------- */
-    ['computer', 'science', 'ap'].forEach(function (sub) {
-      localStorage.removeItem('matchMonster_unlocked_' + sub);
-      localStorage.removeItem('matchMonster_completed_' + sub);
-      localStorage.removeItem('matchMonster_stars_' + sub);
-    });
-
-    /* -------- Clear ALL leaderboards -------- */
-    localStorage.removeItem('mm_leaderboard');
-    localStorage.removeItem('mm_leaderboard_v2');
-    localStorage.removeItem('mm_leaderboard_players');
-
-    // Use MMLeaderboard API if available (cleaner)
-    if (window.MMLeaderboard && typeof MMLeaderboard.clearAll === 'function') {
-      try { MMLeaderboard.clearAll(); } catch (err) {}
+    /* -------- Remove THIS player from leaderboards -------- */
+    if (window.MMLeaderboard && MMLeaderboard.removePlayer && nickname) {
+      try { MMLeaderboard.removePlayer(nickname); } catch (err) {}
     }
 
     /* -------- Refresh UI -------- */
@@ -318,17 +309,13 @@ function initSettings() {
       window.updatePlayerLevelBox();
     }
 
-    // Re-render the leaderboard modal (if it's open)
-    const lbModal = document.getElementById('leaderboardModal');
-    if (lbModal && window.bootstrap) {
-      // Trigger re-render on next open
-      const listEl  = document.getElementById('navLbList');
-      const emptyEl = document.getElementById('navLbEmpty');
-      const podium  = document.getElementById('lbPodium');
-      if (listEl)  listEl.innerHTML = '';
-      if (podium)  podium.hidden = true;
-      if (emptyEl) emptyEl.hidden = false;
-    }
+    /* -------- Clear leaderboard modal in DOM (if open) -------- */
+    const listEl  = document.getElementById('navLbList');
+    const emptyEl = document.getElementById('navLbEmpty');
+    const podium  = document.getElementById('lbPodium');
+    if (listEl)  listEl.innerHTML = '';
+    if (podium)  podium.hidden = true;
+    if (emptyEl) emptyEl.hidden = false;
 
     /* -------- Close settings modal -------- */
     const modalEl = document.getElementById('settingsModal');
@@ -339,7 +326,7 @@ function initSettings() {
 
     /* -------- Toast -------- */
     const toast = document.createElement('div');
-    toast.textContent = '✅ Progress + leaderboards reset!';
+    toast.textContent = '✅ Progress + leaderboard reset!';
     toast.style.cssText = `
       position: fixed;
       bottom: 24px;
@@ -385,14 +372,15 @@ function initSettings() {
 }
 
 /* ================================================================
-   STATS — read/write
+   STATS — per-player read/write
    ================================================================ */
 function getStats() {
+  const pGet = (k, d) => (window.MMPlayer && MMPlayer.pGet) ? MMPlayer.pGet(k, d) : localStorage.getItem(k);
   return {
-    gamesPlayed:  parseInt(localStorage.getItem('gamesPlayed')  || '0', 10),
-    bestTime:     localStorage.getItem('bestTime') || null,
-    totalMatches: parseInt(localStorage.getItem('totalMatches') || '0', 10),
-    rewards:      parseInt(localStorage.getItem('rewardsCount') || '0', 10),
+    gamesPlayed:  parseInt(pGet('gamesPlayed',  '0'), 10) || 0,
+    bestTime:     pGet('bestTime', null),
+    totalMatches: parseInt(pGet('totalMatches', '0'), 10) || 0,
+    rewards:      parseInt(pGet('rewardsCount', '0'), 10) || 0,
   };
 }
 
@@ -404,16 +392,26 @@ function updateStatsDisplay() {
   const rw = document.getElementById('rewardsCount');
 
   if (gp) gp.textContent = stats.gamesPlayed;
-  if (bt) bt.textContent = stats.bestTime !== null ? stats.bestTime + 's' : '--';
+  if (bt) bt.textContent = (stats.bestTime !== null && stats.bestTime !== undefined)
+    ? stats.bestTime + 's'
+    : '--';
   if (tm) tm.textContent = stats.totalMatches;
   if (rw) rw.textContent = stats.rewards;
 }
 
 function saveStats(stats) {
-  localStorage.setItem('gamesPlayed',  String(stats.gamesPlayed));
-  localStorage.setItem('bestTime',     String(stats.bestTime));
-  localStorage.setItem('totalMatches', String(stats.totalMatches));
-  localStorage.setItem('rewardsCount', String(stats.rewards));
+  if (!(window.MMPlayer && MMPlayer.pSet)) {
+    localStorage.setItem('gamesPlayed',  String(stats.gamesPlayed));
+    localStorage.setItem('bestTime',     String(stats.bestTime));
+    localStorage.setItem('totalMatches', String(stats.totalMatches));
+    localStorage.setItem('rewardsCount', String(stats.rewards));
+    updateStatsDisplay();
+    return;
+  }
+  MMPlayer.pSet('gamesPlayed',  String(stats.gamesPlayed));
+  MMPlayer.pSet('bestTime',     String(stats.bestTime));
+  MMPlayer.pSet('totalMatches', String(stats.totalMatches));
+  MMPlayer.pSet('rewardsCount', String(stats.rewards));
   updateStatsDisplay();
 }
 
@@ -851,13 +849,13 @@ function initHomePage() {
 })();
 
 /* ================================================================
-   LOGOUT — clears nickname, sends player back to Start.html
+   LOGOUT — clears nickname only (player data stays on device)
    ================================================================ */
 (function () {
   'use strict';
 
   function doLogout() {
-    if (!confirm('Log out? Your scores stay saved on this device.')) return;
+    if (!confirm('Log out? Your progress stays saved. Enter your nickname again to resume.')) return;
 
     if (window.MMPlayer && typeof MMPlayer.clearNickname === 'function') {
       MMPlayer.clearNickname();
