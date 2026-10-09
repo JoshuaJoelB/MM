@@ -2,6 +2,13 @@
    PLAYER-LEVEL.JS — per-player progress
    ----------------------------------------------------------------
    All storage is scoped to the logged-in nickname via MMPlayer.pX().
+
+   UNLOCK RULE:
+   - You can ONLY unlock the next level (1 ahead of what you've completed).
+   - To unlock Level N, Level N-1 must be completed.
+   - If you have enough points AND the previous level is done → unlock.
+   - If the previous level isn't done → "Finish Level N-1 first".
+   - If you don't have enough points → "Not enough points".
    ================================================================ */
 
 (function () {
@@ -145,6 +152,10 @@
       return { ok: true, alreadyUnlocked: true };
     }
 
+    // ✅ RESTRICTION: Only allow unlocking the NEXT level.
+    // To unlock Level N, Level N-1 must be completed first.
+    // This means a player can never be more than 1 level ahead
+    // of their completed progress, no matter how many points they have.
     if (level > 1) {
       const completed = getCompletedList(subject);
       if (completed.indexOf(level - 1) === -1) {
@@ -166,9 +177,10 @@
     unlocked.push(level);
     saveUnlockedList(subject, unlocked);
 
+    // Read-back verification
     const verify = getUnlockedList(subject);
     if (verify.indexOf(level) === -1) {
-      addPoints(cost);
+      addPoints(cost);   // refund
       return { ok: false, reason: 'save_failed' };
     }
 
