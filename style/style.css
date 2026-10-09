@@ -2152,16 +2152,16 @@ body::before {
 }
 .subject-icon { font-size: 3.5rem; margin-bottom: 12px; }
 .subject-icon-img {
-  width: 80px;
-  height: 80px;
+  width: 180px;
+  height: 120px;
   object-fit: contain;
   margin-bottom: 14px;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
   transition: transform 0.3s ease;
 }
 .subject-card:hover .subject-icon-img { transform: scale(1.08) translateY(-2px); }
-@media (max-width: 768px) { .subject-icon-img { width: 64px; height: 64px; margin-bottom: 10px; } }
-@media (max-width: 480px) { .subject-icon-img { width: 56px; height: 56px; margin-bottom: 8px; } }
+@media (max-width: 768px) { .subject-icon-img { width: 90px; height: auto; margin-bottom: 10px; } } /*mobile for sure*/
+@media (max-width: 480px) { .subject-icon-img { width: 120px; height: 101px; margin-bottom: 8px; } } 
 
 .subject-card h3 {
   font-family: 'DynaPuff', system-ui, sans-serif !important;
