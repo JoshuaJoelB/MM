@@ -1,5 +1,5 @@
 /* ================================================================
-   GAMEPLAY.JS — MATCH MONSTER (per-player + SFX)
+   GAMEPLAY.JS — MATCH MONSTER (per-player + SFX + local images)
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -105,7 +105,168 @@ document.addEventListener('DOMContentLoaded', function() {
   }[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
 
   // ============================================================
-  // IMAGE LIBRARY
+  // LOCAL IMAGE FOLDERS
+  // ============================================================
+  const SUBJECT_FOLDER = {
+    computer: 'EPP',
+    science:  'SCIENCE',
+    ap:       'AP'
+  };
+
+  const LEVEL_FOLDER_VARIANTS = {
+    computer: function (n) { return ['lvl ' + n, 'lvl' + n, 'Level ' + n, 'level ' + n]; },
+    science:  function (n) { return ['Level ' + n, 'level ' + n, 'lvl ' + n, 'lvl' + n]; },
+    ap:       function (n) {
+      const list = ['level ' + n, 'Level ' + n, 'lvl ' + n, 'lvl' + n];
+      if (n === 5) list.unshift('level 5 incomplete');
+      return list;
+    }
+  };
+
+  const IMG_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+
+  // ============================================================
+  // FILE_MAP — actual filenames (without extension)
+  // ============================================================
+  const FILE_MAP = {
+    /* -------------------- AP -------------------- */
+    'ap:1:Pacific Ocean':        'pacific ocean',
+    'ap:1:Pasig River':          'pasig river',
+    'ap:1:Laguna de Bay':        'laguna debay',
+
+    'ap:2:Mount Apo':            'Mount-Apo-',
+    'ap:2:Mayon Volcano':        'mayon',
+    'ap:2:Chocolate Hills':      'chocolate hills',
+    'ap:2:Central Luzon Plain':  'Central Luzon Plain',
+
+    'ap:3:Malaysia':             'malaysia',
+    'ap:3:Indonesia':            'indonesia',
+    'ap:3:Vietnam':              'Vietnam',
+    'ap:3:Thailand':             'thailand',
+    'ap:3:Brunei':               'brunei',
+
+    'ap:4:Weather':              'weather',
+    'ap:4:Climate':              'climate',
+    'ap:4:Temperature':          'temperature',
+    'ap:4:Humidity':             'humidity',
+    'ap:4:Rainfall':             'rainfall',
+    'ap:4:PAGASA':               'pagasa',
+
+    /* -------------------- EPP -------------------- */
+    'computer:1:Google':         'google',
+    'computer:1:Yahoo':          'yahoo',
+    'computer:1:Lycos':          'lycos',
+
+    'computer:2:Search box':     'search box',
+    'computer:2:Search button':  'search button',
+    'computer:2:Search results': 'search result',
+
+    'computer:3:Safari':         'safari',
+    'computer:3:Opera':          'opera',
+    'computer:3:Microsoft Edge': 'microsoft edge',
+    'computer:3:Mozilla Firefox':'mozilla firefox',
+    'computer:3:Google Chrome':  'google chrome',
+
+    'computer:4:Email':          'email',
+    'computer:4:Chat':           'chat',
+    'computer:4:Instant message':'Instant message',
+    'computer:4:Video call':     'videocall',
+    'computer:4:Social media':   'social media',
+    'computer:4:Online class':   'onlineclass',
+
+    'computer:5:Kind words':         'dos/kind words',
+    'computer:5:Ask permission':     'dos/Ask permission before posting others_ photos (do)',
+    'computer:5:Be respectful':      'dos/Be respectful in online class (do)_',
+    'computer:5:Typing in ALL CAPS': 'dont/Typing in ALL CAPS (dont)',
+    'computer:5:Sharing password':   'dont/Sharing password_',
+    'computer:5:Using bad words':    'dont/Using bad words_',
+    'computer:5:Fake news':          'dont/fake news',
+
+    /* -------------------- SCIENCE -------------------- */
+    'science:1:Rock':            'rock',
+    'science:1:Water':           'Water',
+
+    'science:2:Chair':           'Chair',
+    'science:2:Desk':            'Desk',
+    'science:2:Bag':             'Bag',
+    'science:2:Shoes':           'Shoes',
+
+    'science:3:Water':           'water',
+    'science:3:Coffee':          'coffee',
+    'science:3:Chocolate drink': 'chocolate_',
+    'science:3:Juice':           'juice',
+    'science:3:Milk':            'milk',
+
+    'science:4:Air':             'air',
+    'science:4:Wind':            'wind',
+    'science:4:Oxygen':          'Oxygen_',
+    'science:4:Carbon dioxide':  'carbon',
+    'science:4:Water vapor':     'vapor',
+    'science:4:Helium':          'helium_',
+
+    'science:5:Mass':            'mass_',
+    'science:5:Weight':          'weight_',
+    'science:5:Volume':          'volume_',
+    'science:5:Shape':           'shape_',
+    'science:5:Color':           'color',
+    'science:5:Texture':         'texture_',
+    'science:5:Smell':           'smell',
+
+    'science:6:Platform balance':      'platform_',
+    'science:6:Triple beam balance':   'triple beam',
+    'science:6:Weighing scale':        'weighted scale',
+    'science:6:Graduated cylinder':    'cylinder_',
+    'science:6:Meter stick':           'meter stick_',
+    'science:6:Thermometer':           'thermometer_',
+    'science:6:Measuring cup':         'measuring cup',
+
+    'science:7:Gram':                  'gram',
+    'science:7:Kilogram':              'kg',
+    'science:7:Milliliter':            'milliliter_',
+    'science:7:Liter':                 'liter',
+    'science:7:Centimeter':            'cm',
+    'science:7:Meter':                 'meter',
+    'science:7:Degree Celsius':        'degree',
+    'science:7:Cubic meter':           'cubic meter',
+
+    'science:8:Melting':               'melting',
+    'science:8:Freezing':              'freeze',
+    'science:8:Evaporation':           'evaporation_',
+    'science:8:Condensation':          'condensation_',
+    'science:8:Boiling':               'boiling_',
+    'science:8:Cutting paper':         'cut',
+    'science:8:Tearing paper':         'tearing',
+    'science:8:Crushing a can':        'can',
+    'science:8:Dissolving sugar':      'sugar',
+    'science:8:Folding paper':         'fold',
+
+    'science:9:Mouth':                 'mouth',
+    'science:9:Teeth':                 'teeth_',
+    'science:9:Salivary glands':       'glands',
+    'science:9:Esophagus':             'esophagus_',
+    'science:9:Liver':                 'liver',
+    'science:9:Gallbladder':           'gallbladder',
+    'science:9:Pancreas':              'pancreas',
+    'science:9:Small intestine':       'small',
+    'science:9:Large intestine':       'large_',
+    'science:9:Rectum':                'rectum',
+
+    'science:10:Nose':                 'nose',
+    'science:10:Nasal cavity':         'nasal',
+    'science:10:Mouth':                'mouth',
+    'science:10:Pharynx':              'pharxn',
+    'science:10:Larynx':               'larynx',
+    'science:10:Trachea':              'trachea',
+    'science:10:Bronchi':              'bronchi',
+    'science:10:Bronchioles':          'bronchiolos',
+    'science:10:Alveoli':              'alveolar_',
+    'science:10:Lungs':                'lungs',
+    'science:10:Diaphragm':            'diaphragm_',
+    'science:10:Ribs':                 'ribs'
+  };
+
+  // ============================================================
+  // IMAGE LIBRARY (Unsplash fallback IDs)
   // ============================================================
   const IMG = {
     macbook:      'photo-1517336714731-489689fd1ca8',
@@ -252,7 +413,8 @@ document.addEventListener('DOMContentLoaded', function() {
     costume:      'photo-1533106418989-88406c7cc8ca',
     weaving:      'photo-1518998053901-5348d3961a04',
     localFood:    'photo-1504674900247-0877df9cc836',
-    phHistory:    'photo-1519638831568-d9897f54ed69'
+    phHistory:    'photo-1519638831568-d9897f54ed69',
+    storm:        'photo-1502134249126-9f3755a50d78'
   };
 
   // ============================================================
@@ -260,429 +422,294 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   const TOPIC_DATA = {
     computer: {
-      1: { title: 'Computer Devices', cards: [
-        { id: IMG.macbook,      name: 'Laptop' },
-        { id: IMG.laptopDesk,   name: 'Desktop' },
-        { id: IMG.tablet,       name: 'Tablet' },
-        { id: IMG.phone,        name: 'Phone' },
+      1: { title: 'Search Engines', cards: [
+        { id: IMG.codeScreen,   name: 'Google' },
+        { id: IMG.analytics,    name: 'Yahoo' },
+        { id: IMG.binary,       name: 'Lycos' }
+      ]},
+      2: { title: 'Parts of a Search Engine Home Page', cards: [
+        { id: IMG.uiDesign,     name: 'Search box' },
+        { id: IMG.mouse,        name: 'Search button' },
+        { id: IMG.docs,         name: 'Search results' },
+        { id: IMG.dashboard,    name: 'Tabs' }
+      ]},
+      3: { title: 'Web Browsers', cards: [
+        { id: IMG.macbook,      name: 'Safari' },
+        { id: IMG.codeScreen,   name: 'Opera' },
+        { id: IMG.monitor,      name: 'Microsoft Edge' },
+        { id: IMG.code2,        name: 'Mozilla Firefox' },
+        { id: IMG.workspace,    name: 'Google Chrome' }
+      ]},
+      4: { title: 'Ways to Communicate Online', cards: [
+        { id: IMG.docs,         name: 'Email' },
+        { id: IMG.codeScreen,   name: 'Chat' },
+        { id: IMG.notebook,     name: 'Instant message' },
+        { id: IMG.webcam,       name: 'Video call' },
+        { id: IMG.uiDesign,     name: 'Social media' },
+        { id: IMG.studying,     name: 'Online class' }
+      ]},
+      5: { title: "Netiquette: Do's and Don'ts", cards: [
+        { id: IMG.writing,      name: 'Kind words' },
+        { id: IMG.docs,         name: 'Ask permission' },
+        { id: IMG.studying,     name: 'Be respectful' },
+        { id: IMG.code1,        name: 'Typing in ALL CAPS' },
+        { id: IMG.password,     name: 'Sharing password' },
+        { id: IMG.docs,         name: 'Using bad words' },
+        { id: IMG.analytics,    name: 'Fake news' }
+      ]},
+      6: { title: 'Domain Types', cards: [
+        { id: IMG.dashboard,    name: '.com' },
+        { id: IMG.schoolBldg,   name: '.edu' },
+        { id: IMG.circuit,      name: '.net' },
+        { id: IMG.community,    name: '.org' },
+        { id: IMG.buildings,    name: '.gov' },
+        { id: IMG.workspace,    name: '.pro' },
+        { id: IMG.docs,         name: '.info' },
+        { id: IMG.earth,        name: '.int' }
+      ]},
+      7: { title: 'Parts of a Web Browser', cards: [
+        { id: IMG.monitor,      name: 'Browser window buttons' },
+        { id: IMG.uiDesign,     name: 'Tab name' },
+        { id: IMG.mouse,        name: 'Navigation buttons' },
+        { id: IMG.dashboard,    name: 'New tab' },
+        { id: IMG.security,     name: 'Customize and control' },
+        { id: IMG.books,        name: 'Bookmark this page' },
+        { id: IMG.codeScreen,   name: 'Address bar' },
+        { id: IMG.workspace,    name: 'Display window' },
+        { id: IMG.officeDesk,   name: 'Scroll bar' }
+      ]},
+      8: { title: 'Parts of an Email', cards: [
+        { id: IMG.face,         name: 'Username' },
+        { id: IMG.analytics,    name: 'Domain name' },
+        { id: IMG.dashboard,    name: 'Domain type' },
+        { id: IMG.docs,         name: 'To' },
+        { id: IMG.docs,         name: 'Cc' },
+        { id: IMG.security,     name: 'Bcc' },
+        { id: IMG.writing,      name: 'Subject' },
+        { id: IMG.docs,         name: 'Body' },
+        { id: IMG.gadgets,      name: 'Attach File' },
+        { id: IMG.uiDesign,     name: 'Send' }
+      ]},
+      9: { title: 'Email Words', cards: [
+        { id: IMG.dashboard,    name: 'Gmail' },
+        { id: IMG.docs,         name: 'Yahoo Mail' },
+        { id: IMG.macbook,      name: 'Outlook' },
+        { id: IMG.writing,      name: 'Compose Mail' },
+        { id: IMG.docs,         name: 'Inbox' },
+        { id: IMG.analytics,    name: 'Sent' },
+        { id: IMG.notebook,     name: 'Drafts' },
+        { id: IMG.security,     name: 'Spam' },
+        { id: IMG.gadgets,      name: 'Attachment' },
+        { id: IMG.mouse,        name: 'Reply' },
+        { id: IMG.uiDesign,     name: 'Forward' }
+      ]},
+      10: { title: 'Parts of a Computer', cards: [
         { id: IMG.monitor,      name: 'Monitor' },
         { id: IMG.keyboard,     name: 'Keyboard' },
         { id: IMG.mouse,        name: 'Mouse' },
-        { id: IMG.headphones,   name: 'Headphones' },
-        { id: IMG.webcam,       name: 'Webcam' },
-        { id: IMG.circuit,      name: 'Circuit' },
+        { id: IMG.macbook,      name: 'System unit' },
+        { id: IMG.headset,      name: 'Speakers' },
         { id: IMG.printer,      name: 'Printer' },
-        { id: IMG.headset,      name: 'Speaker' }
-      ]},
-      2: { title: 'Tech Accessories', cards: [
-        { id: IMG.headphones,   name: 'Headphones' },
-        { id: IMG.mouse,        name: 'Mouse' },
-        { id: IMG.keyboard,     name: 'Keyboard' },
         { id: IMG.webcam,       name: 'Webcam' },
-        { id: IMG.headset,      name: 'Speaker' },
-        { id: IMG.gadgets,      name: 'Cable' },
-        { id: IMG.dashboard,    name: 'Charger' },
-        { id: IMG.monitor,      name: 'Screen' },
-        { id: IMG.uiDesign,     name: 'Stand' },
-        { id: IMG.analytics,    name: 'Adapter' },
-        { id: IMG.tablet,       name: 'Tablet Case' },
-        { id: IMG.laptopSide,   name: 'Port' }
-      ]},
-      3: { title: 'Work Desk Setup', cards: [
-        { id: IMG.macbook,      name: 'Laptop' },
-        { id: IMG.monitor,      name: 'Monitor' },
-        { id: IMG.keyboard,     name: 'Keyboard' },
-        { id: IMG.mouse,        name: 'Mouse' },
-        { id: IMG.notebook,     name: 'Notebook' },
-        { id: IMG.writing,      name: 'Pen' },
-        { id: IMG.coffee,       name: 'Coffee' },
-        { id: IMG.officeDesk,   name: 'Lamp' },
-        { id: IMG.deskWork,     name: 'Chair' },
-        { id: IMG.workspace,    name: 'Desk' },
-        { id: IMG.docs,         name: 'Paper' },
-        { id: IMG.plant,        name: 'Plant' }
-      ]},
-      4: { title: 'Coding & Screens', cards: [
-        { id: IMG.code1,        name: 'Code' },
-        { id: IMG.code2,        name: 'Editor' },
-        { id: IMG.codeEditor,   name: 'Terminal' },
-        { id: IMG.binary,       name: 'Binary' },
-        { id: IMG.codeScreen,   name: 'Screen' },
-        { id: IMG.monitor,      name: 'Monitor' },
-        { id: IMG.macbook,      name: 'Laptop' },
-        { id: IMG.dualMonitors, name: 'Display' },
-        { id: IMG.uiDesign,     name: 'Window' },
-        { id: IMG.chart,        name: 'Chart' },
-        { id: IMG.analytics,    name: 'Data' },
-        { id: IMG.dashboard,    name: 'UI' }
-      ]},
-      5: { title: 'Mobile Devices', cards: [
-        { id: IMG.phone,        name: 'Phone' },
-        { id: IMG.tablet,       name: 'Tablet' },
-        { id: IMG.headphones,   name: 'Earbuds' },
-        { id: IMG.headset,      name: 'Smartwatch' },
-        { id: IMG.gadgets,      name: 'Charger' },
-        { id: IMG.workspace,    name: 'Case' },
-        { id: IMG.monitor,      name: 'Screen' },
-        { id: IMG.webcam,       name: 'Camera' },
-        { id: IMG.keyboard,     name: 'Button' },
-        { id: IMG.uiDesign,     name: 'App' },
-        { id: IMG.codeScreen,   name: 'Wallpaper' },
-        { id: IMG.password,     name: 'Lock' }
-      ]},
-      6: { title: 'Music & Audio', cards: [
-        { id: IMG.headphones,   name: 'Headphones' },
-        { id: IMG.headset,      name: 'Speaker' },
-        { id: IMG.webcam,       name: 'Microphone' },
-        { id: IMG.workspace,    name: 'Audio' },
-        { id: IMG.code1,        name: 'Studio' },
-        { id: IMG.code2,        name: 'Record' },
-        { id: IMG.analytics,    name: 'Mixer' },
-        { id: IMG.dashboard,    name: 'Amp' },
-        { id: IMG.uiDesign,     name: 'Player' },
-        { id: IMG.gadgets,      name: 'Device' },
-        { id: IMG.headset,      name: 'Sound' },
-        { id: IMG.monitor,      name: 'Screen' }
-      ]},
-      7: { title: 'Photography', cards: [
-        { id: IMG.webcam,       name: 'Camera' },
-        { id: IMG.uiDesign,     name: 'Lens' },
-        { id: IMG.workspace,    name: 'Tripod' },
-        { id: IMG.gadgets,      name: 'Photo' },
-        { id: IMG.dashboard,    name: 'Flash' },
-        { id: IMG.analytics,    name: 'Zoom' },
-        { id: IMG.monitor,      name: 'Filter' },
-        { id: IMG.codeScreen,   name: 'Album' },
-        { id: IMG.sunset,       name: 'Light' },
-        { id: IMG.portrait,     name: 'Shutter' },
-        { id: IMG.flower,       name: 'Frame' },
-        { id: IMG.books,        name: 'Print' }
-      ]},
-      8: { title: 'Gaming', cards: [
-        { id: IMG.workspace,    name: 'Console' },
-        { id: IMG.monitor,      name: 'Screen' },
+        { id: IMG.headphones,   name: 'Microphone' },
         { id: IMG.headset,      name: 'Headset' },
-        { id: IMG.mouse,        name: 'Joystick' },
-        { id: IMG.keyboard,     name: 'Buttons' },
-        { id: IMG.code1,        name: 'Arcade' },
-        { id: IMG.binary,       name: 'Pixel' },
-        { id: IMG.code2,        name: 'Level' },
-        { id: IMG.uiDesign,     name: 'Player' },
-        { id: IMG.analytics,    name: 'Score' },
-        { id: IMG.dashboard,    name: 'Quest' },
-        { id: IMG.macbook,      name: 'Controller' }
-      ]},
-      9: { title: 'Charging & Cables', cards: [
-        { id: IMG.gadgets,      name: 'USB' },
-        { id: IMG.workspace,    name: 'Charger' },
-        { id: IMG.keyboard,     name: 'Cable' },
-        { id: IMG.laptopSide,   name: 'Port' },
-        { id: IMG.phone,        name: 'Battery' },
-        { id: IMG.tablet,       name: 'Plug' },
-        { id: IMG.monitor,      name: 'Adapter' },
-        { id: IMG.circuit,      name: 'Power' },
-        { id: IMG.officeDesk,   name: 'Socket' },
-        { id: IMG.analytics,    name: 'Wire' },
-        { id: IMG.docs,         name: 'Strip' },
-        { id: IMG.dashboard,    name: 'Hub' }
-      ]},
-      10: { title: 'Internet & Network', cards: [
-        { id: IMG.circuit,      name: 'Router' },
-        { id: IMG.analytics,    name: 'Wifi' },
-        { id: IMG.dashboard,    name: 'Modem' },
-        { id: IMG.binary,       name: 'Antenna' },
-        { id: IMG.code1,        name: 'Server' },
-        { id: IMG.clouds,       name: 'Cloud' },
-        { id: IMG.earth,        name: 'Signal' },
-        { id: IMG.security,     name: 'Speed' },
-        { id: IMG.password,     name: 'Data' },
-        { id: IMG.uiDesign,     name: 'Web' },
-        { id: IMG.code2,        name: 'Link' },
-        { id: IMG.codeScreen,   name: 'Network' }
+        { id: IMG.printer,      name: 'Scanner' },
+        { id: IMG.gadgets,      name: 'USB flash drive' },
+        { id: IMG.laptopSide,   name: 'Touchpad' }
       ]}
     },
     science: {
-      1: { title: 'Pets & Farm Animals', cards: [
-        { id: IMG.dog,          name: 'Dog' },
-        { id: IMG.cat,          name: 'Cat' },
-        { id: IMG.bird,         name: 'Bird' },
-        { id: IMG.rabbit,       name: 'Rabbit' },
-        { id: IMG.horse,        name: 'Horse' },
-        { id: IMG.fish,         name: 'Fish' },
-        { id: IMG.turtle,       name: 'Turtle' },
-        { id: IMG.penguin,      name: 'Duck' },
-        { id: IMG.monkey,       name: 'Monkey' },
-        { id: IMG.bird2,        name: 'Chicken' },
-        { id: IMG.butterfly,    name: 'Butterfly' },
-        { id: IMG.elephant,     name: 'Elephant' }
+      1: { title: 'Matter', cards: [
+        { id: IMG.mountain,     name: 'Rock' },
+        { id: IMG.water,        name: 'Water' },
+        { id: IMG.clouds,       name: 'Air' }
       ]},
-      2: { title: 'Wild Animals', cards: [
-        { id: IMG.lion,         name: 'Lion' },
-        { id: IMG.elephant,     name: 'Elephant' },
-        { id: IMG.monkey,       name: 'Monkey' },
-        { id: IMG.horse,        name: 'Zebra' },
-        { id: IMG.penguin,      name: 'Penguin' },
-        { id: IMG.turtle,       name: 'Turtle' },
-        { id: IMG.dog,          name: 'Wolf' },
-        { id: IMG.cat,          name: 'Tiger' },
-        { id: IMG.rabbit,       name: 'Rabbit' },
-        { id: IMG.bird,         name: 'Eagle' },
-        { id: IMG.bird2,        name: 'Owl' },
-        { id: IMG.fish,         name: 'Bear' }
+      2: { title: 'Solids', cards: [
+        { id: IMG.officeDesk,   name: 'Chair' },
+        { id: IMG.workspace,    name: 'Desk' },
+        { id: IMG.schoolBag,    name: 'Bag' },
+        { id: IMG.bike,         name: 'Shoes' }
       ]},
-      3: { title: 'Birds & Bugs', cards: [
-        { id: IMG.bird,         name: 'Bird' },
-        { id: IMG.bird2,        name: 'Parrot' },
-        { id: IMG.butterfly,    name: 'Butterfly' },
-        { id: IMG.flower,       name: 'Bee' },
-        { id: IMG.flower2,      name: 'Ladybug' },
-        { id: IMG.flower3,      name: 'Dragonfly' },
-        { id: IMG.leaves,       name: 'Ant' },
-        { id: IMG.plant,        name: 'Cricket' },
-        { id: IMG.penguin,      name: 'Owl' },
-        { id: IMG.cat,          name: 'Spider' },
-        { id: IMG.turtle,       name: 'Snail' },
-        { id: IMG.jungle,       name: 'Beetle' }
-      ]},
-      4: { title: 'Plants & Trees', cards: [
-        { id: IMG.trees,        name: 'Tree' },
-        { id: IMG.leaves,       name: 'Leaf' },
-        { id: IMG.flower,       name: 'Flower' },
-        { id: IMG.plant,        name: 'Grass' },
-        { id: IMG.forest,       name: 'Bush' },
-        { id: IMG.jungle,       name: 'Fern' },
-        { id: IMG.woods,        name: 'Branch' },
-        { id: IMG.forestPath,   name: 'Trunk' },
-        { id: IMG.flower2,      name: 'Seed' },
-        { id: IMG.flower3,      name: 'Fruit' },
-        { id: IMG.lake,         name: 'Root' },
-        { id: IMG.lake2,        name: 'Vine' }
-      ]},
-      5: { title: 'Beautiful Flowers', cards: [
-        { id: IMG.flower,       name: 'Rose' },
-        { id: IMG.flower2,      name: 'Tulip' },
-        { id: IMG.flower3,      name: 'Sunflower' },
-        { id: IMG.plant,        name: 'Daisy' },
-        { id: IMG.leaves,       name: 'Orchid' },
-        { id: IMG.trees,        name: 'Lily' },
-        { id: IMG.jungle,       name: 'Lotus' },
-        { id: IMG.forest,       name: 'Hibiscus' },
-        { id: IMG.lake,         name: 'Jasmine' },
-        { id: IMG.lake2,        name: 'Magnolia' },
-        { id: IMG.woods,        name: 'Peony' },
-        { id: IMG.forestPath,   name: 'Iris' }
-      ]},
-      6: { title: 'Weather & Sky', cards: [
-        { id: IMG.sunset,       name: 'Sun' },
-        { id: IMG.clouds,       name: 'Cloud' },
-        { id: IMG.clouds2,      name: 'Rain' },
-        { id: IMG.rainbow,      name: 'Rainbow' },
-        { id: IMG.lightning,    name: 'Lightning' },
-        { id: IMG.snow,         name: 'Snow' },
-        { id: IMG.sky,          name: 'Sky' },
-        { id: IMG.sunset2,      name: 'Sunset' },
-        { id: IMG.stars,        name: 'Wind' },
-        { id: IMG.mountain,     name: 'Storm' },
-        { id: IMG.mountains2,   name: 'Fog' },
-        { id: IMG.forestPath,   name: 'Dawn' }
-      ]},
-      7: { title: 'Space & Stars', cards: [
-        { id: IMG.stars,        name: 'Star' },
-        { id: IMG.earth,        name: 'Moon' },
-        { id: IMG.sky,          name: 'Planet' },
-        { id: IMG.clouds2,      name: 'Galaxy' },
-        { id: IMG.lightning,    name: 'Comet' },
-        { id: IMG.sunset,       name: 'Meteor' },
-        { id: IMG.clouds,       name: 'Nebula' },
-        { id: IMG.sunset2,      name: 'Eclipse' },
-        { id: IMG.rainbow,      name: 'Orbit' },
-        { id: IMG.mountain,     name: 'Cosmos' },
-        { id: IMG.mountains2,   name: 'Aurora' },
-        { id: IMG.snow,         name: 'Sky' }
-      ]},
-      8: { title: 'Water & Oceans', cards: [
-        { id: IMG.ocean,        name: 'Ocean' },
-        { id: IMG.river,        name: 'River' },
-        { id: IMG.lake,         name: 'Lake' },
-        { id: IMG.waterfall,    name: 'Waterfall' },
-        { id: IMG.beach,        name: 'Beach' },
-        { id: IMG.island,       name: 'Island' },
-        { id: IMG.lake2,        name: 'Pond' },
-        { id: IMG.clouds,       name: 'Wave' },
-        { id: IMG.sunset,       name: 'Bay' },
-        { id: IMG.earth,        name: 'Reef' },
-        { id: IMG.forestPath,   name: 'Stream' },
-        { id: IMG.jungle,       name: 'Coast' }
-      ]},
-      9: { title: 'Mountains & Land', cards: [
-        { id: IMG.mountain,     name: 'Mountain' },
-        { id: IMG.mountains2,   name: 'Hill' },
-        { id: IMG.forest,       name: 'Valley' },
-        { id: IMG.jungle,       name: 'Cliff' },
-        { id: IMG.woods,        name: 'Canyon' },
-        { id: IMG.earth,        name: 'Plateau' },
-        { id: IMG.snow,         name: 'Glacier' },
-        { id: IMG.sunset,       name: 'Desert' },
-        { id: IMG.lake,         name: 'Rock' },
-        { id: IMG.forestPath,   name: 'Cave' },
-        { id: IMG.trees,        name: 'Peak' },
-        { id: IMG.river,        name: 'Waterfall' }
-      ]},
-      10: { title: 'Food & Fruits', cards: [
-        { id: IMG.apple,        name: 'Apple' },
-        { id: IMG.fruit,        name: 'Fruit' },
-        { id: IMG.vegetables,   name: 'Vegetables' },
-        { id: IMG.salad,        name: 'Salad' },
-        { id: IMG.bread,        name: 'Bread' },
-        { id: IMG.rice,         name: 'Rice' },
-        { id: IMG.soup,         name: 'Soup' },
-        { id: IMG.juice,        name: 'Juice' },
+      3: { title: 'Liquids', cards: [
         { id: IMG.water,        name: 'Water' },
         { id: IMG.coffee,       name: 'Coffee' },
-        { id: IMG.meal,         name: 'Meal' },
-        { id: IMG.snack,        name: 'Snack' }
+        { id: IMG.coffee,       name: 'Chocolate drink' },
+        { id: IMG.juice,        name: 'Juice' },
+        { id: IMG.fruit,        name: 'Milk' }
+      ]},
+      4: { title: 'Gases', cards: [
+        { id: IMG.clouds,       name: 'Air' },
+        { id: IMG.clouds2,      name: 'Wind' },
+        { id: IMG.forest,       name: 'Oxygen' },
+        { id: IMG.sky,          name: 'Carbon dioxide' },
+        { id: IMG.clouds,       name: 'Water vapor' },
+        { id: IMG.rainbow,      name: 'Helium' }
+      ]},
+      5: { title: 'Properties of Matter', cards: [
+        { id: IMG.analytics,    name: 'Mass' },
+        { id: IMG.analytics,    name: 'Weight' },
+        { id: IMG.dashboard,    name: 'Volume' },
+        { id: IMG.uiDesign,     name: 'Shape' },
+        { id: IMG.flower,       name: 'Color' },
+        { id: IMG.leaves,       name: 'Texture' },
+        { id: IMG.flower2,      name: 'Smell' }
+      ]},
+      6: { title: 'Measuring Tools', cards: [
+        { id: IMG.analytics,    name: 'Platform balance' },
+        { id: IMG.analytics,    name: 'Triple beam balance' },
+        { id: IMG.analytics,    name: 'Weighing scale' },
+        { id: IMG.workspace,    name: 'Graduated cylinder' },
+        { id: IMG.officeDesk,   name: 'Meter stick' },
+        { id: IMG.analytics,    name: 'Thermometer' },
+        { id: IMG.workspace,    name: 'Measuring cup' },
+        { id: IMG.soup,         name: 'Beaker' }
+      ]},
+      7: { title: 'Units of Measurement', cards: [
+        { id: IMG.analytics,    name: 'Gram' },
+        { id: IMG.analytics,    name: 'Kilogram' },
+        { id: IMG.water,        name: 'Milliliter' },
+        { id: IMG.water,        name: 'Liter' },
+        { id: IMG.officeDesk,   name: 'Centimeter' },
+        { id: IMG.officeDesk,   name: 'Meter' },
+        { id: IMG.dashboard,    name: 'Cubic centimeter' },
+        { id: IMG.snow,         name: 'Degree Celsius' },
+        { id: IMG.dashboard,    name: 'Cubic meter' }
+      ]},
+      8: { title: 'Physical Changes', cards: [
+        { id: IMG.snow,         name: 'Melting' },
+        { id: IMG.snow,         name: 'Freezing' },
+        { id: IMG.clouds,       name: 'Evaporation' },
+        { id: IMG.clouds2,      name: 'Condensation' },
+        { id: IMG.soup,         name: 'Boiling' },
+        { id: IMG.docs,         name: 'Cutting paper' },
+        { id: IMG.docs,         name: 'Tearing paper' },
+        { id: IMG.gadgets,      name: 'Crushing a can' },
+        { id: IMG.coffee,       name: 'Dissolving sugar' },
+        { id: IMG.docs,         name: 'Folding paper' }
+      ]},
+      9: { title: 'Digestive System', cards: [
+        { id: IMG.face,         name: 'Mouth' },
+        { id: IMG.face,         name: 'Teeth' },
+        { id: IMG.face,         name: 'Salivary glands' },
+        { id: IMG.analytics,    name: 'Esophagus' },
+        { id: IMG.analytics,    name: 'Stomach' },
+        { id: IMG.analytics,    name: 'Liver' },
+        { id: IMG.analytics,    name: 'Gallbladder' },
+        { id: IMG.analytics,    name: 'Pancreas' },
+        { id: IMG.analytics,    name: 'Small intestine' },
+        { id: IMG.analytics,    name: 'Large intestine' },
+        { id: IMG.analytics,    name: 'Rectum' }
+      ]},
+      10: { title: 'Respiratory System', cards: [
+        { id: IMG.face,         name: 'Nose' },
+        { id: IMG.face,         name: 'Nasal cavity' },
+        { id: IMG.face,         name: 'Mouth' },
+        { id: IMG.analytics,    name: 'Pharynx' },
+        { id: IMG.analytics,    name: 'Larynx' },
+        { id: IMG.analytics,    name: 'Trachea' },
+        { id: IMG.analytics,    name: 'Bronchi' },
+        { id: IMG.analytics,    name: 'Bronchioles' },
+        { id: IMG.analytics,    name: 'Alveoli' },
+        { id: IMG.analytics,    name: 'Lungs' },
+        { id: IMG.analytics,    name: 'Diaphragm' },
+        { id: IMG.analytics,    name: 'Ribs' }
       ]}
     },
     ap: {
-      1: { title: 'Ako at Pamilya', cards: [
-        { id: IMG.child,        name: 'Bata' },
-        { id: IMG.girlPortrait, name: 'Nanay' },
-        { id: IMG.boyPortrait,  name: 'Tatay' },
-        { id: IMG.grandparents, name: 'Lolo at Lola' },
-        { id: IMG.siblings,     name: 'Kapatid' },
-        { id: IMG.toddler,      name: 'Sanggol' },
-        { id: IMG.family,       name: 'Pamilya' },
-        { id: IMG.motherChild,  name: 'Ina' },
-        { id: IMG.fatherChild,  name: 'Ama' },
-        { id: IMG.children,     name: 'Mga Anak' },
-        { id: IMG.familyWalk,   name: 'Tahanan' },
-        { id: IMG.face,         name: 'Larawan' }
+      1: { title: 'Bodies of Water', cards: [
+        { id: IMG.ocean,        name: 'Pacific Ocean' },
+        { id: IMG.river,        name: 'Pasig River' },
+        { id: IMG.lake,         name: 'Laguna de Bay' }
       ]},
-      2: { title: 'Mga Kaibigan', cards: [
-        { id: IMG.child,        name: 'Bata' },
-        { id: IMG.toddler,      name: 'Sanggol' },
-        { id: IMG.boyPortrait,  name: 'Kuya' },
-        { id: IMG.girlPortrait, name: 'Ate' },
-        { id: IMG.kid,          name: 'Kalaro' },
-        { id: IMG.kidOutside,   name: 'Barkada' },
-        { id: IMG.children,     name: 'Batang Babae' },
-        { id: IMG.siblings,     name: 'Batang Lalaki' },
-        { id: IMG.face,         name: 'Ngiti' },
-        { id: IMG.portrait,     name: 'Tawa' },
-        { id: IMG.family,       name: 'Kamay' },
-        { id: IMG.motherChild,  name: 'Yakap' }
+      2: { title: 'Landforms', cards: [
+        { id: IMG.mountain,     name: 'Mount Apo' },
+        { id: IMG.mountains2,   name: 'Mayon Volcano' },
+        { id: IMG.mountains2,   name: 'Chocolate Hills' },
+        { id: IMG.forest,       name: 'Central Luzon Plain' }
       ]},
-      3: { title: 'Paaralan', cards: [
-        { id: IMG.teacher,      name: 'Guro' },
-        { id: IMG.students,     name: 'Estudyante' },
-        { id: IMG.books,        name: 'Aklat' },
-        { id: IMG.pencils,      name: 'Lapis' },
-        { id: IMG.schoolBag,    name: 'Bag' },
-        { id: IMG.classroom,    name: 'Silid' },
-        { id: IMG.library,      name: 'Aklatan' },
-        { id: IMG.studying,     name: 'Klase' },
-        { id: IMG.chalkboard,   name: 'Blackboard' },
-        { id: IMG.docs,         name: 'Papel' },
-        { id: IMG.officeDesk,   name: 'Mesa' },
-        { id: IMG.schoolBldg,   name: 'Paaralan' }
+      3: { title: 'Southeast Asian Neighbors', cards: [
+        { id: IMG.city,         name: 'Malaysia' },
+        { id: IMG.island,       name: 'Indonesia' },
+        { id: IMG.river,        name: 'Vietnam' },
+        { id: IMG.town,         name: 'Thailand' },
+        { id: IMG.buildings,    name: 'Brunei' }
       ]},
-      4: { title: 'Komunidad', cards: [
-        { id: IMG.houses,       name: 'Bahay' },
-        { id: IMG.church,       name: 'Simbahan' },
-        { id: IMG.market,       name: 'Palengke' },
-        { id: IMG.park,         name: 'Parke' },
-        { id: IMG.schoolBldg,   name: 'Paaralan' },
-        { id: IMG.street,       name: 'Kalsada' },
-        { id: IMG.buildings,    name: 'Ospital' },
-        { id: IMG.city,         name: 'Gusali' },
-        { id: IMG.town,         name: 'Lugar' },
-        { id: IMG.neighborhood, name: 'Kapitbahay' },
-        { id: IMG.community,    name: 'Bakuran' },
-        { id: IMG.community,    name: 'Tindahan' }
+      4: { title: 'Weather and Climate Terms', cards: [
+        { id: IMG.clouds,       name: 'Weather' },
+        { id: IMG.sunset,       name: 'Climate' },
+        { id: IMG.sunset,       name: 'Temperature' },
+        { id: IMG.clouds2,      name: 'Humidity' },
+        { id: IMG.clouds,       name: 'Rainfall' },
+        { id: IMG.storm,        name: 'PAGASA' }
       ]},
-      5: { title: 'Katulong sa Komunidad', cards: [
-        { id: IMG.doctor,       name: 'Doktor' },
-        { id: IMG.nurse,        name: 'Nars' },
-        { id: IMG.police,       name: 'Pulis' },
-        { id: IMG.teacher,      name: 'Guro' },
-        { id: IMG.firefighter,  name: 'Bumbero' },
-        { id: IMG.farmer,       name: 'Magsasaka' },
-        { id: IMG.chef,         name: 'Kusinero' },
-        { id: IMG.driver,       name: 'Drayber' },
-        { id: IMG.market,       name: 'Tindera' },
-        { id: IMG.farmer,       name: 'Manggagawa' },
-        { id: IMG.doctor,       name: 'Inhinyero' },
-        { id: IMG.market,       name: 'Sastre' }
+      5: { title: 'Climate and Seasons', cards: [
+        { id: IMG.clouds,       name: 'Rainy season' },
+        { id: IMG.sunset,       name: 'Dry season' },
+        { id: IMG.clouds2,      name: 'Cool dry season' },
+        { id: IMG.sunset2,      name: 'Hot dry season' },
+        { id: IMG.sunset,       name: 'May' },
+        { id: IMG.snow,         name: 'January' },
+        { id: IMG.forest,       name: 'Tropical climate' }
       ]},
-      6: { title: 'Transportasyon', cards: [
-        { id: IMG.car,          name: 'Kotse' },
-        { id: IMG.bus,          name: 'Bus' },
-        { id: IMG.bike,         name: 'Bisikleta' },
-        { id: IMG.train,        name: 'Tren' },
-        { id: IMG.plane,        name: 'Eroplano' },
-        { id: IMG.boat,         name: 'Bangka' },
-        { id: IMG.street,       name: 'Jeep' },
-        { id: IMG.city,         name: 'Tricycle' },
-        { id: IMG.street,       name: 'Motorsiklo' },
-        { id: IMG.boat,         name: 'Barko' },
-        { id: IMG.car,          name: 'Trak' },
-        { id: IMG.bike,         name: 'Karwahe' }
+      6: { title: 'Island Groups and Major Islands', cards: [
+        { id: IMG.mountains2,   name: 'Luzon' },
+        { id: IMG.island,       name: 'Visayas' },
+        { id: IMG.island,       name: 'Mindanao' },
+        { id: IMG.beach,        name: 'Palawan' },
+        { id: IMG.island,       name: 'Mindoro' },
+        { id: IMG.island,       name: 'Samar' },
+        { id: IMG.beach,        name: 'Leyte' },
+        { id: IMG.city,         name: 'Cebu' }
       ]},
-      7: { title: 'Pook sa Pilipinas', cards: [
-        { id: IMG.phIslands,    name: 'Isla' },
-        { id: IMG.mountain,     name: 'Bundok' },
-        { id: IMG.ocean,        name: 'Dagat' },
-        { id: IMG.river,        name: 'Ilog' },
-        { id: IMG.riceTerraces, name: 'Rice Terraces' },
-        { id: IMG.phLandmark,   name: 'Bulkang Mayon' },
-        { id: IMG.beach,        name: 'Beach' },
-        { id: IMG.church,       name: 'Simbahan' },
-        { id: IMG.buildings,    name: 'Gusali' },
-        { id: IMG.town,         name: 'Bayan' },
-        { id: IMG.phProvince,   name: 'Lalawigan' },
-        { id: IMG.market,       name: 'Palengke' }
+      7: { title: 'More Landforms and Bodies of Water', cards: [
+        { id: IMG.mountain,     name: 'Mount Pulag' },
+        { id: IMG.mountains2,   name: 'Mount Pinatubo' },
+        { id: IMG.lake2,        name: 'Taal Volcano' },
+        { id: IMG.river,        name: 'Cagayan River' },
+        { id: IMG.river,        name: 'Agusan River' },
+        { id: IMG.lake,         name: 'Lake Lanao' },
+        { id: IMG.ocean,        name: 'Subic Bay' },
+        { id: IMG.ocean,        name: 'Davao Gulf' },
+        { id: IMG.ocean,        name: 'Sibuyan Sea' }
       ]},
-      8: { title: 'Pagkain ng Pilipino', cards: [
-        { id: IMG.rice,         name: 'Kanin' },
-        { id: IMG.meal,         name: 'Adobo' },
-        { id: IMG.soup,         name: 'Sinigang' },
-        { id: IMG.localFood,    name: 'Lechon' },
-        { id: IMG.juice,        name: 'Halo-halo' },
-        { id: IMG.salad,        name: 'Pancit' },
-        { id: IMG.snack,        name: 'Lumpia' },
-        { id: IMG.bread,        name: 'Bibingka' },
-        { id: IMG.fruit,        name: 'Mango' },
-        { id: IMG.bread,        name: 'Pandesal' },
-        { id: IMG.snack,        name: 'Kakanin' },
-        { id: IMG.vegetables,   name: 'Gulay' }
+      8: { title: 'Ancient Filipino Society and Life', cards: [
+        { id: IMG.town,         name: 'Barangay' },
+        { id: IMG.face,         name: 'Datu' },
+        { id: IMG.police,       name: 'Maharlika' },
+        { id: IMG.farmer,       name: 'Timawa' },
+        { id: IMG.farmer,       name: 'Alipin' },
+        { id: IMG.tradition,    name: 'Babaylan' },
+        { id: IMG.boat,         name: 'Balangay' },
+        { id: IMG.weaving,      name: 'Baybayin' },
+        { id: IMG.houses,       name: 'Bahay Kubo' },
+        { id: IMG.farmer,       name: 'Panday' }
       ]},
-      9: { title: 'Pagdiriwang at Kultura', cards: [
-        { id: IMG.festival,     name: 'Pista' },
-        { id: IMG.culturalDance,name: 'Sayaw' },
-        { id: IMG.costume,      name: 'Kasuotan' },
-        { id: IMG.culturalDance,name: 'Musika' },
-        { id: IMG.tradition,    name: 'Parol' },
-        { id: IMG.festival,     name: 'Christmas' },
-        { id: IMG.tradition,    name: 'Simbang Gabi' },
+      9: { title: 'Material Culture', cards: [
+        { id: IMG.tradition,    name: 'Manunggul Jar' },
+        { id: IMG.riceTerraces, name: 'Banaue Rice Terraces' },
+        { id: IMG.weaving,      name: 'Bulul' },
+        { id: IMG.phHistory,    name: 'Laguna Copperplate' },
+        { id: IMG.costume,      name: 'Golden Tara' },
+        { id: IMG.phHistory,    name: 'Tabon Cave' },
+        { id: IMG.phHistory,    name: 'Angono Petroglyphs' },
+        { id: IMG.buildings,    name: 'Fort Santiago' },
+        { id: IMG.church,       name: 'San Agustin Church' },
+        { id: IMG.houses,       name: 'Bahay na Bato' },
+        { id: IMG.church,       name: 'Barasoain Church' }
+      ]},
+      10: { title: 'Non-Material Culture', cards: [
+        { id: IMG.books,        name: 'Hudhud' },
+        { id: IMG.books,        name: 'Biag ni Lam-ang' },
+        { id: IMG.books,        name: 'Alamat' },
+        { id: IMG.books,        name: 'Bugtong' },
+        { id: IMG.books,        name: 'Salawikain' },
+        { id: IMG.motherChild,  name: 'Kundiman' },
+        { id: IMG.culturalDance,name: 'Tinikling' },
+        { id: IMG.culturalDance,name: 'Singkil' },
+        { id: IMG.culturalDance,name: 'Pandanggo sa Ilaw' },
         { id: IMG.festival,     name: 'Fiesta' },
-        { id: IMG.culturalDance,name: 'Handaan' },
-        { id: IMG.weaving,      name: 'Simbolo' },
-        { id: IMG.phLandmark,   name: 'Watawat' },
-        { id: IMG.tradition,    name: 'Handog' }
-      ]},
-      10: { title: 'Kalikasan ng Pilipinas', cards: [
-        { id: IMG.ocean,        name: 'Dagat' },
-        { id: IMG.island,       name: 'Isla' },
-        { id: IMG.mountain,     name: 'Bundok' },
-        { id: IMG.mountains2,   name: 'Bulkang' },
-        { id: IMG.riceTerraces, name: 'Palayan' },
-        { id: IMG.forest,       name: 'Gubat' },
-        { id: IMG.river,        name: 'Ilog' },
-        { id: IMG.waterfall,    name: 'Talon' },
-        { id: IMG.beach,        name: 'Baybayin' },
-        { id: IMG.sunset,       name: 'Sunset' },
-        { id: IMG.riceTerraces, name: 'Rice Field' },
-        { id: IMG.phIslands,    name: 'Kapuluan' }
+        { id: IMG.tradition,    name: 'Pamahiin' },
+        { id: IMG.family,       name: 'Mano po' }
       ]}
     }
   };
@@ -690,22 +717,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const subjectTopics = TOPIC_DATA[subject] || TOPIC_DATA.computer;
   const topicInfo = subjectTopics[level] || subjectTopics[1];
 
-  function unsplashUrl(id, w, h) {
-    return `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&auto=format&q=70`;
-  }
-  function getImageUrlForPair(pairIndex) {
+  // ============================================================
+  // IMAGE BUILDER — Local (via FILE_MAP) → Unsplash → Placeholder
+  // ============================================================
+  function getUnsplashUrl(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
-    return unsplashUrl(entry.id, 400, 500);
+    return `https://images.unsplash.com/${entry.id}?w=400&h=500&fit=crop&auto=format&q=70`;
   }
-  function getBackupImageUrlForPair(pairIndex) {
-    const idx = (pairIndex + 1) % topicInfo.cards.length;
-    const entry = topicInfo.cards[idx];
-    return unsplashUrl(entry.id, 400, 500);
-  }
+
   function getCardLabel(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     return entry ? entry.name : topicInfo.title;
   }
+
   function makePlaceholderDataUri(label) {
     const safe = String(label).replace(/[<>&"']/g, '');
     const svg = `
@@ -727,18 +751,57 @@ document.addEventListener('DOMContentLoaded', function() {
       </svg>`;
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
-  function attachImageFallback(imgEl, pairIndex) {
-    let stage = 0;
-    const label = getCardLabel(pairIndex);
-    imgEl.addEventListener('error', function handleErr() {
-      stage++;
-      if (stage === 1) {
-        imgEl.src = getBackupImageUrlForPair(pairIndex);
-      } else {
-        imgEl.removeEventListener('error', handleErr);
-        imgEl.src = makePlaceholderDataUri(label);
+
+  // Build local candidates: FILE_MAP hit → folder name variants × extensions
+  // NOTE: gameplay pages live in /Gameplay/, so we need `../` prefix.
+  function buildLocalCandidates(pairIndex) {
+    const entry  = topicInfo.cards[pairIndex % topicInfo.cards.length];
+    const label  = entry.name;
+    const folder = SUBJECT_FOLDER[subject] || 'EPP';
+
+    const levelFolders = (LEVEL_FOLDER_VARIANTS[subject] ||
+      LEVEL_FOLDER_VARIANTS.computer)(level);
+
+    const mapKey = subject + ':' + level + ':' + label;
+    const mapped = FILE_MAP[mapKey];
+    if (!mapped) return [];      // no map → skip straight to Unsplash
+
+    const candidates = [];
+    for (const lvl of levelFolders) {
+      for (const ext of IMG_EXTS) {
+        candidates.push(`../Assets/topic/${folder}/${lvl}/${mapped}.${ext}`);
       }
-    });
+    }
+    return candidates;
+  }
+
+  function attachImageFallback(imgEl, pairIndex) {
+    const candidates  = buildLocalCandidates(pairIndex);
+    const unsplash    = getUnsplashUrl(pairIndex);
+    const label       = getCardLabel(pairIndex);
+    const placeholder = makePlaceholderDataUri(label);
+
+    let stage   = 0;
+    let stopped = false;
+
+    function advance() {
+      if (stopped) return;
+      if (stage < candidates.length) {
+        imgEl.src = candidates[stage++];
+        return;
+      }
+      if (stage === candidates.length) {
+        imgEl.src = unsplash;
+        stage++;
+        return;
+      }
+      stopped = true;
+      imgEl.removeEventListener('error', advance);
+      imgEl.src = placeholder;
+    }
+
+    imgEl.addEventListener('error', advance);
+    advance();
   }
 
   // ============================================================
@@ -756,7 +819,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (level > 1) {
     let completedLevels = pJSON('completed_' + subject, []);
     if (!Array.isArray(completedLevels)) completedLevels = [];
-
     if (completedLevels.indexOf(level - 1) === -1) {
       alert(`Finish Level ${level - 1} first before playing Level ${level}!`);
       window.location.href = `../Level.html?subject=${subject}`;
@@ -920,11 +982,10 @@ document.addEventListener('DOMContentLoaded', function() {
       img.className = 'card-image';
       const cardName = getCardLabel(pairIndex);
       img.alt = `${topicInfo.title} — ${cardName}`;
-      img.loading = 'lazy';
+      img.loading = 'eager';
       img.draggable = false;
 
       attachImageFallback(img, pairIndex);
-      img.src = getImageUrlForPair(pairIndex);
       front.appendChild(img);
 
       inner.appendChild(front);
@@ -973,10 +1034,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!el) return;
     if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
 
-    if (!gameStarted) {
-      gameStarted = true;
-      startTimer();
-    }
+    if (!gameStarted) { gameStarted = true; startTimer(); }
 
     el.classList.add('flipped');
     flippedCards.push({ index, el, pair: deck[index] });
@@ -1004,7 +1062,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(showWin, 400);
       }
     } else {
-      // 🔊 Wrong card SFX
       if (window.MMSfx && MMSfx.wrong) MMSfx.wrong();
 
       setTimeout(() => {
@@ -1021,7 +1078,6 @@ document.addEventListener('DOMContentLoaded', function() {
     gameFinished = true;
     isLocked = true;
 
-    // 🔊 Game over SFX
     if (window.MMSfx && MMSfx.gameover) MMSfx.gameover();
 
     if (winOverlay) winOverlay.classList.remove('show');
@@ -1052,8 +1108,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     try {
       sessionStorage.setItem('mm_preWin', JSON.stringify({
-        subject: subject,
-        level: level,
+        subject: subject, level: level,
         wasCompleted: wasCompletedBefore,
         pointsEarned: pointsEarned,
         pointsAwarded: !wasCompletedBefore
@@ -1084,11 +1139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const starRow = document.createElement('div');
         starRow.id = 'winStarRating';
         starRow.className = 'win-star-rating';
-        starRow.innerHTML = `
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-        `;
+        starRow.innerHTML = `<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>`;
         if (pTag && pTag.parentNode) {
           pTag.parentNode.insertBefore(starRow, pTag.nextSibling);
         } else {
@@ -1119,16 +1170,12 @@ document.addEventListener('DOMContentLoaded', function() {
       window.completeLevel(subject, level);
     }
 
-    // Save to leaderboard
     if (window.MMLeaderboard && window.MMPlayer) {
       const nickname = MMPlayer.getNickname();
       if (nickname) {
         MMLeaderboard.recordWin({
-          nickname:     nickname,
-          subject:      subject,
-          level:        level,
-          stars:        starsEarned,
-          time:         elapsed,
+          nickname: nickname, subject: subject, level: level,
+          stars: starsEarned, time: elapsed,
           pointsEarned: wasCompletedBefore ? 0 : pointsEarned
         });
         MMLeaderboard.prune();
@@ -1148,8 +1195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (nextUnlocked) {
           nextLevelBtn.innerHTML = `Next Level <i class="fas fa-arrow-right ms-2"></i>`;
           nextLevelBtn.onclick = function () {
-            window.location.href =
-              `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
+            window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
           };
         } else {
           nextLevelBtn.innerHTML = `<i class="fas fa-unlock me-2"></i> Unlock Next Level`;
@@ -1163,19 +1209,13 @@ document.addEventListener('DOMContentLoaded', function() {
               if (!result.alreadyUnlocked) {
                 try {
                   sessionStorage.setItem('mm_just_unlocked', JSON.stringify({
-                    subject: subject,
-                    level:   nextLevel
+                    subject: subject, level: nextLevel
                   }));
                 } catch (e) {}
               }
               window.location.href = `../Level.html?subject=${subject}`;
             } else if (result.reason === 'not_enough_points') {
-              alert(
-                `⭐ Not enough points!\n\n` +
-                `Level ${nextLevel} costs ${result.cost} points.\n` +
-                `You have ${result.points} points.\n\n` +
-                `Play more levels to earn points!`
-              );
+              alert(`⭐ Not enough points!\n\nLevel ${nextLevel} costs ${result.cost} points.\nYou have ${result.points} points.\n\nPlay more levels to earn points!`);
             } else if (result.reason === 'previous_not_completed') {
               alert(`Finish Level ${nextLevel - 1} first!`);
             } else if (result.reason === 'previous_locked') {
@@ -1185,7 +1225,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           };
         }
-
         nextLevelBtn.style.display = 'inline-block';
       } else {
         nextLevelBtn.innerHTML = `<i class="fas fa-trophy me-2"></i> All Done`;
