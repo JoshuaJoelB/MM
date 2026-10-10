@@ -1,6 +1,7 @@
 /* ================================================================
    GAMEPLAY.JS — MATCH MONSTER (FINAL)
-   - All audio files: lowercase, no spaces (pacificocean.mp3)
+   - AP Levels 1–10 fully mapped
+   - Lowercase, no-space audio filenames
    - Folders: /Assets/sound/{subject}/lvl{N}/
    - Jojoma: title + typewriter description + audio
    ================================================================ */
@@ -127,44 +128,108 @@ document.addEventListener('DOMContentLoaded', function() {
   const LEVEL_FOLDER_VARIANTS = {
     computer: function (n) { return ['lvl' + n, 'lvl ' + n, 'Level ' + n, 'level ' + n]; },
     science:  function (n) { return ['lvl' + n, 'Level ' + n, 'level ' + n, 'lvl ' + n]; },
-    ap:       function (n) {
-      const list = ['lvl' + n, 'lvl ' + n, 'level ' + n, 'Level ' + n];
-      if (n === 5) list.unshift('level 5 incomplete');
-      return list;
-    }
+    ap:       function (n) { return ['level ' + n, 'lvl' + n, 'lvl ' + n, 'Level ' + n]; }
   };
 
   const IMG_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
 
   // ============================================================
-  // FILE_MAP — image filenames
+  // FILE_MAP — image filenames (exact, matches disk)
   // ============================================================
   const FILE_MAP = {
+    // ---- AP Level 1 ----
     'ap:1:Pacific Ocean':        'pacific ocean',
     'ap:1:Pasig River':          'pasig river',
     'ap:1:Laguna de Bay':        'laguna debay',
+    // ---- AP Level 2 ----
     'ap:2:Mount Apo':            'Mount-Apo-',
     'ap:2:Mayon Volcano':        'mayon',
     'ap:2:Chocolate Hills':      'chocolate hills',
     'ap:2:Central Luzon Plain':  'Central Luzon Plain',
+    // ---- AP Level 3 ----
     'ap:3:Malaysia':             'malaysia',
     'ap:3:Indonesia':            'indonesia',
     'ap:3:Vietnam':              'Vietnam',
     'ap:3:Thailand':             'thailand',
     'ap:3:Brunei':               'brunei',
+    // ---- AP Level 4 ----
     'ap:4:Weather':              'weather',
     'ap:4:Climate':              'climate',
     'ap:4:Temperature':          'temperature',
     'ap:4:Humidity':             'humidity',
     'ap:4:Rainfall':             'rainfall',
     'ap:4:PAGASA':               'pagasa',
+    // ---- AP Level 5 ----
+    'ap:5:Cool dry season':      'Cool dry season',
+    'ap:5:Dry season':           'dry season2',
+    'ap:5:Hot dry season':       'hot season',
+    'ap:5:May':                  'hottest month',
+    'ap:5:January':              'coolest',
+    'ap:5:Rainy season':         'rainy season',
+    'ap:5:Tropical climate':     'Tropical climate',
+    // ---- AP Level 6 ----
+    'ap:6:Luzon':                'Luzon',
+    'ap:6:Visayas':              'visaya',
+    'ap:6:Mindanao':             'mindanao',
+    'ap:6:Palawan':              'palawan',
+    'ap:6:Mindoro':              'mindoro',
+    'ap:6:Samar':                'Samar',
+    'ap:6:Leyte':                'Leyte',
+    'ap:6:Cebu':                 'cebu',
+    // ---- AP Level 7 ----
+    'ap:7:Mount Pulag':          'Mount Pulag',
+    'ap:7:Mount Pinatubo':       'Mount Pinatubo',
+    'ap:7:Taal Volcano':         'Taal Volcano',
+    'ap:7:Cagayan River':        'Cagayan River',
+    'ap:7:Agusan River':         'Agusan River',
+    'ap:7:Lake Lanao':           'Lake Lanao',
+    'ap:7:Subic Bay':            'Subic Bay',
+    'ap:7:Davao Gulf':           'Davao Gulf',
+    'ap:7:Sibuyan Sea':          'Sibuyan Sea',
+    // ---- AP Level 8 ----
+    'ap:8:Datu':                 'Datu (chief)',
+    'ap:8:Maharlika':            'Maharlika (noble)',
+    'ap:8:Timawa':               'Timawa (freeman)',
+    'ap:8:Babaylan':             'Babaylan (spiritual leader)',
+    'ap:8:Balangay':             'Balangay (boat)',
+    'ap:8:Baybayin':             'Baybayin (ancient writing)',
+    'ap:8:Bahay Kubo':           'Bahay Kubo',
+    'ap:8:Panday':               'Panday (blacksmith)',
+    // Barangay & Alipin have no local file → Unsplash fallback
+    // ---- AP Level 9 ----
+    'ap:9:Manunggul Jar':        'Manunggul Jar',
+    'ap:9:Banaue Rice Terraces': 'Banaue Rice Terraces',
+    'ap:9:Bulul':                'Bulul',
+    'ap:9:Laguna Copperplate':   'Laguna Copperplate Inscription',
+    'ap:9:Golden Tara':          'Golden Tara of Agusan',
+    'ap:9:Tabon Cave':           'Tabon Cave',
+    'ap:9:Angono Petroglyphs':   'Angono Petroglyphs',
+    'ap:9:Fort Santiago':        'Fort Santiago',
+    'ap:9:San Agustin Church':   'San Agustin Church',
+    'ap:9:Bahay na Bato':        'Bahay na Bato',
+    'ap:9:Barasoain Church':     'Barasoain Church',
+    // ---- AP Level 10 ----
+    'ap:10:Hudhud':              'hudhud',
+    'ap:10:Biag ni Lam-ang':     'Biag ni Lam-ang',
+    'ap:10:Alamat':              'Alamat',
+    'ap:10:Bugtong':             'Bugtong',
+    'ap:10:Salawikain':          'Salawikain',
+    'ap:10:Kundiman':            'Kundiman',
+    'ap:10:Tinikling':           'Tinikling',
+    'ap:10:Singkil':             'Singkil (dance)',
+    'ap:10:Pandanggo sa Ilaw':   'Pandanggo sa Ilaw (dance)',
+    'ap:10:Fiesta':              'Fiesta',
+    'ap:10:Pamahiin':            'Pamahiin (superstition)',
+    'ap:10:Mano po':             'Mano po (respect gesture)',
+
+    // ---- EPP / Computer ----
     'computer:1:Google':         'google',
     'computer:1:Yahoo':          'yahoo',
     'computer:1:Lycos':          'lycos',
     'computer:2:Search box':     'search box',
     'computer:2:Search button':  'search button',
     'computer:2:Search results': 'search result',
-    'computer:2:Tabs':           'tabs',         // ✅ ADDED — matches tabs.jpg
+    'computer:2:Tabs':           'tabs',
     'computer:3:Safari':         'safari',
     'computer:3:Opera':          'opera',
     'computer:3:Microsoft Edge': 'microsoft edge',
@@ -183,6 +248,8 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Sharing password':   'dont/Sharing password_',
     'computer:5:Using bad words':    'dont/Using bad words_',
     'computer:5:Fake news':          'dont/fake news',
+
+    // ---- Science ----
     'science:1:Rock':            'rock',
     'science:1:Water':           'Water',
     'science:2:Chair':           'Chair',
@@ -257,29 +324,98 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // AUDIO_MAP
+  // AUDIO_MAP — lowercase, no spaces (matches your renamed files)
   // ============================================================
   const AUDIO_SUBJECT_FOLDER = { ap: 'ap', computer: 'epp', science: 'science' };
 
   const AUDIO_MAP = {
+    // ---- AP Level 1 ----
     'ap:1:Pacific Ocean':       'pacificocean',
     'ap:1:Pasig River':         'pasigriver',
     'ap:1:Laguna de Bay':       'lagunadebay',
+    // ---- AP Level 2 ----
     'ap:2:Mount Apo':           'mountapo',
     'ap:2:Mayon Volcano':       'mayonvolcano',
     'ap:2:Chocolate Hills':     'chocolatehills',
     'ap:2:Central Luzon Plain': 'centralluzonplain',
+    // ---- AP Level 3 ----
     'ap:3:Malaysia':            'malaysia',
     'ap:3:Indonesia':           'indonesia',
     'ap:3:Vietnam':             'vietnam',
     'ap:3:Thailand':            'thailand',
     'ap:3:Brunei':              'brunei',
+    // ---- AP Level 4 ----
     'ap:4:Weather':             'weather',
     'ap:4:Climate':             'climate',
     'ap:4:Temperature':         'temperature',
     'ap:4:Humidity':            'humidity',
     'ap:4:Rainfall':            'rainfall',
     'ap:4:PAGASA':              'pagasa',
+    // ---- AP Level 5 ----
+    'ap:5:Cool dry season':     'cooldryseason',
+    'ap:5:Dry season':          'dryseason',
+    'ap:5:Hot dry season':      'hotdryseason',
+    'ap:5:May':                 'hottestmonth',
+    'ap:5:January':             'coolest',
+    'ap:5:Rainy season':        'rainyseason',
+    'ap:5:Tropical climate':    'tropicalclimate',
+    // ---- AP Level 6 ----
+    'ap:6:Luzon':               'luzon',
+    'ap:6:Visayas':             'visayas',
+    'ap:6:Mindanao':            'mindanao',
+    'ap:6:Palawan':             'palawan',
+    'ap:6:Mindoro':             'mindoro',
+    'ap:6:Samar':               'samar',
+    'ap:6:Leyte':               'leyte',
+    'ap:6:Cebu':                'cebu',
+    // ---- AP Level 7 ----
+    'ap:7:Mount Pulag':         'mountpulag',
+    'ap:7:Mount Pinatubo':      'mountpinatubo',
+    'ap:7:Taal Volcano':        'taalvolcano',
+    'ap:7:Cagayan River':       'cagayanriver',
+    'ap:7:Agusan River':        'agusanriver',
+    'ap:7:Lake Lanao':          'lakelanao',
+    'ap:7:Subic Bay':           'subicbay',
+    'ap:7:Davao Gulf':          'davaogulf',
+    'ap:7:Sibuyan Sea':         'sibuyansea',
+    // ---- AP Level 8 ----
+    'ap:8:Barangay':            'barangay',
+    'ap:8:Datu':                'datu',
+    'ap:8:Maharlika':           'maharlika',
+    'ap:8:Timawa':              'timawa',
+    'ap:8:Alipin':              'alipin',
+    'ap:8:Babaylan':            'babaylan',
+    'ap:8:Balangay':            'balangay',
+    'ap:8:Baybayin':            'baybayin',
+    'ap:8:Bahay Kubo':          'bahaykubo',
+    'ap:8:Panday':              'panday',
+    // ---- AP Level 9 ----
+    'ap:9:Manunggul Jar':       'manungguljar',
+    'ap:9:Banaue Rice Terraces':'banauekristeraces',
+    'ap:9:Bulul':               'bulul',
+    'ap:9:Laguna Copperplate':  'lagunacopperplate',
+    'ap:9:Golden Tara':         'goldentara',
+    'ap:9:Tabon Cave':          'taboncave',
+    'ap:9:Angono Petroglyphs':  'angonopetroglyphs',
+    'ap:9:Fort Santiago':       'fortsantiago',
+    'ap:9:San Agustin Church':  'sanagustinchurch',
+    'ap:9:Bahay na Bato':       'bahaynabato',
+    'ap:9:Barasoain Church':    'barasoainchurch',
+    // ---- AP Level 10 ----
+    'ap:10:Hudhud':             'hudhud',
+    'ap:10:Biag ni Lam-ang':    'biagnilamang',
+    'ap:10:Alamat':             'alamat',
+    'ap:10:Bugtong':            'bugtong',
+    'ap:10:Salawikain':         'salawikain',
+    'ap:10:Kundiman':           'kundiman',
+    'ap:10:Tinikling':          'tinikling',
+    'ap:10:Singkil':            'singkil',
+    'ap:10:Pandanggo sa Ilaw':  'pandanggoilaw',
+    'ap:10:Fiesta':             'fiesta',
+    'ap:10:Pamahiin':           'pamahiin',
+    'ap:10:Mano po':            'manopo',
+
+    // ---- EPP ----
     'computer:1:Google':         'google',
     'computer:1:Yahoo':          'yahoo',
     'computer:1:Lycos':          'lycos',
@@ -305,49 +441,8 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Sharing password':   'sharingpassword',
     'computer:5:Using bad words':    'usingbadwords',
     'computer:5:Fake news':          'fakenews',
-    'computer:6:.com':  'com', 'computer:6:.edu':  'edu',
-    'computer:6:.net':  'net', 'computer:6:.org':  'org',
-    'computer:6:.gov':  'gov', 'computer:6:.pro':  'pro',
-    'computer:6:.info': 'info','computer:6:.int':  'int',
-    'computer:7:Browser window buttons': 'browserwindowbuttons',
-    'computer:7:Tab name':               'tabname',
-    'computer:7:Navigation buttons':     'navigationbuttons',
-    'computer:7:New tab':                'newtab',
-    'computer:7:Customize and control':  'customizeandcontrol',
-    'computer:7:Bookmark this page':     'bookmarkthispage',
-    'computer:7:Address bar':            'addressbar',
-    'computer:7:Display window':         'displaywindow',
-    'computer:7:Scroll bar':             'scrollbar',
-    'computer:8:Username':    'username',
-    'computer:8:Domain name': 'domainname',
-    'computer:8:Domain type': 'domaintype',
-    'computer:8:To':          'to', 'computer:8:Cc':  'cc',
-    'computer:8:Bcc':         'bcc', 'computer:8:Subject': 'subject',
-    'computer:8:Body':        'body', 'computer:8:Attach File': 'attachfile',
-    'computer:8:Send':        'send',
-    'computer:9:Gmail':        'gmail',
-    'computer:9:Yahoo Mail':   'yahoomail',
-    'computer:9:Outlook':      'outlook',
-    'computer:9:Compose Mail': 'composemail',
-    'computer:9:Inbox':        'inbox',
-    'computer:9:Sent':         'sent',
-    'computer:9:Drafts':       'drafts',
-    'computer:9:Spam':         'spam',
-    'computer:9:Attachment':   'attachment',
-    'computer:9:Reply':        'reply',
-    'computer:9:Forward':      'forward',
-    'computer:10:Monitor':         'monitor',
-    'computer:10:Keyboard':        'keyboard',
-    'computer:10:Mouse':           'mouse',
-    'computer:10:System unit':     'systemunit',
-    'computer:10:Speakers':        'speakers',
-    'computer:10:Printer':         'printer',
-    'computer:10:Webcam':          'webcam',
-    'computer:10:Microphone':      'microphone',
-    'computer:10:Headset':         'headset',
-    'computer:10:Scanner':         'scanner',
-    'computer:10:USB flash drive': 'usbflashdrive',
-    'computer:10:Touchpad':        'touchpad',
+
+    // ---- Science ----
     'science:1:Rock':  'rock', 'science:1:Water': 'water', 'science:1:Air': 'air',
     'science:2:Chair': 'chair', 'science:2:Desk': 'desk', 'science:2:Bag': 'bag', 'science:2:Shoes': 'shoes',
     'science:3:Water': 'water', 'science:3:Coffee': 'coffee', 'science:3:Chocolate drink': 'chocolatedrink', 'science:3:Juice': 'juice', 'science:3:Milk': 'milk',
@@ -361,27 +456,96 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // DESC_MAP
+  // DESC_MAP — Jojoma's descriptions
   // ============================================================
   const DESC_MAP = {
+    // ---- AP Level 1 ----
     'ap:1:Pacific Ocean':       "Earth's largest and deepest ocean.",
     'ap:1:Pasig River':         "Historic river running through Manila.",
     'ap:1:Laguna de Bay':       "Largest lake in the Philippines.",
+    // ---- AP Level 2 ----
     'ap:2:Mount Apo':           "The highest peak in the Philippines.",
     'ap:2:Mayon Volcano':       "Volcano famous for its perfect cone.",
     'ap:2:Chocolate Hills':     "Famous brown hills in Bohol.",
     'ap:2:Central Luzon Plain': "The rice granary of the country.",
+    // ---- AP Level 3 ----
     'ap:3:Malaysia':            "Southeast Asian country near Palawan.",
     'ap:3:Indonesia':           "Giant archipelago south of Mindanao.",
     'ap:3:Vietnam':             "Country across the West Philippine Sea.",
     'ap:3:Thailand':            "Asian country famous for tourism.",
     'ap:3:Brunei':              "Small, wealthy nation on Borneo.",
+    // ---- AP Level 4 ----
     'ap:4:Weather':             "Day-to-day condition of the atmosphere.",
     'ap:4:Climate':             "Long-term average weather pattern.",
     'ap:4:Temperature':         "Measure of hotness or coldness.",
     'ap:4:Humidity':            "Amount of moisture in air.",
     'ap:4:Rainfall':            "Water falling down as rain.",
     'ap:4:PAGASA':              "Philippine official weather forecasting agency.",
+    // ---- AP Level 5 ----
+    'ap:5:Cool dry season':     "Pleasant weather from December to February.",
+    'ap:5:Dry season':          "Months with very little rain.",
+    'ap:5:Hot dry season':      "Warmest months of the year.",
+    'ap:5:May':                 "Peak of the dry season.",
+    'ap:5:January':             "Time of lowest yearly temperatures.",
+    'ap:5:Rainy season':        "Months with heavy rainfall (June-November).",
+    'ap:5:Tropical climate':    "Warm, humid climate near the equator.",
+    // ---- AP Level 6 ----
+    'ap:6:Luzon':               "Largest northern Philippine island group.",
+    'ap:6:Visayas':             "Central island group of the Philippines.",
+    'ap:6:Mindanao':            "Southern island group of the Philippines.",
+    'ap:6:Palawan':             "Island known as the last frontier.",
+    'ap:6:Mindoro':             "Island located south of Luzon.",
+    'ap:6:Samar':               "Large island in eastern Visayas.",
+    'ap:6:Leyte':               "Visayan island next to Samar.",
+    'ap:6:Cebu':                "Major hub in the central Philippines.",
+    // ---- AP Level 7 ----
+    'ap:7:Mount Pulag':         "Luzon's highest peak, above a sea of clouds.",
+    'ap:7:Mount Pinatubo':      "Volcano that erupted in 1991.",
+    'ap:7:Taal Volcano':        "Small active volcano within a lake.",
+    'ap:7:Cagayan River':       "Longest river in the Philippines.",
+    'ap:7:Agusan River':        "Large river in eastern Mindanao.",
+    'ap:7:Lake Lanao':          "Large ancient lake in Mindanao.",
+    'ap:7:Subic Bay':           "Famous harbor in Central Luzon.",
+    'ap:7:Davao Gulf':          "Large gulf in southern Mindanao.",
+    'ap:7:Sibuyan Sea':         "Sea at the center of the Philippines.",
+    // ---- AP Level 8 ----
+    'ap:8:Barangay':            "Ancient Filipino community or village.",
+    'ap:8:Datu':                "Ruler of an ancient barangay.",
+    'ap:8:Maharlika':           "Feudal warrior class of the Tagalogs.",
+    'ap:8:Timawa':              "Free citizens of ancient society.",
+    'ap:8:Alipin':              "Servant class in ancient times.",
+    'ap:8:Babaylan':            "Priestess or shaman of the community.",
+    'ap:8:Balangay':            "Ancient Filipino wooden water vessel.",
+    'ap:8:Baybayin':            "Pre-colonial native writing system.",
+    'ap:8:Bahay Kubo':          "Traditional Filipino stilt house.",
+    'ap:8:Panday':              "Maker of metal tools and weapons.",
+    // ---- AP Level 9 ----
+    'ap:9:Manunggul Jar':       "Ancient burial jar found in Palawan.",
+    'ap:9:Banaue Rice Terraces':"Hand-carved mountainside agricultural terraces.",
+    'ap:9:Bulul':               "Wooden Igorot rice granary god.",
+    'ap:9:Laguna Copperplate':  "Oldest written document in the Philippines.",
+    'ap:9:Golden Tara':         "Ancient Hindu golden statue artifact.",
+    'ap:9:Tabon Cave':          "Site of early human remains.",
+    'ap:9:Angono Petroglyphs':  "Oldest known rock art carvings.",
+    'ap:9:Fort Santiago':       "Spanish defense fortress in Manila.",
+    'ap:9:San Agustin Church':  "Oldest stone church in Manila.",
+    'ap:9:Bahay na Bato':       "Spanish colonial noble stone house.",
+    'ap:9:Barasoain Church':    "Historic site of the first republic.",
+    // ---- AP Level 10 ----
+    'ap:10:Hudhud':             "Chanted epic stories of the Ifugao.",
+    'ap:10:Biag ni Lam-ang':    "Famous Ilocano folk epic poem.",
+    'ap:10:Alamat':             "Traditional story explaining origins.",
+    'ap:10:Bugtong':            "Filipino rhyming word puzzle game.",
+    'ap:10:Salawikain':         "Traditional saying containing wisdom.",
+    'ap:10:Kundiman':           "Traditional Filipino love song genre.",
+    'ap:10:Tinikling':          "Bamboo pole traditional dance.",
+    'ap:10:Singkil':            "Royal Maranao bamboo dance.",
+    'ap:10:Pandanggo sa Ilaw':  "Dance with balancing oil lamps.",
+    'ap:10:Fiesta':             "Community celebration honoring patron saints.",
+    'ap:10:Pamahiin':           "Traditional cultural beliefs and myths.",
+    'ap:10:Mano po':            "Respect gesture for greeting elders.",
+
+    // ---- EPP ----
     'computer:1:Google':         "Most popular modern search engine.",
     'computer:1:Yahoo':          "Search engine with internet directory.",
     'computer:1:Lycos':          "Pioneer search engine from the nineties.",
@@ -407,56 +571,8 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Sharing password':   "Keep account access keys secret.",
     'computer:5:Using bad words':    "Never use offensive language online.",
     'computer:5:Fake news':          "Never share unverified false information.",
-    'computer:6:.com':  "For general commercial businesses.",
-    'computer:6:.edu':  "Used by schools and universities.",
-    'computer:6:.net':  "Used by network provider systems.",
-    'computer:6:.org':  "Used mostly by non-profit groups.",
-    'computer:6:.gov':  "Official government website extension.",
-    'computer:6:.pro':  "Reserved for certified professionals.",
-    'computer:6:.info': "Open extension for informational websites.",
-    'computer:6:.int':  "Used by international treaty organizations.",
-    'computer:7:Browser window buttons': "Minimize, maximize, or close window.",
-    'computer:7:Tab name':               "Displays current web page title.",
-    'computer:7:Navigation buttons':     "Go backward or forward online.",
-    'computer:7:New tab':                "Opens a blank web page window.",
-    'computer:7:Customize and control':  "Browser settings and options menu.",
-    'computer:7:Bookmark this page':     "Saves web address for later.",
-    'computer:7:Address bar':            "Where you type web addresses.",
-    'computer:7:Display window':         "Main area showing website content.",
-    'computer:7:Scroll bar':             "Moves page up and down.",
-    'computer:8:Username':    "Unique name identifying email owner.",
-    'computer:8:Domain name': "Website company hosting email service.",
-    'computer:8:Domain type': "Shows type of email organization.",
-    'computer:8:To':          "Field for main recipient address.",
-    'computer:8:Cc':          "Sends copies to other people.",
-    'computer:8:Bcc':         "Hides recipient names from others.",
-    'computer:8:Subject':     "Title of email message topic.",
-    'computer:8:Body':        "Main written message text area.",
-    'computer:8:Attach File': "Add documents or images here.",
-    'computer:8:Send':        "Button to deliver your email.",
-    'computer:9:Gmail':        "Google electronic mail provider system.",
-    'computer:9:Yahoo Mail':   "Longtime popular email provider service.",
-    'computer:9:Outlook':      "Microsoft email client service provider.",
-    'computer:9:Compose Mail': "Start writing a new email message.",
-    'computer:9:Inbox':        "Where incoming new emails arrive.",
-    'computer:9:Sent':         "Folder storing delivered email messages.",
-    'computer:9:Drafts':       "Stores unfinished email message texts.",
-    'computer:9:Spam':         "Folder filtering unwanted junk emails.",
-    'computer:9:Attachment':   "File attached to an email message.",
-    'computer:9:Reply':        "Answer back to the sender email.",
-    'computer:9:Forward':      "Send received email to someone.",
-    'computer:10:Monitor':        "Screen showing visual output.",
-    'computer:10:Keyboard':       "Device for typing letters, numbers.",
-    'computer:10:Mouse':          "Pointing device used to click.",
-    'computer:10:System unit':    "Main case housing internal hardware.",
-    'computer:10:Speakers':       "Audio output device for sound.",
-    'computer:10:Printer':        "Prints digital documents onto paper.",
-    'computer:10:Webcam':         "Camera capturing live video feeds.",
-    'computer:10:Microphone':     "Input hardware capturing audio voice.",
-    'computer:10:Headset':        "Headphones with voice microphone.",
-    'computer:10:Scanner':        "Copies paper documents into computer.",
-    'computer:10:USB flash drive':"Portable file storage device.",
-    'computer:10:Touchpad':       "Touch-sensitive mouse surface.",
+
+    // ---- Science ----
     'science:1:Rock':  "Hard solid form of matter.",
     'science:1:Water': "Life-sustaining liquid type of matter.",
     'science:1:Air':   "Invisible gas surrounding the Earth.",
@@ -621,7 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // TOPIC_DATA
+  // TOPIC_DATA — AP 1-10, EPP, Science
   // ============================================================
   const TOPIC_DATA = {
     computer: {
