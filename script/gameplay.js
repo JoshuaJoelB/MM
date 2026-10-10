@@ -1,7 +1,8 @@
 /* ================================================================
    GAMEPLAY.JS — MATCH MONSTER (FINAL · JOJOMA EDITION)
    - Jojoma: card title + typed description + per-card audio
-   - Audio has a HARD 3-second budget — no more hangs
+   - Audio now uses canplaythrough + play() rejection handling
+   - Hard 2s audio budget — no more hangs
    - Win modal gated until the final audio finishes
    ================================================================ */
 
@@ -109,11 +110,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const SUBJECT_FOLDER = { computer: 'EPP', science: 'SCIENCE', ap: 'AP' };
 
+  // ── Fixed: no-space folder first (matches most of your folders)
   const LEVEL_FOLDER_VARIANTS = {
-    computer: function (n) { return ['lvl ' + n, 'lvl' + n, 'Level ' + n, 'level ' + n]; },
-    science:  function (n) { return ['Level ' + n, 'level ' + n, 'lvl ' + n, 'lvl' + n]; },
-    ap:       function (n) {
-      const list = ['level ' + n, 'Level ' + n, 'lvl ' + n, 'lvl' + n];
+    computer: function (n) {
+      // EPP folders: level 1 = "lvl 1", levels 2+ = "lvl2", "lvl3"...
+      if (n === 1) return ['lvl 1', 'lvl1', 'Level 1', 'level 1'];
+      return ['lvl' + n, 'lvl ' + n, 'Level ' + n, 'level ' + n];
+    },
+    science: function (n) {
+      return ['lvl' + n, 'Level ' + n, 'level ' + n, 'lvl ' + n];
+    },
+    ap: function (n) {
+      const list = ['lvl' + n, 'lvl ' + n, 'level ' + n, 'Level ' + n];
       if (n === 5) list.unshift('level 5 incomplete');
       return list;
     }
@@ -600,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
       ]},
       2: { title: 'Parts of a Search Engine Home Page', cards: [
         { id: IMG.uiDesign,  name: 'Search box'     },
-        { id: IMG.mouse,     name: 'Search button'  },
+        { id: IMG.uiDesign,  name: 'Search button'  },
         { id: IMG.docs,      name: 'Search results' },
         { id: IMG.dashboard, name: 'Tabs'           }
       ]},
@@ -933,31 +941,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     return candidates;
   }
-  function attachImageFallback(imgEl, pairIndex) {
-    const candidates  = buildLocalCandidates(pairIndex);
-    const unsplash    = getUnsplashUrl(pairIndex);
-    const label       = getCardLabel(pairIndex);
-    const placeholder = makePlaceholderDataUri(label);
-    let stage = 0, stopped = false;
-    function advance() {
-      if (stopped) return;
-      if (stage < candidates.length) { imgEl.src = candidates[stage++]; return; }
-      if (stage === candidates.length) { imgEl.src = unsplash; stage++; return; }
-      stopped = true;
-      imgEl.removeEventListener('error', advance);
-      imgEl.src = placeholder;
-    }
-    imgEl.addEventListener('error', advance);
-    advance();
+function attachImageFallback(imgEl, pairIndex) {
+  const candidates  = buildLocalCandidates(pairIndex);
+  const unsplash    = getUnsplashUrl(pairIndex);
+  const label       = getCardLabel(pairIndex);
+  const placeholder = makePlaceholderDataUri(label);
+
+  let stage = 0, stopped = false;
+
+  function advance() {
+    if (stopped) return;
+    if (stage < candidates.length) { imgEl.src = candidates[stage++]; return; }
+    if (stage === candidates.length) { imgEl.src = unsplash; stage++; return; }
+    stopped = true;
+    imgEl.removeEventListener('error', advance);
+    imgEl.src = placeholder;
   }
 
-  // ============================================================
-  // AUDIO — SMART BUILDER + HARD BUDGET PLAYER
-  // ============================================================
-  const AUDIO_BUDGET_MS = 3000;   // max time spent trying to find audio
-  const AUDIO_PER_TRY_MS = 280;   // max time per candidate
+  // ✅ Debug: log every failed URL
+  imgEl.addEventListener('error', function onErr() {
+    console.log('[Image] ✗ 404:', imgEl.src);
+  });
 
-  // Build a small candidate list (≤12) — folders most likely first
+  // ✅ Debug: log when it finally loads
+  imgEl.addEventListener('load', function onLoad() {
+    const src = imgEl.src.split('/').slice(-3).join('/');
+    console.log('[Image] ✔ Loaded for "' + label + '":', src);
+    imgEl.removeEventListener('load', onLoad);
+  });
+
+  imgEl.addEventListener('error', advance);
+  advance();
+}
+
+  // ============================================================
+  // AUDIO — FIXED PLAYER
+  // ============================================================
+  const AUDIO_BUDGET_MS  = 2000;   // total time to find + start audio
+  const AUDIO_PER_TRY_MS = 450;    // time per candidate
+
   function buildAudioCandidates(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     if (!entry) return [];
@@ -965,34 +987,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const folder   = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
     const mapped   = AUDIO_MAP[subject + ':' + level + ':' + cardName];
 
-    // Names to try (max 3)
+    // Filename variants (max 3)
     const names = [];
     if (mapped) names.push(mapped);
     if (cardName !== mapped) names.push(cardName);
     const lc = cardName.toLowerCase();
     if (names.indexOf(lc) === -1 && lc !== cardName) names.push(lc);
 
-    // Folders most likely first (max 4)
-    const lvlDirs = [
-      'lvl ' + level,     // epp level 1
-      'lvl' + level,      // ap level 1
-      'lv' + level,       // epp level 2
-      'Level ' + level    // fallback
-    ];
+    // Folder variants — most likely first
+    let lvlDirs;
+    if (subject === 'computer' && level === 1) {
+      lvlDirs = ['lvl 1', 'lvl1', 'Level 1'];
+    } else {
+      lvlDirs = ['lvl' + level, 'lvl ' + level, 'Level ' + level];
+    }
 
     const out = [];
     for (const dir of lvlDirs) {
       for (const name of names) {
         out.push(`../Assets/sound/${folder}/${dir}/${name}.mp3`);
-        if (out.length >= 12) return out;
+        if (out.length >= 9) return out;
       }
     }
     return out;
   }
 
   /**
-   * Try each candidate URL with a short timeout and a HARD overall budget.
-   * Resolves with the Audio element on success, or null if nothing works.
+   * Resolves with a PLAYING Audio object, or null if nothing plays
+   * within the budget. Uses canplaythrough + play() rejection handling.
    */
   function playAudioWithBudget(candidates, budgetMs) {
     return new Promise((resolve) => {
@@ -1005,11 +1027,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const budgetTimer = setTimeout(function () {
         if (resolved) return;
         resolved = true;
-        console.warn('[Jojoma] Audio budget exceeded — skipping');
+        console.warn('[Jojoma] ⏱ Audio budget exceeded — skipping audio');
         resolve(null);
       }, budgetMs);
 
-      function finishWith(audio) {
+      function finish(audio) {
         if (resolved) return;
         resolved = true;
         clearTimeout(budgetTimer);
@@ -1018,37 +1040,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
       function tryNext() {
         if (resolved) return;
-        if (idx >= candidates.length) { finishWith(null); return; }
-        if (Date.now() - startTime > budgetMs) { finishWith(null); return; }
+        if (idx >= candidates.length) { finish(null); return; }
+        if (Date.now() - startTime > budgetMs - 100) { finish(null); return; }
 
         const src = candidates[idx++];
         const audio = new Audio();
         audio.preload = 'auto';
-        audio.volume = 1.0;
+        audio.volume  = 1.0;
 
         let settled = false;
 
+        // ✅ FIX: named the timer so we can actually clear it
         const perTry = setTimeout(function () {
           if (settled) return;
           settled = true;
-          try { audio.src = ''; } catch(e){}
+          try { audio.src = ''; } catch (e) {}
           tryNext();
         }, AUDIO_PER_TRY_MS);
 
-        audio.addEventListener('loadedmetadata', function () {
+        // ✅ FIX: canplaythrough fires when buffer is fully ready
+        audio.addEventListener('canplaythrough', function () {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
+
           console.log('[Jojoma] ▶ Playing:', src);
 
-          // Try to play — best effort
+          // ✅ FIX: handle play() rejection — don't wait for 'ended' that never comes
           const p = audio.play();
-          if (p && typeof p.catch === 'function') {
-            p.catch(function (err) {
-              console.warn('[Jojoma] Play blocked:', err && err.name);
+          if (p && typeof p.then === 'function') {
+            p.then(function () {
+              finish(audio);   // ✅ playing — resolve with the audio
+            }).catch(function (err) {
+              console.warn('[Jojoma] play() rejected:', err && err.name);
+              tryNext();       // ✅ move on to next candidate immediately
             });
+          } else {
+            finish(audio);
           }
-          finishWith(audio);
         });
 
         audio.addEventListener('error', function () {
@@ -1059,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         audio.src = src;
-        try { audio.load(); } catch(e) { tryNext(); }
+        try { audio.load(); } catch (e) { tryNext(); }
       }
 
       tryNext();
@@ -1083,7 +1112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!characterDialog) return;
     if (characterTitle) characterTitle.textContent = title || '';
     characterDialog.classList.add('show');
-    dialogActive = true;
+    dialogActive  = true;
     skipRequested = false;
     characterDialog.classList.add('skippable');
     if (!characterDialog.__skipBound) {
@@ -1123,11 +1152,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, speed);
   }
 
-  /**
-   * Show Jojoma + type description + play audio.
-   * Dialog closes when BOTH typing AND audio phase finish.
-   * Audio has a hard 3s budget — if no file found, moves on.
-   */
   function speakCard(pairIndex, onDone) {
     dialogOnDone = onDone || null;
 
@@ -1160,16 +1184,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // 1) Start typing
+    // 1) Type the description
     typeText(desc, function () {
       typingDone = true;
       checkBothDone();
     });
 
-    // 2) Try to play audio (hard 3s budget)
+    // 2) Play audio (or skip if none found within 2s)
     playAudioWithBudget(candidates, AUDIO_BUDGET_MS).then(function (audio) {
       if (!audio) {
-        // No audio available — just finish the audio phase
         audioDone = true;
         checkBothDone();
         return;
@@ -1177,10 +1200,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       currentAudio = audio;
 
-      // Safety cap: force finish after 15s max
+      // ✅ Reduced safety cap — audio for a single word is short
       const maxDur = setTimeout(function () {
         if (!audioDone) { audioDone = true; checkBothDone(); }
-      }, 15000);
+      }, 6000);
 
       audio.addEventListener('ended', function () {
         clearTimeout(maxDur);
