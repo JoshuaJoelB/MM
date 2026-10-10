@@ -752,8 +752,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
 
-  // Build local candidates: FILE_MAP hit → folder name variants × extensions
-  // NOTE: gameplay pages live in /Gameplay/, so we need `../` prefix.
   function buildLocalCandidates(pairIndex) {
     const entry  = topicInfo.cards[pairIndex % topicInfo.cards.length];
     const label  = entry.name;
@@ -764,7 +762,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const mapKey = subject + ':' + level + ':' + label;
     const mapped = FILE_MAP[mapKey];
-    if (!mapped) return [];      // no map → skip straight to Unsplash
+    if (!mapped) return [];
 
     const candidates = [];
     for (const lvl of levelFolders) {
@@ -834,16 +832,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const STAR_THRESHOLDS = [5, 30, 52];
 
-  function getBarPercentage(mv, pairCount) {
-    if (pairCount <= 0) return 100;
-    const t3 = 1.4 * pairCount;
-    const t2 = 2.0 * pairCount;
-    const t1 = 3.0 * pairCount;
-    if (mv <= t3) return 100 - (mv / t3) * 33.33;
-    if (mv <= t2) return 66.67 - ((mv - t3) / (t2 - t3)) * 33.34;
-    if (mv <= t1) return 33.33 - ((mv - t2) / (t1 - t2)) * 33.33;
-    return 0;
-  }
+  /* ============================================================
+     ⭐ STAR BAR — event-based system
+     ------------------------------------------------------------
+     • Correct match  → no reduction
+     • Wrong pair     → -4%
+     • Every second   → -0.2%
+     • Bar starts at 100%, clamped 0–100
+     ============================================================ */
+  const BAR_START         = 100;
+  const BAR_PENALTY_WRONG = 4;     // % lost per wrong pair
+  const BAR_PENALTY_TIME  = 0.2;   // % lost per second
+
+  let barPercent = BAR_START;
+
   function getStarCountFromBar(pct) {
     let count = 0;
     for (let i = 0; i < STAR_THRESHOLDS.length; i++) {
@@ -851,9 +853,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     return Math.max(1, count);
   }
-  function calculateStars(mv, pairCount) {
-    return getStarCountFromBar(getBarPercentage(mv, pairCount));
+
+  // Stars are now derived from the live bar percentage
+  function calculateStars() {
+    return getStarCountFromBar(barPercent);
   }
+
   function getPointsForStars(basePoints, starsEarned) {
     const bonus = basePoints * 0.5;
     return Math.round(basePoints + (starsEarned - 1) * bonus);
@@ -995,11 +1000,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // ⭐ Bar is driven by events — correct match keeps it, wrong pair & time reduce it
   function updateStarProgress() {
     if (!starProgressFill) return;
-    const pct = getBarPercentage(moves, pairs);
-    starProgressFill.style.width = pct + '%';
-    const starsEarned = getStarCountFromBar(pct);
+
+    if (barPercent > 100) barPercent = 100;
+    if (barPercent < 0)   barPercent = 0;
+
+    starProgressFill.style.width = barPercent + '%';
+
+    const starsEarned = getStarCountFromBar(barPercent);
     starProgressStars.forEach((star, i) => {
       star.classList.toggle('filled', i < starsEarned);
     });
@@ -1010,6 +1020,11 @@ document.addEventListener('DOMContentLoaded', function() {
     timerInterval = setInterval(() => {
       secondsLeft--;
       if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
+
+      // ⏱️ Time penalty — small, steady reduction
+      barPercent = Math.max(0, barPercent - BAR_PENALTY_TIME);
+      updateStarProgress();
+
       if (secondsLeft <= 0) {
         stopTimer();
         loseGame();
@@ -1051,6 +1066,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const [first, second] = flippedCards;
 
     if (first.pair === second.pair) {
+      // ✅ Correct match — no reduction
       first.el.classList.add('matched');
       second.el.classList.add('matched');
       matchedPairs++;
@@ -1063,6 +1079,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     } else {
       if (window.MMSfx && MMSfx.wrong) MMSfx.wrong();
+
+      // ❌ Wrong pair — small penalty
+      barPercent = Math.max(0, barPercent - BAR_PENALTY_WRONG);
+      updateStarProgress();
 
       setTimeout(() => {
         first.el.classList.remove('flipped');
@@ -1103,7 +1123,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (winTime)  winTime.textContent  = formatTime(elapsed);
 
     const wasCompletedBefore = wasLevelCompletedBefore();
-    const starsEarned  = calculateStars(moves, pairs);
+
+    // ⭐ Stars based on the final bar value
+    const starsEarned  = calculateStars();
     const pointsEarned = getPointsForStars(basePoints, starsEarned);
 
     try {
@@ -1339,6 +1361,9 @@ document.addEventListener('DOMContentLoaded', function() {
       goToLevels();
     }
   });
+
+  // ⭐ Initialise bar at 100% before first render
+  barPercent = BAR_START;
 
   renderCards();
   resetTimer();
