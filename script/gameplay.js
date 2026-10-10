@@ -1,10 +1,8 @@
 /* ================================================================
-   GAMEPLAY.JS — MATCH MONSTER (FINAL · JOJOMA EDITION)
-   - Audio: /Assets/sound/{subject}/lvl{N}/{card}.mp3
-   - Multi-extension fallback (mp3, wav, m4a, ogg)
-   - Dynamic tab title + favicon per subject/level
+   GAMEPLAY.JS — MATCH MONSTER (FINAL)
+   - All audio files: lowercase, no spaces (pacificocean.mp3)
+   - Folders: /Assets/sound/{subject}/lvl{N}/
    - Jojoma: title + typewriter description + audio
-   - Win modal gated until final audio finishes
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -43,9 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof window.updatePlayerLevelBox === 'function') {
           window.updatePlayerLevelBox();
           clearInterval(retry);
-        } else if (++tries > 10) {
-          clearInterval(retry);
-        }
+        } else if (++tries > 10) clearInterval(retry);
       }, 100);
     }
   }
@@ -114,38 +110,24 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   (function updateTabBranding() {
     document.title = `${subjectInfo.name} · Level ${level} — Match Monster`;
-
     const iconUrl = subjectInfo.icon || '../Assets/top_icon.png';
     document.querySelectorAll('link[rel*="icon"]').forEach(el => el.remove());
 
-    const link1 = document.createElement('link');
-    link1.rel  = 'icon';
-    link1.type = 'image/png';
-    link1.href = iconUrl + '?v=' + level;
-    document.head.appendChild(link1);
-
-    const link2 = document.createElement('link');
-    link2.rel  = 'shortcut icon';
-    link2.href = iconUrl + '?v=' + level;
-    document.head.appendChild(link2);
-
-    const link3 = document.createElement('link');
-    link3.rel  = 'apple-touch-icon';
-    link3.href = iconUrl + '?v=' + level;
-    document.head.appendChild(link3);
+    [['icon', 'image/png'], ['shortcut icon', ''], ['apple-touch-icon', '']].forEach(([rel, type]) => {
+      const link = document.createElement('link');
+      link.rel  = rel;
+      if (type) link.type = type;
+      link.href = iconUrl + '?v=' + level;
+      document.head.appendChild(link);
+    });
   })();
 
   const SUBJECT_FOLDER = { computer: 'EPP', science: 'SCIENCE', ap: 'AP' };
 
   const LEVEL_FOLDER_VARIANTS = {
-    computer: function (n) {
-      if (n === 1) return ['lvl1', 'lvl 1', 'Level 1', 'level 1'];
-      return ['lvl' + n, 'lvl ' + n, 'Level ' + n, 'level ' + n];
-    },
-    science: function (n) {
-      return ['lvl' + n, 'Level ' + n, 'level ' + n, 'lvl ' + n];
-    },
-    ap: function (n) {
+    computer: function (n) { return ['lvl' + n, 'lvl ' + n, 'Level ' + n, 'level ' + n]; },
+    science:  function (n) { return ['lvl' + n, 'Level ' + n, 'level ' + n, 'lvl ' + n]; },
+    ap:       function (n) {
       const list = ['lvl' + n, 'lvl ' + n, 'level ' + n, 'Level ' + n];
       if (n === 5) list.unshift('level 5 incomplete');
       return list;
@@ -274,72 +256,81 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // AUDIO_MAP  —  match EXACTLY what your files are named
+  // AUDIO_MAP — matches your new lowercase filenames
   // ============================================================
   const AUDIO_SUBJECT_FOLDER = { ap: 'ap', computer: 'epp', science: 'science' };
 
   const AUDIO_MAP = {
-    'ap:1:Pacific Ocean':       'pacific ocean',
-    'ap:1:Pasig River':         'Pasig River',
-    'ap:1:Laguna de Bay':       'Laguna de Bay',
-    'ap:2:Mount Apo':           'Mount Apo',
-    'ap:2:Mayon Volcano':       'Mayon Volcano',
-    'ap:2:Chocolate Hills':     'chocolate hills',
-    'ap:2:Central Luzon Plain': 'central luzon plain',
+    // ---------- AP ----------
+    'ap:1:Pacific Ocean':       'pacificocean',
+    'ap:1:Pasig River':         'pasigriver',
+    'ap:1:Laguna de Bay':       'lagunadebay',
+    'ap:2:Mount Apo':           'mountapo',
+    'ap:2:Mayon Volcano':       'mayonvolcano',
+    'ap:2:Chocolate Hills':     'chocolatehills',
+    'ap:2:Central Luzon Plain': 'centralluzonplain',
     'ap:3:Malaysia':            'malaysia',
-    'ap:3:Indonesia':           'Indonesia',
+    'ap:3:Indonesia':           'indonesia',
     'ap:3:Vietnam':             'vietnam',
     'ap:3:Thailand':            'thailand',
-    'ap:3:Brunei':              'Brunei',
-    'computer:1:Google':         'Google',
+    'ap:3:Brunei':              'brunei',
+    'ap:4:Weather':             'weather',
+    'ap:4:Climate':             'climate',
+    'ap:4:Temperature':         'temperature',
+    'ap:4:Humidity':            'humidity',
+    'ap:4:Rainfall':            'rainfall',
+    'ap:4:PAGASA':              'pagasa',
+
+    // ---------- EPP ----------
+    'computer:1:Google':         'google',
     'computer:1:Yahoo':          'yahoo',
     'computer:1:Lycos':          'lycos',
-    'computer:2:Search box':     'search box',
-    'computer:2:Search button':  'search button',
-    'computer:2:Search results': 'search result',
+    'computer:2:Search box':     'searchbox',
+    'computer:2:Search button':  'searchbutton',
+    'computer:2:Search results': 'searchresult',
     'computer:2:Tabs':           'tabs',
     'computer:3:Safari':          'safari',
     'computer:3:Opera':           'opera',
-    'computer:3:Microsoft Edge':  'microsoft edge',
-    'computer:3:Mozilla Firefox': 'mozilla firefox',
-    'computer:3:Google Chrome':   'google chrome',
+    'computer:3:Microsoft Edge':  'microsoftedge',
+    'computer:3:Mozilla Firefox': 'mozillafirefox',
+    'computer:3:Google Chrome':   'googlechrome',
     'computer:4:Email':           'email',
     'computer:4:Chat':            'chat',
-    'computer:4:Instant message': 'instant message',
-    'computer:4:Video call':      'video call',
-    'computer:4:Social media':    'social media',
-    'computer:4:Online class':    'online class',
-    'computer:5:Kind words':         'kind words',
-    'computer:5:Ask permission':     'ask permission',
-    'computer:5:Be respectful':      'be respectful',
-    'computer:5:Typing in ALL CAPS': 'typing in all caps',
-    'computer:5:Sharing password':   'sharing password',
-    'computer:5:Using bad words':    'using bad words',
-    'computer:5:Fake news':          'fake news',
+    'computer:4:Instant message': 'instantmessage',
+    'computer:4:Video call':      'videocall',
+    'computer:4:Social media':    'socialmedia',
+    'computer:4:Online class':    'onlineclass',
+    'computer:5:Kind words':         'kindwords',
+    'computer:5:Ask permission':     'askpermission',
+    'computer:5:Be respectful':      'berespectful',
+    'computer:5:Typing in ALL CAPS': 'typinginallcaps',
+    'computer:5:Sharing password':   'sharingpassword',
+    'computer:5:Using bad words':    'usingbadwords',
+    'computer:5:Fake news':          'fakenews',
     'computer:6:.com':  'com', 'computer:6:.edu':  'edu',
     'computer:6:.net':  'net', 'computer:6:.org':  'org',
     'computer:6:.gov':  'gov', 'computer:6:.pro':  'pro',
     'computer:6:.info': 'info','computer:6:.int':  'int',
-    'computer:7:Browser window buttons': 'browser window buttons',
-    'computer:7:Tab name':               'tab name',
-    'computer:7:Navigation buttons':     'navigation buttons',
-    'computer:7:New tab':                'new tab',
-    'computer:7:Customize and control':  'customize and control',
-    'computer:7:Bookmark this page':     'bookmark this page',
-    'computer:7:Address bar':            'address bar',
-    'computer:7:Display window':         'display window',
-    'computer:7:Scroll bar':             'scroll bar',
+    'computer:7:Browser window buttons': 'browserwindowbuttons',
+    'computer:7:Tab name':               'tabname',
+    'computer:7:Navigation buttons':     'navigationbuttons',
+    'computer:7:New tab':                'newtab',
+    'computer:7:Customize and control':  'customizeandcontrol',
+    'computer:7:Bookmark this page':     'bookmarkthispage',
+    'computer:7:Address bar':            'addressbar',
+    'computer:7:Display window':         'displaywindow',
+    'computer:7:Scroll bar':             'scrollbar',
     'computer:8:Username':    'username',
-    'computer:8:Domain name': 'domain name',
-    'computer:8:Domain type': 'domain type',
+    'computer:8:Domain name': 'domainname',
+    'computer:8:Domain type': 'domaintype',
     'computer:8:To':          'to', 'computer:8:Cc':  'cc',
     'computer:8:Bcc':         'bcc', 'computer:8:Subject': 'subject',
-    'computer:8:Body':        'body', 'computer:8:Attach File': 'attach file',
+    'computer:8:Body':        'body', 'computer:8:Attach File': 'attachfile',
     'computer:8:Send':        'send',
     'computer:9:Gmail':        'gmail',
-    'computer:9:Yahoo Mail':   'yahoo mail',
+    'computer:9:Yahoo Mail':   'yahoomail',
     'computer:9:Outlook':      'outlook',
-    'computer:9:Compose Mail': 'compose mail',
+    'computer:9:Compose Mail': 'composemail',
     'computer:9:Inbox':        'inbox',
     'computer:9:Sent':         'sent',
     'computer:9:Drafts':       'drafts',
@@ -350,15 +341,27 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:10:Monitor':         'monitor',
     'computer:10:Keyboard':        'keyboard',
     'computer:10:Mouse':           'mouse',
-    'computer:10:System unit':     'system unit',
+    'computer:10:System unit':     'systemunit',
     'computer:10:Speakers':        'speakers',
     'computer:10:Printer':         'printer',
     'computer:10:Webcam':          'webcam',
     'computer:10:Microphone':      'microphone',
     'computer:10:Headset':         'headset',
     'computer:10:Scanner':         'scanner',
-    'computer:10:USB flash drive': 'usb flash drive',
-    'computer:10:Touchpad':        'touchpad'
+    'computer:10:USB flash drive': 'usbflashdrive',
+    'computer:10:Touchpad':        'touchpad',
+
+    // ---------- SCIENCE ----------
+    'science:1:Rock':  'rock', 'science:1:Water': 'water', 'science:1:Air': 'air',
+    'science:2:Chair': 'chair', 'science:2:Desk': 'desk', 'science:2:Bag': 'bag', 'science:2:Shoes': 'shoes',
+    'science:3:Water': 'water', 'science:3:Coffee': 'coffee', 'science:3:Chocolate drink': 'chocolatedrink', 'science:3:Juice': 'juice', 'science:3:Milk': 'milk',
+    'science:4:Air': 'air', 'science:4:Wind': 'wind', 'science:4:Oxygen': 'oxygen', 'science:4:Carbon dioxide': 'carbondioxide', 'science:4:Water vapor': 'watervapor', 'science:4:Helium': 'helium',
+    'science:5:Mass': 'mass', 'science:5:Weight': 'weight', 'science:5:Volume': 'volume', 'science:5:Shape': 'shape', 'science:5:Color': 'color', 'science:5:Texture': 'texture', 'science:5:Smell': 'smell',
+    'science:6:Platform balance': 'platformbalance', 'science:6:Triple beam balance': 'triplebeambalance', 'science:6:Weighing scale': 'weighingscale', 'science:6:Graduated cylinder': 'graduatedcylinder', 'science:6:Meter stick': 'meterstick', 'science:6:Thermometer': 'thermometer', 'science:6:Measuring cup': 'measuringcup',
+    'science:7:Gram': 'gram', 'science:7:Kilogram': 'kilogram', 'science:7:Milliliter': 'milliliter', 'science:7:Liter': 'liter', 'science:7:Centimeter': 'centimeter', 'science:7:Meter': 'meter', 'science:7:Degree Celsius': 'degreecelsius', 'science:7:Cubic meter': 'cubicmeter',
+    'science:8:Melting': 'melting', 'science:8:Freezing': 'freezing', 'science:8:Evaporation': 'evaporation', 'science:8:Condensation': 'condensation', 'science:8:Boiling': 'boiling', 'science:8:Cutting paper': 'cuttingpaper', 'science:8:Tearing paper': 'tearingpaper', 'science:8:Crushing a can': 'crushingacan', 'science:8:Dissolving sugar': 'dissolvingsugar', 'science:8:Folding paper': 'foldingpaper',
+    'science:9:Mouth': 'mouth', 'science:9:Teeth': 'teeth', 'science:9:Salivary glands': 'salivaryglands', 'science:9:Esophagus': 'esophagus', 'science:9:Stomach': 'stomach', 'science:9:Liver': 'liver', 'science:9:Gallbladder': 'gallbladder', 'science:9:Pancreas': 'pancreas', 'science:9:Small intestine': 'smallintestine', 'science:9:Large intestine': 'largeintestine', 'science:9:Rectum': 'rectum',
+    'science:10:Nose': 'nose', 'science:10:Nasal cavity': 'nasalcavity', 'science:10:Mouth': 'mouth', 'science:10:Pharynx': 'pharynx', 'science:10:Larynx': 'larynx', 'science:10:Trachea': 'trachea', 'science:10:Bronchi': 'bronchi', 'science:10:Bronchioles': 'bronchioles', 'science:10:Alveoli': 'alveoli', 'science:10:Lungs': 'lungs', 'science:10:Diaphragm': 'diaphragm', 'science:10:Ribs': 'ribs'
   };
 
   // ============================================================
@@ -973,7 +976,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const placeholder = makePlaceholderDataUri(label);
 
     let stage = 0, stopped = false;
-
     function advance() {
       if (stopped) return;
       if (stage < candidates.length) { imgEl.src = candidates[stage++]; return; }
@@ -982,38 +984,34 @@ document.addEventListener('DOMContentLoaded', function() {
       imgEl.removeEventListener('error', advance);
       imgEl.src = placeholder;
     }
-
     imgEl.addEventListener('error', advance);
     advance();
   }
 
   // ============================================================
-  // AUDIO PLAYER
+  // AUDIO — Play per-card sound
   // ============================================================
   const AUDIO_BUDGET_MS  = 3000;
   const AUDIO_PER_TRY_MS = 400;
 
-  // ✅ Simplified: since folders are consistently "lvl1", "lvl2", "lvl3"
   function buildAudioCandidates(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     if (!entry) return [];
 
     const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
-    const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name]
-                 || entry.name;
+    const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
+    const cardName = entry.name;
 
-    // Filename variants: exact, lowercase, and with underscores
+    // Filename variants — dedupe
     const names = [];
-    names.push(mapped);
-    const lc = mapped.toLowerCase();
-    if (names.indexOf(lc) === -1) names.push(lc);
-    const u  = mapped.replace(/\s+/g, '_');
-    if (names.indexOf(u) === -1) names.push(u);
-    const ul = u.toLowerCase();
-    if (names.indexOf(ul) === -1) names.push(ul);
+    function add(n) { if (n && names.indexOf(n) === -1) names.push(n); }
+    add(mapped);                                          // pacificocean
+    add(cardName.toLowerCase().replace(/\s+/g, ''));       // pacificocean
+    add(cardName.toLowerCase().replace(/\s+/g, '_'));      // pacific_ocean
+    add(cardName.toLowerCase());                           // pacific ocean
+    add(cardName);                                         // Pacific Ocean
 
     const exts = ['mp3', 'wav', 'm4a', 'ogg'];
-
     const out = [];
     for (const name of names) {
       for (const ext of exts) {
@@ -1034,7 +1032,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const budgetTimer = setTimeout(function () {
         if (resolved) return;
         resolved = true;
-        console.warn('[Jojoma] ⏱ Audio budget exceeded');
         resolve(null);
       }, budgetMs);
 
@@ -1051,14 +1048,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (Date.now() - startTime > budgetMs - 100) { finish(null); return; }
 
         const src = candidates[idx++];
-        console.log('[Jojoma] → try:', src);
-
         const audio = new Audio();
         audio.preload = 'auto';
         audio.volume  = 1.0;
 
         let settled = false;
-
         const perTry = setTimeout(function () {
           if (settled) return;
           settled = true;
@@ -1070,15 +1064,11 @@ document.addEventListener('DOMContentLoaded', function() {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
-          console.log('[Jojoma] ▶ Playing:', src);
 
           const p = audio.play();
           if (p && typeof p.then === 'function') {
             p.then(function () { finish(audio); })
-             .catch(function (err) {
-               console.warn('[Jojoma] play() rejected:', err && err.name);
-               tryNext();
-             });
+             .catch(function () { tryNext(); });
           } else {
             finish(audio);
           }
@@ -1088,7 +1078,6 @@ document.addEventListener('DOMContentLoaded', function() {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
-          console.log('[Jojoma] ✗ 404:', src);
           tryNext();
         });
 
@@ -1164,9 +1153,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const desc       = getCardDescription(pairIndex);
     const candidates = buildAudioCandidates(pairIndex);
 
-    console.log('[Jojoma] Card:', title, '· candidates:', candidates.length);
-    if (candidates.length) console.log('[Jojoma] First try:', candidates[0]);
-
     showCharacterDialog(title);
 
     let typingDone   = false;
@@ -1200,13 +1186,10 @@ document.addEventListener('DOMContentLoaded', function() {
         checkBothDone();
         return;
       }
-
       currentAudio = audio;
-
       const maxDur = setTimeout(function () {
         if (!audioDone) { audioDone = true; checkBothDone(); }
       }, 6000);
-
       audio.addEventListener('ended', function () {
         clearTimeout(maxDur);
         if (!audioDone) { audioDone = true; checkBothDone(); }
