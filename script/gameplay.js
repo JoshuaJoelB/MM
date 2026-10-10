@@ -1,11 +1,10 @@
 /* ================================================================
    GAMEPLAY.JS — MATCH MONSTER (FINAL · JOJOMA EDITION)
-   - Jojoma: card title + typed description + per-card audio
-   - Dynamic tab title + favicon (changes per subject/level)
-   - Multi-extension audio (mp3, wav, m4a, ogg)
-   - Audio with hard budget + play() rejection handling
+   - Audio: /Assets/sound/{subject}/lvl{N}/{card}.mp3
+   - Multi-extension fallback (mp3, wav, m4a, ogg)
+   - Dynamic tab title + favicon per subject/level
+   - Jojoma: title + typewriter description + audio
    - Win modal gated until final audio finishes
-   - Debug logging for images and audio
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -111,16 +110,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
 
   // ============================================================
-  // DYNAMIC TAB TITLE + FAVICON  (changes per subject + level)
+  // DYNAMIC TAB TITLE + FAVICON
   // ============================================================
   (function updateTabBranding() {
-    // ----- Tab title -----
     document.title = `${subjectInfo.name} · Level ${level} — Match Monster`;
 
-    // ----- Favicon (subject icon) -----
     const iconUrl = subjectInfo.icon || '../Assets/top_icon.png';
-
-    // Remove any existing favicon links
     document.querySelectorAll('link[rel*="icon"]').forEach(el => el.remove());
 
     const link1 = document.createElement('link');
@@ -144,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const LEVEL_FOLDER_VARIANTS = {
     computer: function (n) {
-      if (n === 1) return ['lvl 1', 'lvl1', 'Level 1', 'level 1'];
+      if (n === 1) return ['lvl1', 'lvl 1', 'Level 1', 'level 1'];
       return ['lvl' + n, 'lvl ' + n, 'Level ' + n, 'level ' + n];
     },
     science: function (n) {
@@ -279,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // AUDIO_MAP
+  // AUDIO_MAP  —  match EXACTLY what your files are named
   // ============================================================
   const AUDIO_SUBJECT_FOLDER = { ap: 'ap', computer: 'epp', science: 'science' };
 
@@ -548,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // IMG — Unsplash fallback library
+  // IMG — Unsplash fallback
   // ============================================================
   const IMG = {
     macbook:'photo-1517336714731-489689fd1ca8', laptopDesk:'photo-1496181133206-80ce9b88a853',
@@ -988,70 +983,46 @@ document.addEventListener('DOMContentLoaded', function() {
       imgEl.src = placeholder;
     }
 
-    // ✅ Debug: log every failed URL
-    imgEl.addEventListener('error', function onErr() {
-      console.log('[Image] ✗ 404:', imgEl.src);
-    });
-
-    // ✅ Debug: log when it finally loads
-    imgEl.addEventListener('load', function onLoad() {
-      const src = imgEl.src.split('/').slice(-3).join('/');
-      console.log('[Image] ✔ Loaded for "' + label + '":', src);
-      imgEl.removeEventListener('load', onLoad);
-    });
-
     imgEl.addEventListener('error', advance);
     advance();
   }
 
   // ============================================================
-  // AUDIO — FIXED PLAYER (multi-extension)
+  // AUDIO PLAYER
   // ============================================================
-  const AUDIO_BUDGET_MS  = 4000;   // total time to find + start audio
-  const AUDIO_PER_TRY_MS = 300;    // time per candidate
+  const AUDIO_BUDGET_MS  = 3000;
+  const AUDIO_PER_TRY_MS = 400;
 
+  // ✅ Simplified: since folders are consistently "lvl1", "lvl2", "lvl3"
   function buildAudioCandidates(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     if (!entry) return [];
-    const cardName = entry.name;
-    const folder   = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
-    const mapped   = AUDIO_MAP[subject + ':' + level + ':' + cardName];
 
-    // Filename variants — capped at 3
-    const rawNames = [];
-    if (mapped) rawNames.push(mapped);
-    if (cardName !== mapped) rawNames.push(cardName);
-    const lc = cardName.toLowerCase();
-    if (rawNames.indexOf(lc) === -1 && lc !== cardName) rawNames.push(lc);
+    const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
+    const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name]
+                 || entry.name;
 
-    // Folder variants — most likely first
-    let rawDirs;
-    if (subject === 'computer' && level === 1) {
-      rawDirs = ['lvl 1', 'lvl1'];
-    } else {
-      rawDirs = ['lvl' + level, 'lvl ' + level];
-    }
+    // Filename variants: exact, lowercase, and with underscores
+    const names = [];
+    names.push(mapped);
+    const lc = mapped.toLowerCase();
+    if (names.indexOf(lc) === -1) names.push(lc);
+    const u  = mapped.replace(/\s+/g, '_');
+    if (names.indexOf(u) === -1) names.push(u);
+    const ul = u.toLowerCase();
+    if (names.indexOf(ul) === -1) names.push(ul);
 
-    // ✅ Try all extensions
     const exts = ['mp3', 'wav', 'm4a', 'ogg'];
 
     const out = [];
-    for (const dir of rawDirs) {
-      for (const name of rawNames) {
-        for (const ext of exts) {
-          const p = `../Assets/sound/${folder}/${encodeURIComponent(dir)}/${encodeURIComponent(name)}.${ext}`;
-          out.push(p);
-          if (out.length >= 16) return out;
-        }
+    for (const name of names) {
+      for (const ext of exts) {
+        out.push(`../Assets/sound/${folder}/lvl${level}/${encodeURIComponent(name)}.${ext}`);
       }
     }
     return out;
   }
 
-  /**
-   * Resolves with a PLAYING Audio object, or null if nothing plays
-   * within the budget.
-   */
   function playAudioWithBudget(candidates, budgetMs) {
     return new Promise((resolve) => {
       if (!candidates || !candidates.length) { resolve(null); return; }
@@ -1063,7 +1034,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const budgetTimer = setTimeout(function () {
         if (resolved) return;
         resolved = true;
-        console.warn('[Jojoma] ⏱ Audio budget exceeded — skipping audio');
+        console.warn('[Jojoma] ⏱ Audio budget exceeded');
         resolve(null);
       }, budgetMs);
 
@@ -1099,17 +1070,15 @@ document.addEventListener('DOMContentLoaded', function() {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
-
           console.log('[Jojoma] ▶ Playing:', src);
 
           const p = audio.play();
           if (p && typeof p.then === 'function') {
-            p.then(function () {
-              finish(audio);
-            }).catch(function (err) {
-              console.warn('[Jojoma] play() rejected:', err && err.name);
-              tryNext();
-            });
+            p.then(function () { finish(audio); })
+             .catch(function (err) {
+               console.warn('[Jojoma] play() rejected:', err && err.name);
+               tryNext();
+             });
           } else {
             finish(audio);
           }
@@ -1220,13 +1189,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // 1) Type the description
     typeText(desc, function () {
       typingDone = true;
       checkBothDone();
     });
 
-    // 2) Play audio (or skip if none found within budget)
     playAudioWithBudget(candidates, AUDIO_BUDGET_MS).then(function (audio) {
       if (!audio) {
         audioDone = true;
