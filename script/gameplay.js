@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:2:Search box':     'search box',
     'computer:2:Search button':  'search button',
     'computer:2:Search results': 'search result',
+    'computer:2:Tabs':           'tabs',         // ✅ ADDED — matches tabs.jpg
     'computer:3:Safari':         'safari',
     'computer:3:Opera':          'opera',
     'computer:3:Microsoft Edge': 'microsoft edge',
@@ -256,12 +257,11 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // AUDIO_MAP — matches your new lowercase filenames
+  // AUDIO_MAP
   // ============================================================
   const AUDIO_SUBJECT_FOLDER = { ap: 'ap', computer: 'epp', science: 'science' };
 
   const AUDIO_MAP = {
-    // ---------- AP ----------
     'ap:1:Pacific Ocean':       'pacificocean',
     'ap:1:Pasig River':         'pasigriver',
     'ap:1:Laguna de Bay':       'lagunadebay',
@@ -280,8 +280,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:4:Humidity':            'humidity',
     'ap:4:Rainfall':            'rainfall',
     'ap:4:PAGASA':              'pagasa',
-
-    // ---------- EPP ----------
     'computer:1:Google':         'google',
     'computer:1:Yahoo':          'yahoo',
     'computer:1:Lycos':          'lycos',
@@ -350,8 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:10:Scanner':         'scanner',
     'computer:10:USB flash drive': 'usbflashdrive',
     'computer:10:Touchpad':        'touchpad',
-
-    // ---------- SCIENCE ----------
     'science:1:Rock':  'rock', 'science:1:Water': 'water', 'science:1:Air': 'air',
     'science:2:Chair': 'chair', 'science:2:Desk': 'desk', 'science:2:Bag': 'bag', 'science:2:Shoes': 'shoes',
     'science:3:Water': 'water', 'science:3:Coffee': 'coffee', 'science:3:Chocolate drink': 'chocolatedrink', 'science:3:Juice': 'juice', 'science:3:Milk': 'milk',
@@ -1002,14 +998,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
     const cardName = entry.name;
 
-    // Filename variants — dedupe
     const names = [];
     function add(n) { if (n && names.indexOf(n) === -1) names.push(n); }
-    add(mapped);                                          // pacificocean
-    add(cardName.toLowerCase().replace(/\s+/g, ''));       // pacificocean
-    add(cardName.toLowerCase().replace(/\s+/g, '_'));      // pacific_ocean
-    add(cardName.toLowerCase());                           // pacific ocean
-    add(cardName);                                         // Pacific Ocean
+    add(mapped);
+    add(cardName.toLowerCase().replace(/\s+/g, ''));
+    add(cardName.toLowerCase().replace(/\s+/g, '_'));
+    add(cardName.toLowerCase());
+    add(cardName);
 
     const exts = ['mp3', 'wav', 'm4a', 'ogg'];
     const out = [];
