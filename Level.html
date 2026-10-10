@@ -474,18 +474,25 @@
       window.addEventListener('focus',    function () { renderMap(); });
     }
 
-    if (window.platformReadyPromise) {
+        if (window.assetLoader && window.assetLoader.ready) {
+      window.assetLoader.ready.then(bootMap);
+    } else if (window.platformReadyPromise) {
       window.platformReadyPromise.then(bootMap);
     } else {
       bootMap();
     }
   });
   </script>
+<script src="script/player.js"></script>
+<script src="script/leaderboard-data.js"></script>
+<script src="script/leaderboard.js"></script>
+<script src="script/player-level.js"></script>
+<script src="script/platform-loader.js"></script>
 
-  <script src="script/cloud-loader.js"></script>
-  <script src="script/clouds.js"></script>
-<script src="script/audio.js"></script>
-<script src="script/sfx.js"></script>
+<!-- ⬇️ NEW: preloads level map + jojoma + decorative islands -->
+<script src="script/asset-loader.js"></script>
+
+<!-- page logic (inline) -->
 
 </body>
 </html>
