@@ -1,9 +1,11 @@
 /* ================================================================
    GAMEPLAY.JS — MATCH MONSTER (FINAL · JOJOMA EDITION)
    - Jojoma: card title + typed description + per-card audio
-   - Audio now uses canplaythrough + play() rejection handling
-   - Hard 2s audio budget — no more hangs
-   - Win modal gated until the final audio finishes
+   - Dynamic tab title + favicon (changes per subject/level)
+   - Multi-extension audio (mp3, wav, m4a, ogg)
+   - Audio with hard budget + play() rejection handling
+   - Win modal gated until final audio finishes
+   - Debug logging for images and audio
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -108,12 +110,40 @@ document.addEventListener('DOMContentLoaded', function() {
     science:  { name: 'Science',  icon: '../Assets/icons/science_icon.png' }
   }[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
 
+  // ============================================================
+  // DYNAMIC TAB TITLE + FAVICON  (changes per subject + level)
+  // ============================================================
+  (function updateTabBranding() {
+    // ----- Tab title -----
+    document.title = `${subjectInfo.name} · Level ${level} — Match Monster`;
+
+    // ----- Favicon (subject icon) -----
+    const iconUrl = subjectInfo.icon || '../Assets/top_icon.png';
+
+    // Remove any existing favicon links
+    document.querySelectorAll('link[rel*="icon"]').forEach(el => el.remove());
+
+    const link1 = document.createElement('link');
+    link1.rel  = 'icon';
+    link1.type = 'image/png';
+    link1.href = iconUrl + '?v=' + level;
+    document.head.appendChild(link1);
+
+    const link2 = document.createElement('link');
+    link2.rel  = 'shortcut icon';
+    link2.href = iconUrl + '?v=' + level;
+    document.head.appendChild(link2);
+
+    const link3 = document.createElement('link');
+    link3.rel  = 'apple-touch-icon';
+    link3.href = iconUrl + '?v=' + level;
+    document.head.appendChild(link3);
+  })();
+
   const SUBJECT_FOLDER = { computer: 'EPP', science: 'SCIENCE', ap: 'AP' };
 
-  // ── Fixed: no-space folder first (matches most of your folders)
   const LEVEL_FOLDER_VARIANTS = {
     computer: function (n) {
-      // EPP folders: level 1 = "lvl 1", levels 2+ = "lvl2", "lvl3"...
       if (n === 1) return ['lvl 1', 'lvl1', 'Level 1', 'level 1'];
       return ['lvl' + n, 'lvl ' + n, 'Level ' + n, 'level ' + n];
     },
@@ -941,55 +971,86 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     return candidates;
   }
-function attachImageFallback(imgEl, pairIndex) {
-  const candidates  = buildLocalCandidates(pairIndex);
-  const unsplash    = getUnsplashUrl(pairIndex);
-  const label       = getCardLabel(pairIndex);
-  const placeholder = makePlaceholderDataUri(label);
+  function attachImageFallback(imgEl, pairIndex) {
+    const candidates  = buildLocalCandidates(pairIndex);
+    const unsplash    = getUnsplashUrl(pairIndex);
+    const label       = getCardLabel(pairIndex);
+    const placeholder = makePlaceholderDataUri(label);
 
-  let stage = 0, stopped = false;
+    let stage = 0, stopped = false;
 
-  function advance() {
-    if (stopped) return;
-    if (stage < candidates.length) { imgEl.src = candidates[stage++]; return; }
-    if (stage === candidates.length) { imgEl.src = unsplash; stage++; return; }
-    stopped = true;
-    imgEl.removeEventListener('error', advance);
-    imgEl.src = placeholder;
+    function advance() {
+      if (stopped) return;
+      if (stage < candidates.length) { imgEl.src = candidates[stage++]; return; }
+      if (stage === candidates.length) { imgEl.src = unsplash; stage++; return; }
+      stopped = true;
+      imgEl.removeEventListener('error', advance);
+      imgEl.src = placeholder;
+    }
+
+    // ✅ Debug: log every failed URL
+    imgEl.addEventListener('error', function onErr() {
+      console.log('[Image] ✗ 404:', imgEl.src);
+    });
+
+    // ✅ Debug: log when it finally loads
+    imgEl.addEventListener('load', function onLoad() {
+      const src = imgEl.src.split('/').slice(-3).join('/');
+      console.log('[Image] ✔ Loaded for "' + label + '":', src);
+      imgEl.removeEventListener('load', onLoad);
+    });
+
+    imgEl.addEventListener('error', advance);
+    advance();
   }
 
-  // ✅ Debug: log every failed URL
-  imgEl.addEventListener('error', function onErr() {
-    console.log('[Image] ✗ 404:', imgEl.src);
-  });
-
-  // ✅ Debug: log when it finally loads
-  imgEl.addEventListener('load', function onLoad() {
-    const src = imgEl.src.split('/').slice(-3).join('/');
-    console.log('[Image] ✔ Loaded for "' + label + '":', src);
-    imgEl.removeEventListener('load', onLoad);
-  });
-
-  imgEl.addEventListener('error', advance);
-  advance();
-}
-
   // ============================================================
-  // AUDIO — FIXED PLAYER
+  // AUDIO — FIXED PLAYER (multi-extension)
   // ============================================================
-  const AUDIO_BUDGET_MS  = 2000;   // total time to find + start audio
-  const AUDIO_PER_TRY_MS = 450;    // time per candidate
+  const AUDIO_BUDGET_MS  = 4000;   // total time to find + start audio
+  const AUDIO_PER_TRY_MS = 300;    // time per candidate
 
-function buildAudioCandidates(pairIndex) {
-  const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
-  if (!entry) return [];
-  const name = encodeURIComponent(entry.name.toLowerCase());
-  const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
-  return [`../Assets/sound/${folder}/lvl${level}/${name}.mp3`];
-}
+  function buildAudioCandidates(pairIndex) {
+    const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
+    if (!entry) return [];
+    const cardName = entry.name;
+    const folder   = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
+    const mapped   = AUDIO_MAP[subject + ':' + level + ':' + cardName];
+
+    // Filename variants — capped at 3
+    const rawNames = [];
+    if (mapped) rawNames.push(mapped);
+    if (cardName !== mapped) rawNames.push(cardName);
+    const lc = cardName.toLowerCase();
+    if (rawNames.indexOf(lc) === -1 && lc !== cardName) rawNames.push(lc);
+
+    // Folder variants — most likely first
+    let rawDirs;
+    if (subject === 'computer' && level === 1) {
+      rawDirs = ['lvl 1', 'lvl1'];
+    } else {
+      rawDirs = ['lvl' + level, 'lvl ' + level];
+    }
+
+    // ✅ Try all extensions
+    const exts = ['mp3', 'wav', 'm4a', 'ogg'];
+
+    const out = [];
+    for (const dir of rawDirs) {
+      for (const name of rawNames) {
+        for (const ext of exts) {
+          const p = `../Assets/sound/${folder}/${encodeURIComponent(dir)}/${encodeURIComponent(name)}.${ext}`;
+          out.push(p);
+          if (out.length >= 16) return out;
+        }
+      }
+    }
+    return out;
+  }
+
   /**
    * Resolves with a PLAYING Audio object, or null if nothing plays
-   * within the budget. Uses canplaythrough + play() rejection handling.
+   * within the budget.
    */
   function playAudioWithBudget(candidates, budgetMs) {
     return new Promise((resolve) => {
@@ -1019,13 +1080,14 @@ function buildAudioCandidates(pairIndex) {
         if (Date.now() - startTime > budgetMs - 100) { finish(null); return; }
 
         const src = candidates[idx++];
+        console.log('[Jojoma] → try:', src);
+
         const audio = new Audio();
         audio.preload = 'auto';
         audio.volume  = 1.0;
 
         let settled = false;
 
-        // ✅ FIX: named the timer so we can actually clear it
         const perTry = setTimeout(function () {
           if (settled) return;
           settled = true;
@@ -1033,7 +1095,6 @@ function buildAudioCandidates(pairIndex) {
           tryNext();
         }, AUDIO_PER_TRY_MS);
 
-        // ✅ FIX: canplaythrough fires when buffer is fully ready
         audio.addEventListener('canplaythrough', function () {
           if (settled) return;
           settled = true;
@@ -1041,14 +1102,13 @@ function buildAudioCandidates(pairIndex) {
 
           console.log('[Jojoma] ▶ Playing:', src);
 
-          // ✅ FIX: handle play() rejection — don't wait for 'ended' that never comes
           const p = audio.play();
           if (p && typeof p.then === 'function') {
             p.then(function () {
-              finish(audio);   // ✅ playing — resolve with the audio
+              finish(audio);
             }).catch(function (err) {
               console.warn('[Jojoma] play() rejected:', err && err.name);
-              tryNext();       // ✅ move on to next candidate immediately
+              tryNext();
             });
           } else {
             finish(audio);
@@ -1059,6 +1119,7 @@ function buildAudioCandidates(pairIndex) {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
+          console.log('[Jojoma] ✗ 404:', src);
           tryNext();
         });
 
@@ -1165,7 +1226,7 @@ function buildAudioCandidates(pairIndex) {
       checkBothDone();
     });
 
-    // 2) Play audio (or skip if none found within 2s)
+    // 2) Play audio (or skip if none found within budget)
     playAudioWithBudget(candidates, AUDIO_BUDGET_MS).then(function (audio) {
       if (!audio) {
         audioDone = true;
@@ -1175,7 +1236,6 @@ function buildAudioCandidates(pairIndex) {
 
       currentAudio = audio;
 
-      // ✅ Reduced safety cap — audio for a single word is short
       const maxDur = setTimeout(function () {
         if (!audioDone) { audioDone = true; checkBothDone(); }
       }, 6000);
