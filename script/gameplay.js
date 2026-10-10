@@ -980,38 +980,13 @@ function attachImageFallback(imgEl, pairIndex) {
   const AUDIO_BUDGET_MS  = 2000;   // total time to find + start audio
   const AUDIO_PER_TRY_MS = 450;    // time per candidate
 
-  function buildAudioCandidates(pairIndex) {
-    const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
-    if (!entry) return [];
-    const cardName = entry.name;
-    const folder   = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
-    const mapped   = AUDIO_MAP[subject + ':' + level + ':' + cardName];
-
-    // Filename variants (max 3)
-    const names = [];
-    if (mapped) names.push(mapped);
-    if (cardName !== mapped) names.push(cardName);
-    const lc = cardName.toLowerCase();
-    if (names.indexOf(lc) === -1 && lc !== cardName) names.push(lc);
-
-    // Folder variants — most likely first
-    let lvlDirs;
-    if (subject === 'computer' && level === 1) {
-      lvlDirs = ['lvl 1', 'lvl1', 'Level 1'];
-    } else {
-      lvlDirs = ['lvl' + level, 'lvl ' + level, 'Level ' + level];
-    }
-
-    const out = [];
-    for (const dir of lvlDirs) {
-      for (const name of names) {
-        out.push(`../Assets/sound/${folder}/${dir}/${name}.mp3`);
-        if (out.length >= 9) return out;
-      }
-    }
-    return out;
-  }
-
+function buildAudioCandidates(pairIndex) {
+  const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
+  if (!entry) return [];
+  const name = encodeURIComponent(entry.name.toLowerCase());
+  const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
+  return [`../Assets/sound/${folder}/lvl${level}/${name}.mp3`];
+}
   /**
    * Resolves with a PLAYING Audio object, or null if nothing plays
    * within the budget. Uses canplaythrough + play() rejection handling.
