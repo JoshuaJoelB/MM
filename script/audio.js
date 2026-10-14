@@ -63,10 +63,10 @@
   // ---------- Fade helpers ----------
   function fadeIn() {
     let v = audio.volume;
-    const target = 0.35;
+    const target = 0.05;
     if (v >= target) return;
     const step = setInterval(function () {
-      v += 0.02;
+      v += 0.01;
       if (v >= target) { audio.volume = target; clearInterval(step); return; }
       audio.volume = v;
     }, 30);
