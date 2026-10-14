@@ -280,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:6:Meter stick':           'meter stick_',
     'science:6:Thermometer':           'thermometer_',
     'science:6:Measuring cup':         'measuring cup',
+    'science:6:Beaker':                'beaker',      // ✅ ADDED — matches beaker.jpg
     'science:7:Gram':                  'gram',
     'science:7:Kilogram':              'kg',
     'science:7:Milliliter':            'milliliter_',
@@ -323,12 +324,12 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // AUDIO_MAP — exact filenames from disk
+  // AUDIO_MAP
   // ============================================================
   const AUDIO_SUBJECT_FOLDER = { ap: 'AP', computer: 'epp', science: 'science' };
 
   const AUDIO_MAP = {
-    // ============ AP ============
+    // ---- AP ----
     'ap:1:Pacific Ocean':       'pacific ocean',
     'ap:1:Pasig River':         'pasig river',
     'ap:1:Laguna de Bay':       'laguna de bay',
@@ -371,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:7:Subic Bay':           'subic',
     'ap:7:Davao Gulf':          'davao gulf',
     'ap:7:Sibuyan Sea':         'sibuyan sea',
-    'ap:8:Barangay':            'baragay',                       // typo on disk
+    'ap:8:Barangay':            'baragay',
     'ap:8:Datu':                'datu',
     'ap:8:Maharlika':           'maharlika',
     'ap:8:Timawa':              'timawa',
@@ -381,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:8:Baybayin':            'baybayin',
     'ap:8:Bahay Kubo':          'bahay kubo',
     'ap:8:Panday':              'panday',
-    'ap:9:Manunggul Jar':       'manunggal jar',                 // typo on disk
+    'ap:9:Manunggul Jar':       'manunggal jar',
     'ap:9:Banaue Rice Terraces':'banaue rice terrace',
     'ap:9:Bulul':               'bulul',
     'ap:9:Laguna Copperplate':  'Laguna Copperplate Inscription',
@@ -391,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:9:Fort Santiago':       'fort santiago',
     'ap:9:San Agustin Church':  'san agustin church',
     'ap:9:Bahay na Bato':       'bahay na bato',
-    'ap:9:Barasoain Church':    'barasain church',               // typo on disk
+    'ap:9:Barasoain Church':    'barasain church',
     'ap:10:Hudhud':             'hudhud',
     'ap:10:Biag ni Lam-ang':    'Biag ni Lam-ang',
     'ap:10:Alamat':             'alamat',
@@ -405,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:10:Pamahiin':           'pamahiin',
     'ap:10:Mano po':            'mano po',
 
-    // ============ EPP (exact filenames) ============
+    // ---- EPP ----
     'computer:1:Google':         'google',
     'computer:1:Yahoo':          'yahoo',
     'computer:1:Lycos':          'lycos',
@@ -482,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:10:USB flash drive': 'usb flash drive',
     'computer:10:Touchpad':        'touch pad',
 
-    // ============ SCIENCE (exact filenames, typos preserved) ============
+    // ---- Science ----
     'science:1:Rock':  'rock',
     'science:1:Water': 'water',
     'science:1:Air':   'air',
@@ -490,23 +491,23 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:2:Desk':  'desk',
     'science:2:Bag':   'bag',
     'science:2:Shoes': 'shoes',
-    'science:3:Water':           'waterr',                        // typo
+    'science:3:Water':           'waterr',
     'science:3:Coffee':          'coffee',
     'science:3:Chocolate drink': 'chocolate drink',
     'science:3:Juice':           'juice',
     'science:3:Milk':            'milk',
-    'science:4:Air':            'airr',                           // typo
+    'science:4:Air':            'airr',
     'science:4:Wind':           'wind',
     'science:4:Oxygen':         'oxygen',
     'science:4:Carbon dioxide': 'carbon dioxide',
     'science:4:Water vapor':    'water vapor',
-    'science:4:Helium':         'hellum',                         // typo
+    'science:4:Helium':         'hellum',
     'science:5:Mass':    'mass',
     'science:5:Weight':  'weight',
     'science:5:Volume':  'volume',
     'science:5:Shape':   'shape',
     'science:5:Color':   'color',
-    'science:5:Texture': 'twxture',                               // typo
+    'science:5:Texture': 'twxture',
     'science:5:Smell':   'smell',
     'science:6:Platform balance':    'platform balance',
     'science:6:Triple beam balance': 'triple beam balance',
@@ -529,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:8:Freezing':         'freezing',
     'science:8:Evaporation':      'evaporation',
     'science:8:Condensation':     'condensation',
-    'science:8:Boiling':          'boilimg',                      // typo
+    'science:8:Boiling':          'boilimg',
     'science:8:Cutting paper':    'cutting paper',
     'science:8:Tearing paper':    'tearing paper',
     'science:8:Crushing a can':   'crushing a can',
@@ -1193,7 +1194,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // AUDIO PLAYER — now with numeric folders + .m4a everywhere
+  // AUDIO PLAYER
   // ============================================================
   const AUDIO_BUDGET_MS  = 3000;
   const AUDIO_PER_TRY_MS = 400;
@@ -1206,15 +1207,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
     const cardName = entry.name;
 
-    // Only try: exact mapped name, then card name
     const names = [];
     if (mapped && names.indexOf(mapped) === -1) names.push(mapped);
     if (cardName && names.indexOf(cardName) === -1) names.push(cardName);
 
-    // ✅ Numeric folder for ALL subjects now
     const levelFolder = String(level);
-
-    // ✅ .m4a first for everyone
     const exts = ['m4a', 'mp3', 'wav', 'ogg'];
 
     const out = [];
