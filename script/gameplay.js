@@ -1,8 +1,7 @@
 /* ================================================================
    GAMEPLAY.JS — MATCH MONSTER (FINAL)
-   - AP Levels 1–10 fully mapped
-   - Lowercase, no-space audio filenames
-   - Folders: /Assets/sound/{subject}/lvl{N}/
+   - AP audio: /Assets/sound/AP/{N}/{filename}.m4a
+   - EPP/Science audio: /Assets/sound/{subject}/lvl{N}/{filename}
    - Jojoma: title + typewriter description + audio
    ================================================================ */
 
@@ -134,32 +133,32 @@ document.addEventListener('DOMContentLoaded', function() {
   const IMG_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
 
   // ============================================================
-  // FILE_MAP — image filenames (exact, matches disk)
+  // FILE_MAP — image filenames
   // ============================================================
   const FILE_MAP = {
-    // ---- AP Level 1 ----
+    // ---- AP 1 ----
     'ap:1:Pacific Ocean':        'pacific ocean',
     'ap:1:Pasig River':          'pasig river',
     'ap:1:Laguna de Bay':        'laguna debay',
-    // ---- AP Level 2 ----
+    // ---- AP 2 ----
     'ap:2:Mount Apo':            'Mount-Apo-',
     'ap:2:Mayon Volcano':        'mayon',
     'ap:2:Chocolate Hills':      'chocolate hills',
     'ap:2:Central Luzon Plain':  'Central Luzon Plain',
-    // ---- AP Level 3 ----
+    // ---- AP 3 ----
     'ap:3:Malaysia':             'malaysia',
     'ap:3:Indonesia':            'indonesia',
     'ap:3:Vietnam':              'Vietnam',
     'ap:3:Thailand':             'thailand',
     'ap:3:Brunei':               'brunei',
-    // ---- AP Level 4 ----
+    // ---- AP 4 ----
     'ap:4:Weather':              'weather',
     'ap:4:Climate':              'climate',
     'ap:4:Temperature':          'temperature',
     'ap:4:Humidity':             'humidity',
     'ap:4:Rainfall':             'rainfall',
     'ap:4:PAGASA':               'pagasa',
-    // ---- AP Level 5 ----
+    // ---- AP 5 ----
     'ap:5:Cool dry season':      'Cool dry season',
     'ap:5:Dry season':           'dry season2',
     'ap:5:Hot dry season':       'hot season',
@@ -167,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:5:January':              'coolest',
     'ap:5:Rainy season':         'rainy season',
     'ap:5:Tropical climate':     'Tropical climate',
-    // ---- AP Level 6 ----
+    // ---- AP 6 ----
     'ap:6:Luzon':                'Luzon',
     'ap:6:Visayas':              'visaya',
     'ap:6:Mindanao':             'mindanao',
@@ -176,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:6:Samar':                'Samar',
     'ap:6:Leyte':                'Leyte',
     'ap:6:Cebu':                 'cebu',
-    // ---- AP Level 7 ----
+    // ---- AP 7 ----
     'ap:7:Mount Pulag':          'Mount Pulag',
     'ap:7:Mount Pinatubo':       'Mount Pinatubo',
     'ap:7:Taal Volcano':         'Taal Volcano',
@@ -186,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:7:Subic Bay':            'Subic Bay',
     'ap:7:Davao Gulf':           'Davao Gulf',
     'ap:7:Sibuyan Sea':          'Sibuyan Sea',
-    // ---- AP Level 8 ----
+    // ---- AP 8 ----
     'ap:8:Datu':                 'Datu (chief)',
     'ap:8:Maharlika':            'Maharlika (noble)',
     'ap:8:Timawa':               'Timawa (freeman)',
@@ -195,8 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:8:Baybayin':             'Baybayin (ancient writing)',
     'ap:8:Bahay Kubo':           'Bahay Kubo',
     'ap:8:Panday':               'Panday (blacksmith)',
-    // Barangay & Alipin have no local file → Unsplash fallback
-    // ---- AP Level 9 ----
+    // ---- AP 9 ----
     'ap:9:Manunggul Jar':        'Manunggul Jar',
     'ap:9:Banaue Rice Terraces': 'Banaue Rice Terraces',
     'ap:9:Bulul':                'Bulul',
@@ -208,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:9:San Agustin Church':   'San Agustin Church',
     'ap:9:Bahay na Bato':        'Bahay na Bato',
     'ap:9:Barasoain Church':     'Barasoain Church',
-    // ---- AP Level 10 ----
+    // ---- AP 10 ----
     'ap:10:Hudhud':              'hudhud',
     'ap:10:Biag ni Lam-ang':     'Biag ni Lam-ang',
     'ap:10:Alamat':              'Alamat',
@@ -222,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:10:Pamahiin':            'Pamahiin (superstition)',
     'ap:10:Mano po':             'Mano po (respect gesture)',
 
-    // ---- EPP / Computer ----
+    // ---- EPP ----
     'computer:1:Google':         'google',
     'computer:1:Yahoo':          'yahoo',
     'computer:1:Lycos':          'lycos',
@@ -324,62 +322,62 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // AUDIO_MAP — lowercase, no spaces (matches your renamed files)
+  // AUDIO_MAP — ⭐ AP uses .m4a files (folder: AP/{N}/)
   // ============================================================
-  const AUDIO_SUBJECT_FOLDER = { ap: 'ap', computer: 'epp', science: 'science' };
+  const AUDIO_SUBJECT_FOLDER = { ap: 'AP', computer: 'epp', science: 'science' };
 
   const AUDIO_MAP = {
-    // ---- AP Level 1 ----
-    'ap:1:Pacific Ocean':       'pacificocean',
-    'ap:1:Pasig River':         'pasigriver',
-    'ap:1:Laguna de Bay':       'lagunadebay',
-    // ---- AP Level 2 ----
-    'ap:2:Mount Apo':           'mountapo',
-    'ap:2:Mayon Volcano':       'mayonvolcano',
-    'ap:2:Chocolate Hills':     'chocolatehills',
-    'ap:2:Central Luzon Plain': 'centralluzonplain',
-    // ---- AP Level 3 ----
+    // ---- AP 1 ----
+    'ap:1:Pacific Ocean':       'pacific ocean',
+    'ap:1:Pasig River':         'pasig river',
+    'ap:1:Laguna de Bay':       'laguna de bay',
+    // ---- AP 2 ----
+    'ap:2:Mount Apo':           'mount apo',
+    'ap:2:Mayon Volcano':       'mayon',
+    'ap:2:Chocolate Hills':     'chocolate hills',
+    'ap:2:Central Luzon Plain': 'Central Luzon Plain',
+    // ---- AP 3 ----
     'ap:3:Malaysia':            'malaysia',
-    'ap:3:Indonesia':           'indonesia',
-    'ap:3:Vietnam':             'vietnam',
-    'ap:3:Thailand':            'thailand',
-    'ap:3:Brunei':              'brunei',
-    // ---- AP Level 4 ----
+    'ap:3:Indonesia':           'Indonesia',
+    'ap:3:Vietnam':             'Vietnam',
+    'ap:3:Thailand':            'Thailand',
+    'ap:3:Brunei':              'Brunei',
+    // ---- AP 4 ----
     'ap:4:Weather':             'weather',
     'ap:4:Climate':             'climate',
     'ap:4:Temperature':         'temperature',
     'ap:4:Humidity':            'humidity',
     'ap:4:Rainfall':            'rainfall',
-    'ap:4:PAGASA':              'pagasa',
-    // ---- AP Level 5 ----
-    'ap:5:Cool dry season':     'cooldryseason',
-    'ap:5:Dry season':          'dryseason',
-    'ap:5:Hot dry season':      'hotdryseason',
-    'ap:5:May':                 'hottestmonth',
-    'ap:5:January':             'coolest',
-    'ap:5:Rainy season':        'rainyseason',
-    'ap:5:Tropical climate':    'tropicalclimate',
-    // ---- AP Level 6 ----
-    'ap:6:Luzon':               'luzon',
+    'ap:4:PAGASA':              'PAGASA',
+    // ---- AP 5 ----
+    'ap:5:Cool dry season':     'cool dry season',
+    'ap:5:Dry season':          'dry season',
+    'ap:5:Hot dry season':      'hot dry season',
+    'ap:5:May':                 'hottest month',
+    'ap:5:January':             'coolest month',
+    'ap:5:Rainy season':        'rainy season',
+    'ap:5:Tropical climate':    'tropical climate',
+    // ---- AP 6 ----
+    'ap:6:Luzon':               'Luzon',
     'ap:6:Visayas':             'visayas',
-    'ap:6:Mindanao':            'mindanao',
+    'ap:6:Mindanao':            'Mindanao',
     'ap:6:Palawan':             'palawan',
     'ap:6:Mindoro':             'mindoro',
     'ap:6:Samar':               'samar',
     'ap:6:Leyte':               'leyte',
     'ap:6:Cebu':                'cebu',
-    // ---- AP Level 7 ----
-    'ap:7:Mount Pulag':         'mountpulag',
-    'ap:7:Mount Pinatubo':      'mountpinatubo',
-    'ap:7:Taal Volcano':        'taalvolcano',
-    'ap:7:Cagayan River':       'cagayanriver',
-    'ap:7:Agusan River':        'agusanriver',
-    'ap:7:Lake Lanao':          'lakelanao',
-    'ap:7:Subic Bay':           'subicbay',
-    'ap:7:Davao Gulf':          'davaogulf',
-    'ap:7:Sibuyan Sea':         'sibuyansea',
-    // ---- AP Level 8 ----
-    'ap:8:Barangay':            'barangay',
+    // ---- AP 7 ----
+    'ap:7:Mount Pulag':         'mount pulag',
+    'ap:7:Mount Pinatubo':      'mount pinatubo',
+    'ap:7:Taal Volcano':        'taal volcano',
+    'ap:7:Cagayan River':       'cagayan river',
+    'ap:7:Agusan River':        'agusan river',
+    'ap:7:Lake Lanao':          'lake lanao',
+    'ap:7:Subic Bay':           'subic',
+    'ap:7:Davao Gulf':          'davao gulf',
+    'ap:7:Sibuyan Sea':         'sibuyan sea',
+    // ---- AP 8 ----
+    'ap:8:Barangay':            'baragay',   // (typo in file)
     'ap:8:Datu':                'datu',
     'ap:8:Maharlika':           'maharlika',
     'ap:8:Timawa':              'timawa',
@@ -387,33 +385,33 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:8:Babaylan':            'babaylan',
     'ap:8:Balangay':            'balangay',
     'ap:8:Baybayin':            'baybayin',
-    'ap:8:Bahay Kubo':          'bahaykubo',
+    'ap:8:Bahay Kubo':          'bahay kubo',
     'ap:8:Panday':              'panday',
-    // ---- AP Level 9 ----
-    'ap:9:Manunggul Jar':       'manungguljar',
-    'ap:9:Banaue Rice Terraces':'banauekristeraces',
+    // ---- AP 9 ----
+    'ap:9:Manunggul Jar':       'manunggal jar',                    // (typo in file)
+    'ap:9:Banaue Rice Terraces':'banaue rice terrace',
     'ap:9:Bulul':               'bulul',
-    'ap:9:Laguna Copperplate':  'lagunacopperplate',
-    'ap:9:Golden Tara':         'goldentara',
-    'ap:9:Tabon Cave':          'taboncave',
-    'ap:9:Angono Petroglyphs':  'angonopetroglyphs',
-    'ap:9:Fort Santiago':       'fortsantiago',
-    'ap:9:San Agustin Church':  'sanagustinchurch',
-    'ap:9:Bahay na Bato':       'bahaynabato',
-    'ap:9:Barasoain Church':    'barasoainchurch',
-    // ---- AP Level 10 ----
+    'ap:9:Laguna Copperplate':  'Laguna Copperplate Inscription',
+    'ap:9:Golden Tara':         'Golden Tara of Agusan',
+    'ap:9:Tabon Cave':          'tabon cave',
+    'ap:9:Angono Petroglyphs':  'angono',
+    'ap:9:Fort Santiago':       'fort santiago',
+    'ap:9:San Agustin Church':  'san agustin church',
+    'ap:9:Bahay na Bato':       'bahay na bato',
+    'ap:9:Barasoain Church':    'barasain church',                  // (typo in file)
+    // ---- AP 10 ----
     'ap:10:Hudhud':             'hudhud',
-    'ap:10:Biag ni Lam-ang':    'biagnilamang',
-    'ap:10:Alamat':             'alamat',
+    'ap:10:Biag ni Lam-ang':    'Biag ni Lam-ang',
+    'ap:10:Alamat':             'alamat',                           // (file missing → silent)
     'ap:10:Bugtong':            'bugtong',
     'ap:10:Salawikain':         'salawikain',
     'ap:10:Kundiman':           'kundiman',
     'ap:10:Tinikling':          'tinikling',
     'ap:10:Singkil':            'singkil',
-    'ap:10:Pandanggo sa Ilaw':  'pandanggoilaw',
+    'ap:10:Pandanggo sa Ilaw':  'Pandanggo sa Ilaw',
     'ap:10:Fiesta':             'fiesta',
     'ap:10:Pamahiin':           'pamahiin',
-    'ap:10:Mano po':            'manopo',
+    'ap:10:Mano po':            'mano po',
 
     // ---- EPP ----
     'computer:1:Google':         'google',
@@ -456,40 +454,34 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // DESC_MAP — Jojoma's descriptions
+  // DESC_MAP
   // ============================================================
   const DESC_MAP = {
-    // ---- AP Level 1 ----
     'ap:1:Pacific Ocean':       "Earth's largest and deepest ocean.",
     'ap:1:Pasig River':         "Historic river running through Manila.",
     'ap:1:Laguna de Bay':       "Largest lake in the Philippines.",
-    // ---- AP Level 2 ----
     'ap:2:Mount Apo':           "The highest peak in the Philippines.",
     'ap:2:Mayon Volcano':       "Volcano famous for its perfect cone.",
     'ap:2:Chocolate Hills':     "Famous brown hills in Bohol.",
     'ap:2:Central Luzon Plain': "The rice granary of the country.",
-    // ---- AP Level 3 ----
     'ap:3:Malaysia':            "Southeast Asian country near Palawan.",
     'ap:3:Indonesia':           "Giant archipelago south of Mindanao.",
     'ap:3:Vietnam':             "Country across the West Philippine Sea.",
     'ap:3:Thailand':            "Asian country famous for tourism.",
     'ap:3:Brunei':              "Small, wealthy nation on Borneo.",
-    // ---- AP Level 4 ----
     'ap:4:Weather':             "Day-to-day condition of the atmosphere.",
     'ap:4:Climate':             "Long-term average weather pattern.",
     'ap:4:Temperature':         "Measure of hotness or coldness.",
     'ap:4:Humidity':            "Amount of moisture in air.",
     'ap:4:Rainfall':            "Water falling down as rain.",
     'ap:4:PAGASA':              "Philippine official weather forecasting agency.",
-    // ---- AP Level 5 ----
-    'ap:5:Cool dry season':     "Pleasant weather from December to February.",
+    'ap:5:Rainy season':        "Months with heavy rainfall (June-November).",
     'ap:5:Dry season':          "Months with very little rain.",
+    'ap:5:Cool dry season':     "Pleasant weather with cool breezes.",
     'ap:5:Hot dry season':      "Warmest months of the year.",
     'ap:5:May':                 "Peak of the dry season.",
     'ap:5:January':             "Time of lowest yearly temperatures.",
-    'ap:5:Rainy season':        "Months with heavy rainfall (June-November).",
     'ap:5:Tropical climate':    "Warm, humid climate near the equator.",
-    // ---- AP Level 6 ----
     'ap:6:Luzon':               "Largest northern Philippine island group.",
     'ap:6:Visayas':             "Central island group of the Philippines.",
     'ap:6:Mindanao':            "Southern island group of the Philippines.",
@@ -498,7 +490,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:6:Samar':               "Large island in eastern Visayas.",
     'ap:6:Leyte':               "Visayan island next to Samar.",
     'ap:6:Cebu':                "Major hub in the central Philippines.",
-    // ---- AP Level 7 ----
     'ap:7:Mount Pulag':         "Luzon's highest peak, above a sea of clouds.",
     'ap:7:Mount Pinatubo':      "Volcano that erupted in 1991.",
     'ap:7:Taal Volcano':        "Small active volcano within a lake.",
@@ -508,7 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:7:Subic Bay':           "Famous harbor in Central Luzon.",
     'ap:7:Davao Gulf':          "Large gulf in southern Mindanao.",
     'ap:7:Sibuyan Sea':         "Sea at the center of the Philippines.",
-    // ---- AP Level 8 ----
     'ap:8:Barangay':            "Ancient Filipino community or village.",
     'ap:8:Datu':                "Ruler of an ancient barangay.",
     'ap:8:Maharlika':           "Feudal warrior class of the Tagalogs.",
@@ -519,7 +509,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:8:Baybayin':            "Pre-colonial native writing system.",
     'ap:8:Bahay Kubo':          "Traditional Filipino stilt house.",
     'ap:8:Panday':              "Maker of metal tools and weapons.",
-    // ---- AP Level 9 ----
     'ap:9:Manunggul Jar':       "Ancient burial jar found in Palawan.",
     'ap:9:Banaue Rice Terraces':"Hand-carved mountainside agricultural terraces.",
     'ap:9:Bulul':               "Wooden Igorot rice granary god.",
@@ -531,7 +520,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:9:San Agustin Church':  "Oldest stone church in Manila.",
     'ap:9:Bahay na Bato':       "Spanish colonial noble stone house.",
     'ap:9:Barasoain Church':    "Historic site of the first republic.",
-    // ---- AP Level 10 ----
     'ap:10:Hudhud':             "Chanted epic stories of the Ifugao.",
     'ap:10:Biag ni Lam-ang':    "Famous Ilocano folk epic poem.",
     'ap:10:Alamat':             "Traditional story explaining origins.",
@@ -545,7 +533,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:10:Pamahiin':           "Traditional cultural beliefs and myths.",
     'ap:10:Mano po':            "Respect gesture for greeting elders.",
 
-    // ---- EPP ----
     'computer:1:Google':         "Most popular modern search engine.",
     'computer:1:Yahoo':          "Search engine with internet directory.",
     'computer:1:Lycos':          "Pioneer search engine from the nineties.",
@@ -572,7 +559,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    "Never use offensive language online.",
     'computer:5:Fake news':          "Never share unverified false information.",
 
-    // ---- Science ----
     'science:1:Rock':  "Hard solid form of matter.",
     'science:1:Water': "Life-sustaining liquid type of matter.",
     'science:1:Air':   "Invisible gas surrounding the Earth.",
@@ -737,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // TOPIC_DATA — AP 1-10, EPP, Science
+  // TOPIC_DATA
   // ============================================================
   const TOPIC_DATA = {
     computer: {
@@ -1101,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // AUDIO — Play per-card sound
+  // AUDIO PLAYER
   // ============================================================
   const AUDIO_BUDGET_MS  = 3000;
   const AUDIO_PER_TRY_MS = 400;
@@ -1110,23 +1096,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     if (!entry) return [];
 
-    const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
-    const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
+    const folder   = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
+    const mapped   = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
     const cardName = entry.name;
 
+    // Build candidate filenames (dedup)
     const names = [];
     function add(n) { if (n && names.indexOf(n) === -1) names.push(n); }
     add(mapped);
-    add(cardName.toLowerCase().replace(/\s+/g, ''));
-    add(cardName.toLowerCase().replace(/\s+/g, '_'));
-    add(cardName.toLowerCase());
     add(cardName);
+    add(cardName.toLowerCase());
+    add(cardName.toLowerCase().replace(/\s+/g, '_'));
+    add(cardName.toLowerCase().replace(/\s+/g, ''));
 
-    const exts = ['mp3', 'wav', 'm4a', 'ogg'];
+    // ⭐ Folder name differs per subject
+    const levelFolder = (subject === 'ap') ? String(level) : ('lvl' + level);
+
+    // ⭐ Extension order differs per subject
+    const exts = (subject === 'ap')
+      ? ['m4a', 'mp3', 'wav', 'ogg']
+      : ['mp3', 'm4a', 'wav', 'ogg'];
+
     const out = [];
     for (const name of names) {
       for (const ext of exts) {
-        out.push(`../Assets/sound/${folder}/lvl${level}/${encodeURIComponent(name)}.${ext}`);
+        out.push(`../Assets/sound/${folder}/${levelFolder}/${encodeURIComponent(name)}.${ext}`);
       }
     }
     return out;
