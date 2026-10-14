@@ -1,8 +1,9 @@
 /* ================================================================
    GAMEPLAY.JS — MATCH MONSTER (FINAL)
-   - AP audio: /Assets/sound/AP/{N}/{filename}.m4a
-   - EPP/Science audio: /Assets/sound/{subject}/lvl{N}/{filename}
-   - Jojoma: title + typewriter description + audio
+   - All subjects: /Assets/sound/{folder}/{N}/{filename}.m4a
+   - AP  → /Assets/sound/AP/{N}/
+   - EPP → /Assets/sound/epp/{N}/
+   - Science → /Assets/sound/science/{N}/
    ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -322,34 +323,30 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // AUDIO_MAP — ⭐ AP uses .m4a files (folder: AP/{N}/)
+  // AUDIO_MAP — exact filenames from disk
   // ============================================================
   const AUDIO_SUBJECT_FOLDER = { ap: 'AP', computer: 'epp', science: 'science' };
 
   const AUDIO_MAP = {
-    // ---- AP 1 ----
+    // ============ AP ============
     'ap:1:Pacific Ocean':       'pacific ocean',
     'ap:1:Pasig River':         'pasig river',
     'ap:1:Laguna de Bay':       'laguna de bay',
-    // ---- AP 2 ----
     'ap:2:Mount Apo':           'mount apo',
     'ap:2:Mayon Volcano':       'mayon',
     'ap:2:Chocolate Hills':     'chocolate hills',
     'ap:2:Central Luzon Plain': 'Central Luzon Plain',
-    // ---- AP 3 ----
     'ap:3:Malaysia':            'malaysia',
     'ap:3:Indonesia':           'Indonesia',
     'ap:3:Vietnam':             'Vietnam',
     'ap:3:Thailand':            'Thailand',
     'ap:3:Brunei':              'Brunei',
-    // ---- AP 4 ----
     'ap:4:Weather':             'weather',
     'ap:4:Climate':             'climate',
     'ap:4:Temperature':         'temperature',
     'ap:4:Humidity':            'humidity',
     'ap:4:Rainfall':            'rainfall',
     'ap:4:PAGASA':              'PAGASA',
-    // ---- AP 5 ----
     'ap:5:Cool dry season':     'cool dry season',
     'ap:5:Dry season':          'dry season',
     'ap:5:Hot dry season':      'hot dry season',
@@ -357,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:5:January':             'coolest month',
     'ap:5:Rainy season':        'rainy season',
     'ap:5:Tropical climate':    'tropical climate',
-    // ---- AP 6 ----
     'ap:6:Luzon':               'Luzon',
     'ap:6:Visayas':             'visayas',
     'ap:6:Mindanao':            'Mindanao',
@@ -366,7 +362,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:6:Samar':               'samar',
     'ap:6:Leyte':               'leyte',
     'ap:6:Cebu':                'cebu',
-    // ---- AP 7 ----
     'ap:7:Mount Pulag':         'mount pulag',
     'ap:7:Mount Pinatubo':      'mount pinatubo',
     'ap:7:Taal Volcano':        'taal volcano',
@@ -376,8 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:7:Subic Bay':           'subic',
     'ap:7:Davao Gulf':          'davao gulf',
     'ap:7:Sibuyan Sea':         'sibuyan sea',
-    // ---- AP 8 ----
-    'ap:8:Barangay':            'baragay',   // (typo in file)
+    'ap:8:Barangay':            'baragay',                       // typo on disk
     'ap:8:Datu':                'datu',
     'ap:8:Maharlika':           'maharlika',
     'ap:8:Timawa':              'timawa',
@@ -387,8 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:8:Baybayin':            'baybayin',
     'ap:8:Bahay Kubo':          'bahay kubo',
     'ap:8:Panday':              'panday',
-    // ---- AP 9 ----
-    'ap:9:Manunggul Jar':       'manunggal jar',                    // (typo in file)
+    'ap:9:Manunggul Jar':       'manunggal jar',                 // typo on disk
     'ap:9:Banaue Rice Terraces':'banaue rice terrace',
     'ap:9:Bulul':               'bulul',
     'ap:9:Laguna Copperplate':  'Laguna Copperplate Inscription',
@@ -398,11 +391,10 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:9:Fort Santiago':       'fort santiago',
     'ap:9:San Agustin Church':  'san agustin church',
     'ap:9:Bahay na Bato':       'bahay na bato',
-    'ap:9:Barasoain Church':    'barasain church',                  // (typo in file)
-    // ---- AP 10 ----
+    'ap:9:Barasoain Church':    'barasain church',               // typo on disk
     'ap:10:Hudhud':             'hudhud',
     'ap:10:Biag ni Lam-ang':    'Biag ni Lam-ang',
-    'ap:10:Alamat':             'alamat',                           // (file missing → silent)
+    'ap:10:Alamat':             'alamat',
     'ap:10:Bugtong':            'bugtong',
     'ap:10:Salawikain':         'salawikain',
     'ap:10:Kundiman':           'kundiman',
@@ -413,44 +405,158 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:10:Pamahiin':           'pamahiin',
     'ap:10:Mano po':            'mano po',
 
-    // ---- EPP ----
+    // ============ EPP (exact filenames) ============
     'computer:1:Google':         'google',
     'computer:1:Yahoo':          'yahoo',
     'computer:1:Lycos':          'lycos',
-    'computer:2:Search box':     'searchbox',
-    'computer:2:Search button':  'searchbutton',
-    'computer:2:Search results': 'searchresult',
+    'computer:2:Search box':     'search box',
+    'computer:2:Search button':  'search button',
+    'computer:2:Search results': 'search results',
     'computer:2:Tabs':           'tabs',
-    'computer:3:Safari':          'safari',
-    'computer:3:Opera':           'opera',
-    'computer:3:Microsoft Edge':  'microsoftedge',
-    'computer:3:Mozilla Firefox': 'mozillafirefox',
-    'computer:3:Google Chrome':   'googlechrome',
-    'computer:4:Email':           'email',
-    'computer:4:Chat':            'chat',
-    'computer:4:Instant message': 'instantmessage',
-    'computer:4:Video call':      'videocall',
-    'computer:4:Social media':    'socialmedia',
-    'computer:4:Online class':    'onlineclass',
-    'computer:5:Kind words':         'kindwords',
-    'computer:5:Ask permission':     'askpermission',
-    'computer:5:Be respectful':      'berespectful',
-    'computer:5:Typing in ALL CAPS': 'typinginallcaps',
-    'computer:5:Sharing password':   'sharingpassword',
-    'computer:5:Using bad words':    'usingbadwords',
-    'computer:5:Fake news':          'fakenews',
+    'computer:3:Safari':         'safari',
+    'computer:3:Opera':          'opera',
+    'computer:3:Microsoft Edge': 'Microsoft edge',
+    'computer:3:Mozilla Firefox':'Mozilla Firefox',
+    'computer:3:Google Chrome':  'google chrome',
+    'computer:4:Email':          'email',
+    'computer:4:Chat':           'chat',
+    'computer:4:Instant message':'instant message',
+    'computer:4:Video call':     'video call',
+    'computer:4:Social media':   'social media',
+    'computer:4:Online class':   'online class',
+    'computer:5:Kind words':         'use kind words',
+    'computer:5:Ask permission':     'Ask permission before posting others_ photos (do)',
+    'computer:5:Be respectful':      'be respectful',
+    'computer:5:Typing in ALL CAPS': 'typing in all caps',
+    'computer:5:Sharing password':   'sharing your password',
+    'computer:5:Using bad words':    'using bad words',
+    'computer:5:Fake news':          'spreading fake news',
+    'computer:6:.com':  'com',
+    'computer:6:.edu':  'edu',
+    'computer:6:.net':  'net',
+    'computer:6:.org':  'org',
+    'computer:6:.gov':  'gov',
+    'computer:6:.pro':  'pro',
+    'computer:6:.info': 'info',
+    'computer:6:.int':  'int',
+    'computer:7:Browser window buttons': 'browser window button',
+    'computer:7:Tab name':               'tab name',
+    'computer:7:Navigation buttons':     'navigation buttons',
+    'computer:7:New tab':                'new tab',
+    'computer:7:Customize and control':  'customize and control',
+    'computer:7:Bookmark this page':     'bookmark',
+    'computer:7:Address bar':            'address bar',
+    'computer:7:Display window':         'display window',
+    'computer:7:Scroll bar':             'scroll bar',
+    'computer:8:Username':    'username',
+    'computer:8:Domain name': 'domain name',
+    'computer:8:Domain type': 'domain type',
+    'computer:8:To':          'to',
+    'computer:8:Cc':          'Cc',
+    'computer:8:Bcc':         'Bcc',
+    'computer:8:Subject':     'subject',
+    'computer:8:Body':        'body',
+    'computer:8:Attach File': 'attach file',
+    'computer:8:Send':        'send',
+    'computer:9:Gmail':        'gmail',
+    'computer:9:Yahoo Mail':   'yahoo mail',
+    'computer:9:Outlook':      'outlook',
+    'computer:9:Compose Mail': 'compose mail',
+    'computer:9:Inbox':        'inbox',
+    'computer:9:Sent':         'sent',
+    'computer:9:Drafts':       'draft',
+    'computer:9:Spam':         'spam',
+    'computer:9:Attachment':   'attachment',
+    'computer:9:Reply':        'reply',
+    'computer:9:Forward':      'forward',
+    'computer:10:Monitor':         'monitor',
+    'computer:10:Keyboard':        'keyboard',
+    'computer:10:Mouse':           'mouse',
+    'computer:10:System unit':     'system unit',
+    'computer:10:Speakers':        'speakers',
+    'computer:10:Printer':         'printer',
+    'computer:10:Webcam':          'webcam',
+    'computer:10:Microphone':      'microphone',
+    'computer:10:Headset':         'headset',
+    'computer:10:Scanner':         'scanner',
+    'computer:10:USB flash drive': 'usb flash drive',
+    'computer:10:Touchpad':        'touch pad',
 
-    // ---- Science ----
-    'science:1:Rock':  'rock', 'science:1:Water': 'water', 'science:1:Air': 'air',
-    'science:2:Chair': 'chair', 'science:2:Desk': 'desk', 'science:2:Bag': 'bag', 'science:2:Shoes': 'shoes',
-    'science:3:Water': 'water', 'science:3:Coffee': 'coffee', 'science:3:Chocolate drink': 'chocolatedrink', 'science:3:Juice': 'juice', 'science:3:Milk': 'milk',
-    'science:4:Air': 'air', 'science:4:Wind': 'wind', 'science:4:Oxygen': 'oxygen', 'science:4:Carbon dioxide': 'carbondioxide', 'science:4:Water vapor': 'watervapor', 'science:4:Helium': 'helium',
-    'science:5:Mass': 'mass', 'science:5:Weight': 'weight', 'science:5:Volume': 'volume', 'science:5:Shape': 'shape', 'science:5:Color': 'color', 'science:5:Texture': 'texture', 'science:5:Smell': 'smell',
-    'science:6:Platform balance': 'platformbalance', 'science:6:Triple beam balance': 'triplebeambalance', 'science:6:Weighing scale': 'weighingscale', 'science:6:Graduated cylinder': 'graduatedcylinder', 'science:6:Meter stick': 'meterstick', 'science:6:Thermometer': 'thermometer', 'science:6:Measuring cup': 'measuringcup',
-    'science:7:Gram': 'gram', 'science:7:Kilogram': 'kilogram', 'science:7:Milliliter': 'milliliter', 'science:7:Liter': 'liter', 'science:7:Centimeter': 'centimeter', 'science:7:Meter': 'meter', 'science:7:Degree Celsius': 'degreecelsius', 'science:7:Cubic meter': 'cubicmeter',
-    'science:8:Melting': 'melting', 'science:8:Freezing': 'freezing', 'science:8:Evaporation': 'evaporation', 'science:8:Condensation': 'condensation', 'science:8:Boiling': 'boiling', 'science:8:Cutting paper': 'cuttingpaper', 'science:8:Tearing paper': 'tearingpaper', 'science:8:Crushing a can': 'crushingacan', 'science:8:Dissolving sugar': 'dissolvingsugar', 'science:8:Folding paper': 'foldingpaper',
-    'science:9:Mouth': 'mouth', 'science:9:Teeth': 'teeth', 'science:9:Salivary glands': 'salivaryglands', 'science:9:Esophagus': 'esophagus', 'science:9:Stomach': 'stomach', 'science:9:Liver': 'liver', 'science:9:Gallbladder': 'gallbladder', 'science:9:Pancreas': 'pancreas', 'science:9:Small intestine': 'smallintestine', 'science:9:Large intestine': 'largeintestine', 'science:9:Rectum': 'rectum',
-    'science:10:Nose': 'nose', 'science:10:Nasal cavity': 'nasalcavity', 'science:10:Mouth': 'mouth', 'science:10:Pharynx': 'pharynx', 'science:10:Larynx': 'larynx', 'science:10:Trachea': 'trachea', 'science:10:Bronchi': 'bronchi', 'science:10:Bronchioles': 'bronchioles', 'science:10:Alveoli': 'alveoli', 'science:10:Lungs': 'lungs', 'science:10:Diaphragm': 'diaphragm', 'science:10:Ribs': 'ribs'
+    // ============ SCIENCE (exact filenames, typos preserved) ============
+    'science:1:Rock':  'rock',
+    'science:1:Water': 'water',
+    'science:1:Air':   'air',
+    'science:2:Chair': 'chair',
+    'science:2:Desk':  'desk',
+    'science:2:Bag':   'bag',
+    'science:2:Shoes': 'shoes',
+    'science:3:Water':           'waterr',                        // typo
+    'science:3:Coffee':          'coffee',
+    'science:3:Chocolate drink': 'chocolate drink',
+    'science:3:Juice':           'juice',
+    'science:3:Milk':            'milk',
+    'science:4:Air':            'airr',                           // typo
+    'science:4:Wind':           'wind',
+    'science:4:Oxygen':         'oxygen',
+    'science:4:Carbon dioxide': 'carbon dioxide',
+    'science:4:Water vapor':    'water vapor',
+    'science:4:Helium':         'hellum',                         // typo
+    'science:5:Mass':    'mass',
+    'science:5:Weight':  'weight',
+    'science:5:Volume':  'volume',
+    'science:5:Shape':   'shape',
+    'science:5:Color':   'color',
+    'science:5:Texture': 'twxture',                               // typo
+    'science:5:Smell':   'smell',
+    'science:6:Platform balance':    'platform balance',
+    'science:6:Triple beam balance': 'triple beam balance',
+    'science:6:Weighing scale':      'Weighing scale',
+    'science:6:Graduated cylinder':  'graduated cylinder',
+    'science:6:Meter stick':         'meter stick',
+    'science:6:Thermometer':         'thermometer',
+    'science:6:Measuring cup':       'measuring cup',
+    'science:6:Beaker':              'beaker',
+    'science:7:Gram':             'gram',
+    'science:7:Kilogram':         'kg',
+    'science:7:Milliliter':       'milliliter',
+    'science:7:Liter':            'liter',
+    'science:7:Centimeter':       'cm',
+    'science:7:Meter':            'meter',
+    'science:7:Degree Celsius':   'degree Celsius',
+    'science:7:Cubic meter':      'cubic meter',
+    'science:7:Cubic centimeter': 'cubic centimeter',
+    'science:8:Melting':          'melting',
+    'science:8:Freezing':         'freezing',
+    'science:8:Evaporation':      'evaporation',
+    'science:8:Condensation':     'condensation',
+    'science:8:Boiling':          'boilimg',                      // typo
+    'science:8:Cutting paper':    'cutting paper',
+    'science:8:Tearing paper':    'tearing paper',
+    'science:8:Crushing a can':   'crushing a can',
+    'science:8:Dissolving sugar': 'dissolving sugar',
+    'science:8:Folding paper':    'folding paper',
+    'science:9:Mouth':           'mouth',
+    'science:9:Teeth':           'teeth',
+    'science:9:Salivary glands': 'salivary glands',
+    'science:9:Esophagus':       'esophagus',
+    'science:9:Liver':           'liver',
+    'science:9:Gallbladder':     'gallbladder',
+    'science:9:Pancreas':        'pancreas',
+    'science:9:Small intestine': 'small intestine',
+    'science:9:Large intestine': 'large intestine',
+    'science:9:Rectum':          'rectum',
+    'science:10:Nose':         'nose',
+    'science:10:Nasal cavity': 'nasal cavity',
+    'science:10:Mouth':        'mouth',
+    'science:10:Pharynx':      'Pharynx',
+    'science:10:Larynx':       'Larynx',
+    'science:10:Trachea':      'Trachea',
+    'science:10:Bronchi':      'Bronchi',
+    'science:10:Bronchioles':  'Bronchioles',
+    'science:10:Alveoli':      'Alveoli',
+    'science:10:Lungs':        'lungs',
+    'science:10:Diaphragm':    'diaphragm',
+    'science:10:Ribs':         'ribs'
   };
 
   // ============================================================
@@ -1087,7 +1193,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // AUDIO PLAYER
+  // AUDIO PLAYER — now with numeric folders + .m4a everywhere
   // ============================================================
   const AUDIO_BUDGET_MS  = 3000;
   const AUDIO_PER_TRY_MS = 400;
@@ -1096,26 +1202,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     if (!entry) return [];
 
-    const folder   = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
-    const mapped   = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
+    const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
+    const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
     const cardName = entry.name;
 
-    // Build candidate filenames (dedup)
+    // Only try: exact mapped name, then card name
     const names = [];
-    function add(n) { if (n && names.indexOf(n) === -1) names.push(n); }
-    add(mapped);
-    add(cardName);
-    add(cardName.toLowerCase());
-    add(cardName.toLowerCase().replace(/\s+/g, '_'));
-    add(cardName.toLowerCase().replace(/\s+/g, ''));
+    if (mapped && names.indexOf(mapped) === -1) names.push(mapped);
+    if (cardName && names.indexOf(cardName) === -1) names.push(cardName);
 
-    // ⭐ Folder name differs per subject
-    const levelFolder = (subject === 'ap') ? String(level) : ('lvl' + level);
+    // ✅ Numeric folder for ALL subjects now
+    const levelFolder = String(level);
 
-    // ⭐ Extension order differs per subject
-    const exts = (subject === 'ap')
-      ? ['m4a', 'mp3', 'wav', 'ogg']
-      : ['mp3', 'm4a', 'wav', 'ogg'];
+    // ✅ .m4a first for everyone
+    const exts = ['m4a', 'mp3', 'wav', 'ogg'];
 
     const out = [];
     for (const name of names) {
