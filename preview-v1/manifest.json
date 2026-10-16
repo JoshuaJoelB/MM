@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "backend": "native",
+  "rasterEngine": "libreoffice",
+  "source": "saved",
+  "inputPath": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\Match_Monster_Documentation.docx",
+  "sourceSha256": "448748bb01782ae71d4cfd7730cf4c597756ed9df03c50f6a948c9bbbd5c6c43",
+  "dpi": 120,
+  "pageCount": 8,
+  "images": [
+    {
+      "index": 1,
+      "page": 1,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0001.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 27923
+    },
+    {
+      "index": 2,
+      "page": 2,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0002.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 88462
+    },
+    {
+      "index": 3,
+      "page": 3,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0003.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 92719
+    },
+    {
+      "index": 4,
+      "page": 4,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0004.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 65577
+    },
+    {
+      "index": 5,
+      "page": 5,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0005.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 82296
+    },
+    {
+      "index": 6,
+      "page": 6,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0006.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 83658
+    },
+    {
+      "index": 7,
+      "page": 7,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0007.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 84598
+    },
+    {
+      "index": 8,
+      "page": 8,
+      "path": "C:\\Users\\Joshua Joel B. Mateo\\OneDrive\\Desktop\\MM\\preview-v1\\page-0008.png",
+      "width": 1020,
+      "height": 1320,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 55508
+    }
+  ],
+  "missingFonts": [
+    "Courier"
+  ]
+}

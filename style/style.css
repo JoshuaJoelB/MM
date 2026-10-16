@@ -3965,3 +3965,146 @@ h1, h2, h3, h4, h5, h6,
 ::-webkit-scrollbar-track { background: #0a1428; }
 ::-webkit-scrollbar-thumb { background: #4682B4; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #FFD700; }
+
+/* ================================================================
+   FIRST-TIME TUTORIAL — spotlight coach-marks (level 1, grades 4-6)
+   ================================================================ */
+.tutorial-spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 2300;
+  pointer-events: none;
+}
+
+.spotlight-hole {
+  position: absolute;
+  border-radius: 16px;
+  border: 3px solid #FFD700;
+  box-shadow:
+    0 0 0 9999px rgba(10, 20, 40, 0.88),
+    0 0 22px rgba(255, 215, 0, 0.7);
+  transition: all 0.35s ease;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* Tooltip bubble */
+.tutorial-tooltip {
+  position: fixed;
+  z-index: 2301;
+  pointer-events: auto;
+  max-width: 300px;
+  background: linear-gradient(180deg, #1a3a5c 0%, #0a1428 100%);
+  border: 2px solid #FFD700;
+  border-radius: 18px;
+  padding: 14px 18px 16px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(255, 215, 0, 0.4);
+  animation: fadeUp 0.35s ease;
+  text-align: center;
+}
+.tutorial-tooltip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #FFD700;
+}
+.tutorial-tooltip.arrow-down::before {
+  top: auto;
+  bottom: -10px;
+  border-top: 10px solid #FFD700;
+  border-bottom: none;
+}
+
+.tutorial-tooltip-text {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #F0E68C;
+  margin: 0 0 12px;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+}
+
+.tutorial-tooltip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 26px;
+  min-height: 46px;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #1a0f2e;
+  background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
+  border: 3px solid #1a0f2e;
+  border-radius: 100px;
+  box-shadow:
+    0 5px 0 #7a4b00,
+    0 8px 22px rgba(255, 184, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+}
+.tutorial-tooltip-btn:hover {
+  background: linear-gradient(180deg, #FFE97A 0%, #FFCB24 55%, #FFAB0F 100%);
+  transform: translateY(-2px);
+  box-shadow:
+    0 7px 0 #7a4b00,
+    0 12px 28px rgba(255, 184, 0, 0.55),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+.tutorial-tooltip-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 2px 0 #7a4b00,
+    0 4px 12px rgba(255, 184, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+.tutorial-tooltip-btn:focus-visible {
+  outline: 4px solid #FFD700;
+  outline-offset: 4px;
+}
+
+/* Fixed Skip button (top-right) */
+.tutorial-skip-fixed {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 2302;
+  pointer-events: auto;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #FFD700;
+  background: rgba(10, 20, 40, 0.75);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 100px;
+  padding: 8px 18px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.tutorial-skip-fixed:hover { background: rgba(255, 215, 0, 0.18); }
+.tutorial-skip-fixed:active { transform: scale(0.96); }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tutorial-tooltip { max-width: 250px; padding: 12px 14px 14px; }
+  .tutorial-tooltip-text { font-size: 0.85rem; }
+  .tutorial-tooltip-btn { font-size: 0.85rem; min-height: 42px; padding: 8px 20px; }
+  .tutorial-skip-fixed { top: 12px; right: 12px; font-size: 0.7rem; padding: 7px 14px; }
+}
