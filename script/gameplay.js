@@ -240,13 +240,72 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:4:Video call':     'videocall',
     'computer:4:Social media':   'social media',
     'computer:4:Online class':   'onlineclass',
-    'computer:5:Kind words':         'dos/kind words',
-    'computer:5:Ask permission':     'dos/Ask permission before posting others_ photos (do)',
-    'computer:5:Be respectful':      'dos/Be respectful in online class (do)_',
-    'computer:5:Typing in ALL CAPS': 'dont/Typing in ALL CAPS (dont)',
-    'computer:5:Sharing password':   'dont/Sharing password_',
-    'computer:5:Using bad words':    'dont/Using bad words_',
-    'computer:5:Fake news':          'dont/fake news',
+    'computer:5:Kind words':         'kind words',
+    'computer:5:Ask permission':     'Ask permission before posting others_ photos ',
+    'computer:5:Be respectful':      'Be respectful in online class ',
+    'computer:5:Typing in ALL CAPS': 'Typing in ALL CAPS',
+    'computer:5:Sharing password':   'Sharing password',
+    'computer:5:Using bad words':    'Using bad words',
+    'computer:5:Fake news':          'fake news',
+
+    // ---- EPP Level 6 (Updated to match screenshot & new topic) ----
+    'computer:6:Kind words':         'kind words',
+    'computer:6:Ask permission':     'Ask permission before posting others_ photos',
+    'computer:6:Be respectful':      'Be respectful in online class',
+    'computer:6:Typing in ALL CAPS': 'Typing in ALL CAPS',
+    'computer:6:Sharing password':   'Sharing password',
+    'computer:6:Using bad words':    'Using bad words',
+    'computer:6:Fake news':          'fake news',
+
+    // ---- EPP Level 7 ----
+    'computer:7:Browser window buttons': 'Browser window buttons',
+    'computer:7:Tab name':               'tab name',
+    'computer:7:Navigation buttons':     'navigation button',
+    'computer:7:New tab':                'new tab',
+    'computer:7:Customize and control':  'customize and control',
+    'computer:7:Bookmark this page':     'book mark',
+    'computer:7:Address bar':            'adress bar',
+    'computer:7:Display window':         'Display window buttons',
+    'computer:7:Scroll bar':             'scroll bar',
+
+    // ---- EPP Level 8 ----
+    'computer:8:Username':    'usemname',
+    'computer:8:Domain name': 'domainname',
+    'computer:8:Domain type': 'domain type',
+    'computer:8:To':          'to',
+    'computer:8:Cc':          'cc',
+    'computer:8:Bcc':         'bcc',
+    'computer:8:Subject':     'subject_',
+    'computer:8:Body':        'body',
+    'computer:8:Attach File': 'attachfile',
+    'computer:8:Send':        'send',
+
+    // ---- EPP Level 9 ----
+    'computer:9:Gmail':        'gmail',
+    'computer:9:Yahoo Mail':   'yahoo mail',
+    'computer:9:Outlook':      'out look',
+    'computer:9:Compose Mail': 'compose mail',
+    'computer:9:Inbox':        'inbox',
+    'computer:9:Sent':         'send',
+    'computer:9:Drafts':       'draft',
+    'computer:9:Spam':         'spam',
+    'computer:9:Attachment':   'attachfile',
+    'computer:9:Reply':        'reply',
+    'computer:9:Forward':      'forward',
+
+    // ---- EPP Level 10 ----
+    'computer:10:Monitor':         'monitor',
+    'computer:10:Keyboard':        'keyboard',
+    'computer:10:Mouse':           'mouse',
+    'computer:10:System unit':     'system unit',
+    'computer:10:Speakers':        'speaker',
+    'computer:10:Printer':         'printer_',
+    'computer:10:Webcam':          'webcam_',
+    'computer:10:Microphone':      'microphone',
+    'computer:10:Headset':         'headset',
+    'computer:10:Scanner':         'scanner',
+    'computer:10:USB flash drive': 'usb_flashdrive',
+    'computer:10:Touchpad':        'touch pad',
 
     // ---- Science ----
     'science:1:Rock':            'rock',
@@ -280,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:6:Meter stick':           'meter stick_',
     'science:6:Thermometer':           'thermometer_',
     'science:6:Measuring cup':         'measuring cup',
-    'science:6:Beaker':                'beaker',      // ✅ ADDED — matches beaker.jpg
+    'science:6:Beaker':                'beaker',
     'science:7:Gram':                  'gram',
     'science:7:Kilogram':              'kg',
     'science:7:Milliliter':            'milliliter_',
@@ -432,14 +491,16 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Sharing password':   'sharing your password',
     'computer:5:Using bad words':    'using bad words',
     'computer:5:Fake news':          'spreading fake news',
-    'computer:6:.com':  'com',
-    'computer:6:.edu':  'edu',
-    'computer:6:.net':  'net',
-    'computer:6:.org':  'org',
-    'computer:6:.gov':  'gov',
-    'computer:6:.pro':  'pro',
-    'computer:6:.info': 'info',
-    'computer:6:.int':  'int',
+    
+    // ---- EPP Level 6 (Updated to match new topic) ----
+    'computer:6:Kind words':         'kind words',
+    'computer:6:Ask permission':     'Ask permission before posting others_ photos',
+    'computer:6:Be respectful':      'Be respectful in online class',
+    'computer:6:Typing in ALL CAPS': 'Typing in ALL CAPS',
+    'computer:6:Sharing password':   'Sharing password',
+    'computer:6:Using bad words':    'Using bad words',
+    'computer:6:Fake news':          'fake news',
+
     'computer:7:Browser window buttons': 'browser window button',
     'computer:7:Tab name':               'tab name',
     'computer:7:Navigation buttons':     'navigation buttons',
@@ -666,6 +727,15 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    "Never use offensive language online.",
     'computer:5:Fake news':          "Never share unverified false information.",
 
+    // ---- EPP Level 6 (Updated to match new topic) ----
+    'computer:6:Kind words':         "Be polite in online messages.",
+    'computer:6:Ask permission':     "Respect privacy of other people.",
+    'computer:6:Be respectful':      "Listen carefully to your teacher.",
+    'computer:6:Typing in ALL CAPS': "Feels like shouting at someone.",
+    'computer:6:Sharing password':   "Keep account access keys secret.",
+    'computer:6:Using bad words':    "Never use offensive language online.",
+    'computer:6:Fake news':          "Never share unverified false information.",
+
     'science:1:Rock':  "Hard solid form of matter.",
     'science:1:Water': "Life-sustaining liquid type of matter.",
     'science:1:Air':   "Invisible gas surrounding the Earth.",
@@ -869,15 +939,14 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: IMG.docs,      name: 'Using bad words'    },
         { id: IMG.analytics, name: 'Fake news'          }
       ]},
-      6: { title: 'Domain Types', cards: [
-        { id: IMG.dashboard,  name: '.com'  },
-        { id: IMG.schoolBldg, name: '.edu'  },
-        { id: IMG.circuit,    name: '.net'  },
-        { id: IMG.community,  name: '.org'  },
-        { id: IMG.buildings,  name: '.gov'  },
-        { id: IMG.workspace,  name: '.pro'  },
-        { id: IMG.docs,       name: '.info' },
-        { id: IMG.earth,      name: '.int'  }
+      6: { title: "Netiquette: Do's and Don'ts", cards: [
+        { id: IMG.writing,   name: 'Kind words'         },
+        { id: IMG.docs,      name: 'Ask permission'     },
+        { id: IMG.studying,  name: 'Be respectful'      },
+        { id: IMG.code1,     name: 'Typing in ALL CAPS' },
+        { id: IMG.password,  name: 'Sharing password'   },
+        { id: IMG.docs,      name: 'Using bad words'    },
+        { id: IMG.analytics, name: 'Fake news'          }
       ]},
       7: { title: 'Parts of a Web Browser', cards: [
         { id: IMG.monitor,    name: 'Browser window buttons' },
@@ -1132,10 +1201,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   // IMAGE BUILDER
   // ============================================================
-  function getUnsplashUrl(pairIndex) {
-    const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
-    return `https://images.unsplash.com/${entry.id}?w=400&h=500&fit=crop&auto=format&q=70`;
-  }
   function getCardLabel(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     return entry ? entry.name : topicInfo.title;
@@ -1176,7 +1241,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   function attachImageFallback(imgEl, pairIndex) {
     const candidates  = buildLocalCandidates(pairIndex);
-    const unsplash    = getUnsplashUrl(pairIndex);
     const label       = getCardLabel(pairIndex);
     const placeholder = makePlaceholderDataUri(label);
 
@@ -1184,7 +1248,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function advance() {
       if (stopped) return;
       if (stage < candidates.length) { imgEl.src = candidates[stage++]; return; }
-      if (stage === candidates.length) { imgEl.src = unsplash; stage++; return; }
       stopped = true;
       imgEl.removeEventListener('error', advance);
       imgEl.src = placeholder;
@@ -1252,7 +1315,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const src = candidates[idx++];
         const audio = new Audio();
         audio.preload = 'auto';
-        audio.volume  = 1.0;
+        audio.volume  = 1.0; // Max volume for subject sound
 
         let settled = false;
         const perTry = setTimeout(function () {
@@ -1665,10 +1728,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 🎵 PLAY WIN SOUND
     // ============================================================
     if (window.MMSfx && window.MMSfx.win) {
-      // Use the existing SFX manager if available
       window.MMSfx.win();
     } else {
-      // Fallback: play the mp3 directly
       try {
         const winSound = new Audio('../Assets/sound/mm win.mp3');
         winSound.volume = 1.0;
