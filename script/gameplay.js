@@ -310,6 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- Science ----
     'science:1:Rock':            'rock',
     'science:1:Water':           'Water',
+    'science:1:Air':             'air', // Matches Level 4 filename
     'science:2:Chair':           'Chair',
     'science:2:Desk':            'Desk',
     'science:2:Bag':             'Bag',
@@ -547,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- Science ----
     'science:1:Rock':  'rock',
     'science:1:Water': 'water',
-    'science:1:Air':   'air',
+    'science:1:Air':   'airr', // Matches Level 4 audio
     'science:2:Chair': 'chair',
     'science:2:Desk':  'desk',
     'science:2:Bag':   'bag',
@@ -738,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     'science:1:Rock':  "Hard solid form of matter.",
     'science:1:Water': "Life-sustaining liquid type of matter.",
-    'science:1:Air':   "Invisible gas surrounding the Earth.",
+    'science:1:Air':   "The gaseous atmosphere of Earth.", // Matches Level 4 description
     'science:2:Chair': "Solid furniture piece for sitting.",
     'science:2:Desk':  "Solid table used for working.",
     'science:2:Bag':   "Solid container carrying school items.",
