@@ -53,6 +53,7 @@
 
   <!-- Data layer (order matters!) -->
   <script src="script/player.js"></script>
+  <script src="script/tutorial.js"></script>
   <script src="script/leaderboard-data.js"></script>
   <script src="script/leaderboard.js"></script>
 
@@ -69,6 +70,25 @@
   <script src="script/island.js"></script>
 <script src="script/audio.js"></script>
 <script src="script/sfx.js"></script>
+
+  <!-- First-time tutorial: welcome + Play Now -->
+  <script>
+    (function () {
+      'use strict';
+      function start() {
+        if (!window.MMTutorial) return;
+        MMTutorial.show([
+          { sel: '.home-title-content', text: 'Welcome to Match Monster! It is a memory game. Flip the cards and find the matching pairs to win. Earn stars and points to unlock new levels!', type: 'info' },
+          { sel: '#chooseSubjectBtn', text: 'Tap Play Now to start!', type: 'navigate' }
+        ], { flagKey: 'onboardHomeSeen' });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+      } else {
+        start();
+      }
+    })();
+  </script>
 
 </body>
 </html>

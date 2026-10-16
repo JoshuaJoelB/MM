@@ -53,6 +53,7 @@
        DATA LAYER (load ONCE, in this order)
        ============================================================ -->
   <script src="script/player.js"></script>
+  <script src="script/tutorial.js"></script>
   <script src="script/leaderboard-data.js"></script>
   <script src="script/leaderboard.js"></script>
   <script src="script/player-level.js"></script>
@@ -348,6 +349,11 @@
 
       function bootMap() {
         renderMap();
+        if (window.MMTutorial) {
+          MMTutorial.show([
+            { sel: '.island-item[data-level="1"]', text: 'Tap Level 1 to play your first game!', type: 'navigate' }
+          ], { flagKey: 'onboardLevelSeen' });
+        }
         if (justUnlockedLevel) {
           const targetLevel = justUnlockedLevel;
           justUnlockedLevel = null;
