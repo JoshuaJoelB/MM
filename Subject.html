@@ -147,6 +147,8 @@
     </div>
   </div>
 
+  <script src="script/player.js"></script>
+  <script src="script/tutorial.js"></script>
   <script src="script/asset-loader.js"></script>
   <script src="script/script.js"></script>
   <script src="script/cloud-loader.js"></script>
@@ -154,6 +156,24 @@
   <script src="script/island.js"></script>
   <script src="script/audio.js"></script>
   <script src="script/sfx.js"></script>
+
+  <!-- First-time tutorial: pick a subject -->
+  <script>
+    (function () {
+      'use strict';
+      function start() {
+        if (!window.MMTutorial) return;
+        MMTutorial.show([
+          { sel: '.subject-grid', text: 'Pick a subject to start learning!', type: 'navigate' }
+        ], { flagKey: 'onboardSubjectSeen' });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+      } else {
+        start();
+      }
+    })();
+  </script>
 
 </body>
 </html>
