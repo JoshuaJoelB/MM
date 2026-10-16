@@ -1660,6 +1660,27 @@ document.addEventListener('DOMContentLoaded', function() {
   function showWin() {
     if (gameFinished) return;
     gameFinished = true;
+
+    // ============================================================
+    // 🎵 PLAY WIN SOUND
+    // ============================================================
+    if (window.MMSfx && window.MMSfx.win) {
+      // Use the existing SFX manager if available
+      window.MMSfx.win();
+    } else {
+      // Fallback: play the mp3 directly
+      try {
+        const winSound = new Audio('../Assets/sound/mm win.mp3');
+        winSound.volume = 1.0;
+        winSound.play().catch(function(e) {
+          console.log('Win sound play failed:', e);
+        });
+      } catch (e) {
+        console.log('Win sound error:', e);
+      }
+    }
+    // ============================================================
+
     const elapsed = GAME_DURATION - secondsLeft;
     if (winMoves) winMoves.textContent = moves;
     if (winTime)  winTime.textContent  = formatTime(elapsed);
