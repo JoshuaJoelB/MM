@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   (function updateTabBranding() {
     document.title = `${subjectInfo.name} · Level ${level} — Match Monster`;
-    const iconUrl = subjectInfo.icon || '../Assets/top_icon.png';
+    const iconUrl = '../Assets/top_icon.png';
     document.querySelectorAll('link[rel*="icon"]').forEach(el => el.remove());
 
     [['icon', 'image/png'], ['shortcut icon', ''], ['apple-touch-icon', '']].forEach(([rel, type]) => {
@@ -1739,6 +1739,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (winOverlay) winOverlay.classList.add('show');
     celebrateWin();
     if (typeof window.completeLevel === 'function') window.completeLevel(subject, level);
+    if (level === 1) { try { pSet('tutorialSeen', '1'); } catch (e) {} }
     if (window.MMLeaderboard && window.MMPlayer) {
       const nickname = MMPlayer.getNickname();
       if (nickname) {
@@ -1865,6 +1866,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
+      if (document.querySelector('.tutorial-spotlight')) return;
       if (pauseOverlay && pauseOverlay.classList.contains('show')) { closePause(); return; }
       if (winOverlay && winOverlay.classList.contains('show'))      { winOverlay.classList.remove('show'); return; }
       if (loseOverlay && loseOverlay.classList.contains('show'))    { loseOverlay.classList.remove('show'); return; }
@@ -1873,8 +1875,155 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // ============================================================
+  // FIRST-TIME TUTORIAL — Level 1 only, shown once per player
+  // ============================================================
+  function initTutorial() {
+    if (level !== 1) return;
+    if (pGet('tutorialSeen', null) === '1') return;
+
+    var STEPS = [
+      { sel: '.card-grid .card-item',              text: 'Tap a card to flip it over.',        interactive: true },
+      { sel: '.card-grid .card-item:nth-child(2)', text: 'Now tap another card.',              interactive: true },
+      { sel: '#timerDisplay',                      text: 'You have 2 minutes to match all the cards.' },
+      { sel: '#starProgress',                      text: 'Fewer mistakes mean more stars and points.' }
+    ];
+
+    var current = 0;
+
+    // Spotlight layer (visual only — clicks pass through to the page)
+    var spotlight = document.createElement('div');
+    spotlight.className = 'tutorial-spotlight';
+    var hole = document.createElement('div');
+    hole.className = 'spotlight-hole';
+    spotlight.appendChild(hole);
+    document.body.appendChild(spotlight);
+
+    // Instruction bubble
+    var tooltip = document.createElement('div');
+    tooltip.className = 'tutorial-tooltip';
+    tooltip.innerHTML =
+      '<div class="tutorial-tooltip-text"></div>' +
+      '<button type="button" class="tutorial-tooltip-btn"></button>';
+    document.body.appendChild(tooltip);
+    var tipText = tooltip.querySelector('.tutorial-tooltip-text');
+    var tipBtn  = tooltip.querySelector('.tutorial-tooltip-btn');
+
+    // Fixed Skip button (top-right)
+    var skipBtn = document.createElement('button');
+    skipBtn.type = 'button';
+    skipBtn.className = 'tutorial-skip-fixed';
+    skipBtn.textContent = 'Skip';
+    skipBtn.setAttribute('aria-label', 'Skip tutorial');
+    document.body.appendChild(skipBtn);
+
+    var tutorialActive = true;
+
+    function position() {
+      var el = document.querySelector(STEPS[current].sel);
+      if (!el) { finishTutorial(); return; }
+      var r = el.getBoundingClientRect();
+      var pad = 8;
+      hole.style.left   = (r.left - pad) + 'px';
+      hole.style.top    = (r.top - pad) + 'px';
+      hole.style.width  = (r.width + pad * 2) + 'px';
+      hole.style.height = (r.height + pad * 2) + 'px';
+
+      var tipW = tooltip.offsetWidth || 280;
+      var tipH = tooltip.offsetHeight || 90;
+      var left = Math.max(12, Math.min(r.left + r.width / 2 - tipW / 2, window.innerWidth - tipW - 12));
+      var top = r.bottom + 16;
+      var arrowDown = false;
+      if (top + tipH > window.innerHeight - 12) {
+        top = r.top - tipH - 16;
+        arrowDown = true;
+      }
+      if (top < 12) { top = 12; }
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+      tooltip.classList.toggle('arrow-down', arrowDown);
+    }
+
+    function renderStep() {
+      var s = STEPS[current];
+      tipText.textContent = s.text;
+      if (s.interactive) {
+        tipBtn.style.display = 'none';
+      } else {
+        tipBtn.style.display = 'inline-flex';
+        tipBtn.textContent = (current === STEPS.length - 1) ? "Let's Play!" : 'Got it!';
+      }
+      position();
+    }
+
+    function next() {
+      current++;
+      if (current >= STEPS.length) { finishTutorial(); return; }
+      renderStep();
+    }
+
+    function finishTutorial() {
+      if (!tutorialActive) return;
+      tutorialActive = false;
+      try { pSet('tutorialSeen', '1'); } catch (e) {}
+      document.removeEventListener('click', onDocClick, true);
+      document.removeEventListener('keydown', onDocKeydown);
+      window.removeEventListener('resize', position);
+      if (spotlight.parentNode) spotlight.parentNode.removeChild(spotlight);
+      if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
+      if (skipBtn.parentNode) skipBtn.parentNode.removeChild(skipBtn);
+      // Reset the board to a clean start (cards the player flipped during
+      // the demo go back face-down, timer and star bar untouched).
+      renderCards();
+      resetTimer();
+      barPercent = BAR_START;
+      updateStarProgress();
+      flippedCards = [];
+      matchedPairs = 0;
+      moves = 0;
+      isLocked = false;
+      gameStarted = false;
+      gameFinished = false;
+    }
+
+    function onDocClick(e) {
+      if (!tutorialActive) return;
+      if (e.target.closest && (e.target.closest('.tutorial-tooltip') || e.target.closest('.tutorial-skip-fixed'))) return;
+
+      var s = STEPS[current];
+      if (s.interactive) {
+        var card = e.target.closest && e.target.closest('.card-item');
+        if (card) {
+          e.stopPropagation();
+          e.preventDefault();
+          card.classList.add('flipped');
+          next();
+          return;
+        }
+      }
+      // Block everything else (back button, pause, cards during info steps).
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
+    function onDocKeydown(e) {
+      if (e.key === 'Escape' && tutorialActive) finishTutorial();
+    }
+
+    document.addEventListener('click', onDocClick, true);
+    document.addEventListener('keydown', onDocKeydown);
+    window.addEventListener('resize', position);
+
+    tipBtn.addEventListener('click', function (e) { e.stopPropagation(); next(); });
+    skipBtn.addEventListener('click', function (e) { e.stopPropagation(); finishTutorial(); });
+
+    renderStep();
+  }
+
   barPercent = BAR_START;
   renderCards();
   resetTimer();
   updateStarProgress();
+
+  initTutorial();
 });
