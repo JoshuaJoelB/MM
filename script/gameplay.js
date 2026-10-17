@@ -1,10 +1,3 @@
-/* ================================================================
-   GAMEPLAY.JS — MATCH MONSTER (FINAL)
-   - All subjects: /Assets/sound/{folder}/{N}/{filename}.m4a
-   - AP  → /Assets/sound/AP/{N}/
-   - EPP → /Assets/sound/epp/{N}/
-   - Science → /Assets/sound/science/{N}/
-   ================================================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
 
