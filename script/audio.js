@@ -36,7 +36,7 @@
   const audio = new Audio();
   audio.loop    = true;
   audio.preload = 'auto';
-  audio.volume  = 0;
+  audio.volume  = 1;
 
   // ---------- Pick working BGM file ----------
   let srcReady = false;
@@ -63,7 +63,7 @@
   // ---------- Fade helpers ----------
   function fadeIn() {
     let v = audio.volume;
-    const target = 0.05;
+    const target = 0.15;
     if (v >= target) return;
     const step = setInterval(function () {
       v += 0.01;

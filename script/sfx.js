@@ -81,15 +81,15 @@
   function play(name) {
     switch (name) {
       case 'click':
-        tone(880, 0.08, 'triangle', 0.18);
+        tone(880, 0.08, 'triangle', 1);
         break;
       case 'wrong':
-        sweep(300, 120, 0.35, 'sawtooth', 0.20);
+        sweep(300, 120, 0.35, 'sawtooth', 1);
         break;
       case 'gameover':
-        tone(220, 0.25, 'square', 0.20);
-        setTimeout(function () { tone(165, 0.35, 'square', 0.20); }, 200);
-        setTimeout(function () { tone(110, 0.55, 'square', 0.20); }, 480);
+        tone(220, 0.25, 'square', 1);
+        setTimeout(function () { tone(165, 0.35, 'square', 1); }, 200);
+        setTimeout(function () { tone(110, 0.55, 'square', 1); }, 480);
         break;
     }
   }

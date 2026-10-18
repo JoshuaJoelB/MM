@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
 
   /* ---- Per-player storage helpers ---- */
@@ -40,6 +39,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   syncChips();
+
+  // ============================================================
+  // AUDIO LOADER UI
+  // ============================================================
+  const audioLoader = document.createElement('div');
+  audioLoader.id = 'audio-loader';
+  audioLoader.innerHTML = '🎵 Loading sound...';
+  audioLoader.style.cssText = `
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8); color: #fff; padding: 10px 20px;
+    border-radius: 30px; font-family: inherit; font-size: 14px;
+    z-index: 10000; opacity: 0; transition: opacity 0.3s ease;
+    pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  `;
+  document.body.appendChild(audioLoader);
+
+  function showAudioLoader() {
+    audioLoader.style.opacity = '1';
+  }
+  function hideAudioLoader() {
+    audioLoader.style.opacity = '0';
+  }
 
   // ============================================================
   // CONFETTI
@@ -241,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    'Using bad words',
     'computer:5:Fake news':          'fake news',
 
-    // ---- EPP Level 6 (Updated to match screenshot & new topic) ----
+    // ---- EPP Level 6 ----
     'computer:6:Kind words':         'kind words',
     'computer:6:Ask permission':     'Ask permission before posting others_ photos',
     'computer:6:Be respectful':      'Be respectful in online class',
@@ -303,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- Science ----
     'science:1:Rock':            'rock',
     'science:1:Water':           'Water',
-    'science:1:Air':             'air', // Matches Level 4 filename
+    'science:1:Air':             'air',
     'science:2:Chair':           'Chair',
     'science:2:Desk':            'Desk',
     'science:2:Bag':             'Bag',
@@ -486,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    'using bad words',
     'computer:5:Fake news':          'spreading fake news',
     
-    // ---- EPP Level 6 (Updated to match new topic) ----
+    // ---- EPP Level 6 ----
     'computer:6:Kind words':         'kind words',
     'computer:6:Ask permission':     'Ask permission before posting others_ photos',
     'computer:6:Be respectful':      'Be respectful in online class',
@@ -541,7 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- Science ----
     'science:1:Rock':  'rock',
     'science:1:Water': 'water',
-    'science:1:Air':   'airr', // Matches Level 4 audio
+    'science:1:Air':   'airr',
     'science:2:Chair': 'chair',
     'science:2:Desk':  'desk',
     'science:2:Bag':   'bag',
@@ -721,7 +742,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    "Never use offensive language online.",
     'computer:5:Fake news':          "Never share unverified false information.",
 
-    // ---- EPP Level 6 (Updated to match new topic) ----
     'computer:6:Kind words':         "Be polite in online messages.",
     'computer:6:Ask permission':     "Respect privacy of other people.",
     'computer:6:Be respectful':      "Listen carefully to your teacher.",
@@ -732,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     'science:1:Rock':  "Hard solid form of matter.",
     'science:1:Water': "Life-sustaining liquid type of matter.",
-    'science:1:Air':   "The gaseous atmosphere of Earth.", // Matches Level 4 description
+    'science:1:Air':   "The gaseous atmosphere of Earth.",
     'science:2:Chair': "Solid furniture piece for sitting.",
     'science:2:Desk':  "Solid table used for working.",
     'science:2:Bag':   "Solid container carrying school items.",
@@ -1251,10 +1271,20 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // AUDIO PLAYER
+  // AUDIO PLAYER (WITH VOLUME BOOST)
   // ============================================================
   const AUDIO_BUDGET_MS  = 3000;
   const AUDIO_PER_TRY_MS = 400;
+
+  // Web Audio API context for boosting volume above 100%
+  let voiceAudioCtx = null;
+  function getVoiceCtx() {
+    if (!voiceAudioCtx) {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx) voiceAudioCtx = new Ctx();
+    }
+    return voiceAudioCtx;
+  }
 
   function buildAudioCandidates(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
@@ -1284,6 +1314,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return new Promise((resolve) => {
       if (!candidates || !candidates.length) { resolve(null); return; }
 
+      showAudioLoader();
       let resolved = false;
       let idx = 0;
       const startTime = Date.now();
@@ -1291,6 +1322,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const budgetTimer = setTimeout(function () {
         if (resolved) return;
         resolved = true;
+        hideAudioLoader();
         resolve(null);
       }, budgetMs);
 
@@ -1298,6 +1330,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (resolved) return;
         resolved = true;
         clearTimeout(budgetTimer);
+        hideAudioLoader();
         resolve(audio);
       }
 
@@ -1309,7 +1342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const src = candidates[idx++];
         const audio = new Audio();
         audio.preload = 'auto';
-        audio.volume  = 1.0; // Max volume for subject sound
+        audio.crossOrigin = 'anonymous'; // Required for Web Audio API boosting
 
         let settled = false;
         const perTry = setTimeout(function () {
@@ -1323,6 +1356,27 @@ document.addEventListener('DOMContentLoaded', function() {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
+
+          // 🎵 BOOST VOLUME USING WEB AUDIO API
+          const ctx = getVoiceCtx();
+          if (ctx) {
+            if (ctx.state === 'suspended') ctx.resume().catch(function(){});
+            try {
+              const source = ctx.createMediaElementSource(audio);
+              const gainNode = ctx.createGain();
+              
+              // 🔥 ADJUST THE BOOST HERE (1.0 is normal, 3.0 is 300%)
+              gainNode.gain.value = 2.5; 
+              
+              source.connect(gainNode);
+              gainNode.connect(ctx.destination);
+            } catch (err) {
+              console.warn("Volume boost failed, playing standard:", err);
+              audio.volume = 1.0;
+            }
+          } else {
+            audio.volume = 1.0; // Fallback
+          }
 
           const p = audio.play();
           if (p && typeof p.then === 'function') {
@@ -1414,6 +1468,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     showCharacterDialog(title);
 
+    // 🎵 PAUSE BACKGROUND MUSIC WHILE SPEAKING
+    if (window.MMBgMusic) window.MMBgMusic.pause();
+
     let typingDone   = false;
     let audioDone    = false;
     let finishCalled = false;
@@ -1427,6 +1484,10 @@ document.addEventListener('DOMContentLoaded', function() {
             try { currentAudio.pause(); } catch (e) {}
             currentAudio = null;
           }
+          
+          // 🎵 RESUME BACKGROUND MUSIC WHEN DONE
+          if (window.MMBgMusic) window.MMBgMusic.play();
+
           const cb = dialogOnDone;
           dialogOnDone = null;
           if (typeof cb === 'function') cb();
@@ -1718,9 +1779,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gameFinished) return;
     gameFinished = true;
 
-    // ============================================================
-    // 🎵 PLAY WIN SOUND
-    // ============================================================
+    // 🎵 PAUSE BACKGROUND MUSIC ON WIN
+    if (window.MMBgMusic) window.MMBgMusic.pause();
+
     if (window.MMSfx && window.MMSfx.win) {
       window.MMSfx.win();
     } else {
@@ -1734,7 +1795,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Win sound error:', e);
       }
     }
-    // ============================================================
 
     const elapsed = GAME_DURATION - secondsLeft;
     if (winMoves) winMoves.textContent = moves;
