@@ -4108,3 +4108,426 @@ h1, h2, h3, h4, h5, h6,
   .tutorial-tooltip-btn { font-size: 0.85rem; min-height: 42px; padding: 8px 20px; }
   .tutorial-skip-fixed { top: 12px; right: 12px; font-size: 0.7rem; padding: 7px 14px; }
 }
+
+
+/* ================================================================
+   NEAT & PRESENTABLE GAMEPLAY BOARD & CARDS (NO OVERLAPPING)
+   ================================================================ */
+.gameplay-overlay {
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-x: hidden !important;
+}
+
+.gameplay-board {
+  flex: 1 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 14px 20px 32px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.card-grid {
+  display: grid !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 640px !important;
+  margin: 0 auto !important;
+  justify-content: center !important;
+  align-content: center !important;
+  justify-items: center !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 8px !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.card-item {
+  width: 100% !important;
+  max-width: 135px !important;
+  aspect-ratio: 4 / 5 !important;
+  height: auto !important;
+  max-height: none !important;
+  perspective: 800px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-item:hover {
+  transform: translateY(-4px) scale(1.03);
+}
+
+.card-item .card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-style: preserve-3d;
+  border-radius: 14px;
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* ================================================================
+   SPECIAL CARDS (LEVEL 6+)
+   ================================================================ */
+.card-special .card-face-back {
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(255, 215, 0, 0.12) 0px, rgba(255, 215, 0, 0.12) 6px,
+      transparent 6px, transparent 12px),
+    linear-gradient(145deg, #3d1245, #180625) !important;
+  border: 2px solid #FFD700 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), inset 0 0 10px rgba(255, 215, 0, 0.25);
+}
+
+.card-special-face {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 8px !important;
+  border-radius: 14px !important;
+  border: 2px solid #FFD700 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  user-select: none;
+}
+
+.special-card-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.special-card-fa {
+  font-size: clamp(1rem, 2.5vw, 1.5rem) !important;
+  color: #fff !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.special-card-emoji {
+  font-size: clamp(1.1rem, 3vw, 1.7rem);
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  animation: specialPulse 2s ease-in-out infinite;
+}
+
+.special-card-label {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: clamp(0.55rem, 1.4vw, 0.78rem);
+  color: #ffffff;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  line-height: 1.1;
+}
+
+@keyframes specialPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.14); filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)); }
+}
+
+/* Individual card gradients */
+.special-bomb {
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+  border-color: #ffd200 !important;
+  box-shadow: 0 0 16px rgba(255, 65, 108, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.special-key {
+  background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(255, 210, 0, 0.7), inset 0 2px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+.special-lock {
+  background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%) !important;
+  border-color: #6dd5ed !important;
+  box-shadow: 0 0 16px rgba(0, 180, 219, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.special-freeze {
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%) !important;
+  border-color: #e0f7fa !important;
+  box-shadow: 0 0 16px rgba(0, 198, 255, 0.7), inset 0 2px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+.special-shuffle {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  border-color: #a8ff78 !important;
+  box-shadow: 0 0 16px rgba(56, 239, 125, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.special-gem {
+  background: linear-gradient(135deg, #8a2387 0%, #e94057 50%, #f27121 100%) !important;
+  border-color: #ff9a9e !important;
+  box-shadow: 0 0 16px rgba(233, 64, 87, 0.7), inset 0 2px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Animations for effects */
+.bomb-destroyed {
+  animation: bombExplode 0.6s ease forwards;
+}
+@keyframes bombExplode {
+  0% { transform: scale(1); filter: brightness(1.5); }
+  50% { transform: scale(1.1) rotate(5deg); filter: brightness(2) drop-shadow(0 0 20px #ff4b2b); }
+  100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+}
+
+.card-shuffling {
+  animation: cardShuffleAnim 0.5s ease-in-out;
+}
+@keyframes cardShuffleAnim {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) rotate(-5deg) scale(0.96); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.timer-frozen {
+  color: #00e5ff !important;
+  border-color: #00e5ff !important;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.8), inset 0 0 10px rgba(0, 229, 255, 0.4) !important;
+  animation: freezeGlitch 1s infinite alternate;
+}
+@keyframes freezeGlitch {
+  from { filter: drop-shadow(0 0 4px #00e5ff); }
+  to { filter: drop-shadow(0 0 14px #e0f7fa); }
+}
+
+.timer-bonus {
+  animation: timerBonusPulse 0.8s ease;
+  color: #38ef7d !important;
+}
+@keyframes timerBonusPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); filter: drop-shadow(0 0 15px #38ef7d); }
+  100% { transform: scale(1); }
+}
+
+/* ================================================================
+   COMBO NOTIFICATION TOAST
+   ================================================================ */
+.combo-toast {
+  position: fixed;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-25px);
+  background: linear-gradient(180deg, #1a0f2e 0%, #0d0617 100%);
+  border: 3px solid #FFD700;
+  color: #FFD700;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  border-radius: 100px;
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    0 0 25px rgba(255, 215, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.combo-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ================================================================
+   LEVEL 6 SPECIAL CARDS TUTORIAL
+   ================================================================ */
+.l6-tutorial-spotlight {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3999;
+}
+
+.l6-spotlight-hole {
+  position: absolute;
+  border: 3px solid #FFD700;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 9999px rgba(10, 20, 40, 0.78),
+    0 0 30px rgba(255, 215, 0, 0.85);
+  transition: all 0.25s ease;
+  animation: l6SpotlightGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes l6SpotlightGlow {
+  0%, 100% { box-shadow: 0 0 0 9999px rgba(10, 20, 40, 0.78), 0 0 20px rgba(255, 215, 0, 0.7); }
+  50%       { box-shadow: 0 0 0 9999px rgba(10, 20, 40, 0.78), 0 0 36px rgba(255, 215, 0, 1); }
+}
+
+.l6-tutorial-box-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  pointer-events: none;
+}
+
+.l6-tutorial-box {
+  position: relative;
+  background: linear-gradient(145deg, #1a3a5c, #0a1428);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 28px;
+  padding: 26px 24px 22px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  color: #FFD700;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(255, 215, 0, 0.35);
+  pointer-events: auto;
+  animation: quickModalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.l6-tutorial-icon {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: 8px;
+  animation: specialPulse 2s ease-in-out infinite;
+}
+
+.l6-tutorial-title {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.4rem;
+  color: #FFD700;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 0 rgba(10, 20, 40, 0.55);
+}
+
+.l6-tutorial-text {
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem;
+  color: #F0E68C;
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.l6-tutorial-progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.l6-tutorial-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.25);
+  border: 1.5px solid rgba(255, 215, 0, 0.6);
+  transition: all 0.2s ease;
+}
+
+.l6-tutorial-dot.active {
+  background: #FFD700;
+  transform: scale(1.25);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.l6-tutorial-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 36px;
+  font-family: 'DynaPuff', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #1a0f2e;
+  background: linear-gradient(180deg, #FFE066 0%, #FFC107 55%, #FFA000 100%);
+  border: 3px solid #1a0f2e;
+  border-radius: 100px;
+  box-shadow:
+    0 5px 0 #7a4b00,
+    0 10px 24px rgba(255, 184, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.l6-tutorial-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 7px 0 #7a4b00,
+    0 14px 30px rgba(255, 184, 0, 0.55),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+.l6-tutorial-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 2px 0 #7a4b00,
+    0 4px 12px rgba(255, 184, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* ================================================================
+   RESPONSIVE CARD SIZING
+   ================================================================ */
+@media (max-width: 768px) {
+  .gameplay-board {
+    padding: 10px 14px 24px !important;
+  }
+  .card-grid {
+    gap: 10px !important;
+    padding: 6px !important;
+  }
+  .card-item {
+    max-width: 110px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .gameplay-board {
+    padding: 6px 10px 18px !important;
+  }
+  .card-grid {
+    gap: 8px !important;
+    padding: 4px !important;
+  }
+  .card-item {
+    max-width: 80px !important;
+  }
+}
