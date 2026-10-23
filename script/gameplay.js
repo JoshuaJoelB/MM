@@ -55,12 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
   `;
   document.body.appendChild(audioLoader);
 
-  function showAudioLoader() {
-    audioLoader.style.opacity = '1';
-  }
-  function hideAudioLoader() {
-    audioLoader.style.opacity = '0';
-  }
+  function showAudioLoader() { audioLoader.style.opacity = '1'; }
+  function hideAudioLoader() { audioLoader.style.opacity = '0'; }
 
   // ============================================================
   // CONFETTI
@@ -262,7 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    'Using bad words',
     'computer:5:Fake news':          'fake news',
 
-    // ---- EPP Level 6 ----
     'computer:6:Kind words':         'kind words',
     'computer:6:Ask permission':     'Ask permission before posting others_ photos',
     'computer:6:Be respectful':      'Be respectful in online class',
@@ -271,7 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:6:Using bad words':    'Using bad words',
     'computer:6:Fake news':          'fake news',
 
-    // ---- EPP Level 7 ----
     'computer:7:Browser window buttons': 'Browser window buttons',
     'computer:7:Tab name':               'tab name',
     'computer:7:Navigation buttons':     'navigation button',
@@ -282,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:7:Display window':         'Display window buttons',
     'computer:7:Scroll bar':             'scroll bar',
 
-    // ---- EPP Level 8 ----
     'computer:8:Username':    'usemname',
     'computer:8:Domain name': 'domainname',
     'computer:8:Domain type': 'domain type',
@@ -294,7 +287,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:8:Attach File': 'attachfile',
     'computer:8:Send':        'send',
 
-    // ---- EPP Level 9 ----
     'computer:9:Gmail':        'gmail',
     'computer:9:Yahoo Mail':   'yahoo mail',
     'computer:9:Outlook':      'out look',
@@ -307,7 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:9:Reply':        'reply',
     'computer:9:Forward':      'forward',
 
-    // ---- EPP Level 10 ----
     'computer:10:Monitor':         'monitor',
     'computer:10:Keyboard':        'keyboard',
     'computer:10:Mouse':           'mouse',
@@ -506,8 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Sharing password':   'sharing your password',
     'computer:5:Using bad words':    'using bad words',
     'computer:5:Fake news':          'spreading fake news',
-    
-    // ---- EPP Level 6 ----
+
     'computer:6:Kind words':         'kind words',
     'computer:6:Ask permission':     'Ask permission before posting others_ photos',
     'computer:6:Be respectful':      'Be respectful in online class',
@@ -1276,7 +1266,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const AUDIO_BUDGET_MS  = 3000;
   const AUDIO_PER_TRY_MS = 400;
 
-  // Web Audio API context for boosting volume above 100%
   let voiceAudioCtx = null;
   function getVoiceCtx() {
     if (!voiceAudioCtx) {
@@ -1342,7 +1331,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const src = candidates[idx++];
         const audio = new Audio();
         audio.preload = 'auto';
-        audio.crossOrigin = 'anonymous'; // Required for Web Audio API boosting
+        audio.crossOrigin = 'anonymous';
 
         let settled = false;
         const perTry = setTimeout(function () {
@@ -1357,17 +1346,13 @@ document.addEventListener('DOMContentLoaded', function() {
           settled = true;
           clearTimeout(perTry);
 
-          // 🎵 BOOST VOLUME USING WEB AUDIO API
           const ctx = getVoiceCtx();
           if (ctx) {
             if (ctx.state === 'suspended') ctx.resume().catch(function(){});
             try {
               const source = ctx.createMediaElementSource(audio);
               const gainNode = ctx.createGain();
-              
-              // 🔥 ADJUST THE BOOST HERE (1.0 is normal, 3.0 is 300%)
-              gainNode.gain.value = 2.5; 
-              
+              gainNode.gain.value = 2.5;
               source.connect(gainNode);
               gainNode.connect(ctx.destination);
             } catch (err) {
@@ -1375,7 +1360,7 @@ document.addEventListener('DOMContentLoaded', function() {
               audio.volume = 1.0;
             }
           } else {
-            audio.volume = 1.0; // Fallback
+            audio.volume = 1.0;
           }
 
           const p = audio.play();
@@ -1468,7 +1453,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     showCharacterDialog(title);
 
-    // 🎵 PAUSE BACKGROUND MUSIC WHILE SPEAKING
     if (window.MMBgMusic) window.MMBgMusic.pause();
 
     let typingDone   = false;
@@ -1484,8 +1468,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try { currentAudio.pause(); } catch (e) {}
             currentAudio = null;
           }
-          
-          // 🎵 RESUME BACKGROUND MUSIC WHEN DONE
+
           if (window.MMBgMusic) window.MMBgMusic.play();
 
           const cb = dialogOnDone;
@@ -1550,11 +1533,11 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   const SPECIAL_PAIRS = [
-    [-1, -1], // Bomb pair
-    [-2, -3], // Key & Lock pair
-    [-4, -4], // Time Freeze pair
-    [-5, -5], // Shuffle pair
-    [-6, -6]  // Multiplier / Gem pair
+    [-1, -1],
+    [-2, -3],
+    [-4, -4],
+    [-5, -5],
+    [-6, -6]
   ];
 
   function isSpecialMatch(pairA, pairB) {
@@ -1576,17 +1559,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // DECK GENERATION (DYNAMIC CARD COUNT)
+  // DECK GENERATION
   // ============================================================
-  // Level 1: 4 cards (2x2 grid)
-  // Level 2: 6 cards (3x2 grid)
-  // Level 3: 8 cards (4x2 grid)
-  // Level 4: 10 cards (5x2 grid)
-  // Level 5: 12 cards (4x3 grid)
-  // Level 6-10: Cap normal cards at 12 (6 pairs); replace 2-3 pairs with special pairs
   function buildDeck() {
     if (level <= 5) {
-      const cardCount = 4 + (level - 1) * 2; // L1:4, L2:6, L3:8, L4:10, L5:12
+      const cardCount = 4 + (level - 1) * 2;
       const numPairs = cardCount / 2;
       const d = [];
       for (let i = 0; i < numPairs; i++) {
@@ -1599,7 +1576,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const normalPairsCount = 6 - numSpecialPairs;
       const d = [];
 
-      // Pick varied random cards from the curriculum topic cards for this level
       const topicCardTotal = (topicInfo && topicInfo.cards) ? topicInfo.cards.length : 6;
       const availableIndices = [];
       for (let i = 0; i < topicCardTotal; i++) availableIndices.push(i);
@@ -1611,7 +1587,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const chosenSpecials = [];
       if (level === 6 && pGet('specialTutorialSeen', null) !== '1') {
-        // Guarantee Bomb and Key/Lock for first-time tutorial on Level 6
         chosenSpecials.push([-1, -1]);
         chosenSpecials.push([-2, -3]);
       } else {
@@ -1672,7 +1647,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // COMBO SYSTEM (+15s on 3 Consecutive Matches) & BONUS
+  // COMBO SYSTEM
   // ============================================================
   let comboCount  = 0;
   let bonusPoints = 0;
@@ -1696,22 +1671,21 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // GRID LAYOUT & NO-SCROLL CALCULATION
+  // GRID LAYOUT
   // ============================================================
   function getGridCols(count) {
-    if (count <= 4) return 2;  // 2x2
-    if (count <= 6) return 3;  // 3x2
-    if (count <= 8) return 4;  // 4x2
-    if (count <= 10) return 5; // 5x2
-    if (count <= 12) return 4; // 4x3
-    if (count <= 16) return 4; // 4x4
-    if (count <= 18) return 6; // 6x3
-    if (count <= 20) return 5; // 5x4
+    if (count <= 4) return 2;
+    if (count <= 6) return 3;
+    if (count <= 8) return 4;
+    if (count <= 10) return 5;
+    if (count <= 12) return 4;
+    if (count <= 16) return 4;
+    if (count <= 18) return 6;
+    if (count <= 20) return 5;
     return 4;
   }
 
   function applyNoScrollLayout() {
-    // Keep board clean, centered, and unconstrained
     const board = document.querySelector('.gameplay-board');
     if (!board) return;
     board.style.height = 'auto';
@@ -1776,7 +1750,6 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderCardFront(front, pairIndex) {
     front.innerHTML = '';
     if (pairIndex < 0) {
-      // Special card
       const spec = SPECIAL_CARDS[String(pairIndex)] || {
         type: 'special', emoji: '⭐', icon: 'fa-star', label: 'Special', class: 'special-gem'
       };
@@ -1801,7 +1774,6 @@ document.addEventListener('DOMContentLoaded', function() {
       front.appendChild(iconWrap);
       front.appendChild(labelEl);
     } else {
-      // Normal card
       front.className = 'card-face card-face-front';
       const img = document.createElement('img');
       img.className = 'card-image';
@@ -1820,19 +1792,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const cols = getGridCols(deck.length);
     grid.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
-    grid.style.gridTemplateRows = ''; // Allow natural, neat auto-sizing without overlapping
+    grid.style.gridTemplateRows = '';
+    grid.classList.toggle('grid-5col', cols === 5);
 
-    if (cols === 2) {
-      grid.style.maxWidth = '340px';
-    } else if (cols === 3) {
-      grid.style.maxWidth = '490px';
-    } else if (cols === 4) {
-      grid.style.maxWidth = '640px';
-    } else if (cols === 5) {
-      grid.style.maxWidth = '780px';
-    } else {
-      grid.style.maxWidth = '640px';
-    }
+    if (cols === 2)      grid.style.maxWidth = '380px';
+    else if (cols === 3) grid.style.maxWidth = '570px';
+    else if (cols === 4) grid.style.maxWidth = '760px';
+    else if (cols === 5) grid.style.maxWidth = '1000px';
+    else                 grid.style.maxWidth = '760px';
 
     deck.forEach((pairIndex, index) => {
       const div = document.createElement('div');
@@ -1844,7 +1811,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
-      // Back face
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
       const badge = document.createElement('div');
@@ -1862,7 +1828,6 @@ document.addEventListener('DOMContentLoaded', function() {
       back.appendChild(badge);
       inner.appendChild(back);
 
-      // Front face
       const front = document.createElement('div');
       renderCardFront(front, pairIndex);
       inner.appendChild(front);
@@ -1938,7 +1903,6 @@ document.addEventListener('DOMContentLoaded', function() {
       matchedPairs++;
       flippedCards = [];
 
-      // COMBO SYSTEM
       comboCount++;
       if (comboCount >= 3 && comboCount % 3 === 0) {
         secondsLeft += 15;
@@ -1959,7 +1923,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const isLast    = (matchedPairs === pairs);
 
         if (isTimerFrozen) {
-          // FAST PLAY: Keep cards clickable during Time Freeze so player isn't locked!
           isLocked = false;
           if (isLast) {
             stopTimer();
@@ -1976,7 +1939,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     } else {
-      // Wrong match resets combo
       comboCount = 0;
       if (window.MMSfx && MMSfx.wrong) MMSfx.wrong();
       barPercent = Math.max(0, barPercent - BAR_PENALTY_WRONG);
@@ -1993,29 +1955,20 @@ document.addEventListener('DOMContentLoaded', function() {
   function handleSpecialMatch(pairA, pairB) {
     if (window.MMSfx && MMSfx.click) MMSfx.click();
 
-    // 1. Bomb (💣) [-1, -1]: Destroys a random unmatched pair
     if (pairA === -1 && pairB === -1) {
       showComboToast('💣 Bomb! Auto-destroyed a random pair!');
       showAudioLoader();
-      setTimeout(() => {
-        hideAudioLoader();
-        destroyRandomPair();
-      }, 500);
+      setTimeout(() => { hideAudioLoader(); destroyRandomPair(); }, 500);
       return;
     }
 
-    // 2. Key & Lock (🔑 & 🔒) [-2 & -3]: Reveals all cards for 2 seconds
     if ((pairA === -2 && pairB === -3) || (pairA === -3 && pairB === -2)) {
       showComboToast('🔑 Key & Lock! Board revealed for 2s!');
       showAudioLoader();
-      setTimeout(() => {
-        hideAudioLoader();
-        revealBoardFor2Seconds();
-      }, 400);
+      setTimeout(() => { hideAudioLoader(); revealBoardFor2Seconds(); }, 400);
       return;
     }
 
-    // 3. Time Freeze (❄️) [-4, -4]: Pauses timer for 5 seconds
     if (pairA === -4 && pairB === -4) {
       showComboToast('❄️ Time Freeze! Timer paused for 5s!');
       triggerTimeFreeze();
@@ -2023,18 +1976,13 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // 4. Shuffle (🔄) [-5, -5]: Shuffles remaining unmatched cards
     if (pairA === -5 && pairB === -5) {
       showComboToast('🔄 Shuffle! Unmatched cards rearranged!');
       showAudioLoader();
-      setTimeout(() => {
-        hideAudioLoader();
-        shuffleRemainingCards();
-      }, 400);
+      setTimeout(() => { hideAudioLoader(); shuffleRemainingCards(); }, 400);
       return;
     }
 
-    // 5. Multiplier (💎) [-6, -6]: Grants +100 flat points instantly
     if (pairA === -6 && pairB === -6) {
       bonusPoints += 100;
       showComboToast('💎 Multiplier! +100 Flat Points!');
@@ -2055,7 +2003,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Bomb Effect: Auto-matches a random unmatched pair
   function destroyRandomPair() {
     const unmatchedElements = Array.from(grid.children).filter(el => !el.classList.contains('matched'));
     const pairMap = {};
@@ -2091,7 +2038,6 @@ document.addEventListener('DOMContentLoaded', function() {
     finishSpecialTurn();
   }
 
-  // Key & Lock Effect: Reveals all cards for 2 seconds
   function revealBoardFor2Seconds() {
     const unmatchedElements = Array.from(grid.children).filter(el => !el.classList.contains('matched'));
     unmatchedElements.forEach(el => el.classList.add('flipped'));
@@ -2104,7 +2050,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
   }
 
-  // Time Freeze Effect: Timer paused for 5 seconds
   function triggerTimeFreeze() {
     isTimerFrozen = true;
     if (timerDisplay) timerDisplay.classList.add('timer-frozen');
@@ -2117,7 +2062,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 5000);
   }
 
-  // Shuffle Effect: Scrambles all remaining unmatched cards
   function shuffleRemainingCards() {
     const unmatchedElements = Array.from(grid.children).filter(el => !el.classList.contains('matched'));
     if (unmatchedElements.length <= 1) {
@@ -2135,11 +2079,8 @@ document.addEventListener('DOMContentLoaded', function() {
       deck[index] = newP;
       el.classList.remove('flipped');
 
-      if (newP < 0) {
-        el.classList.add('card-special');
-      } else {
-        el.classList.remove('card-special');
-      }
+      if (newP < 0) el.classList.add('card-special');
+      else el.classList.remove('card-special');
 
       const front = el.querySelector('.card-face-front');
       if (front) renderCardFront(front, newP);
@@ -2172,7 +2113,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gameFinished) return;
     gameFinished = true;
 
-    // 🎵 PAUSE BACKGROUND MUSIC ON WIN
     if (window.MMBgMusic) window.MMBgMusic.pause();
 
     if (window.MMSfx && window.MMSfx.win) {
@@ -2382,6 +2322,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       if (document.querySelector('.tutorial-spotlight') || document.querySelector('.l6-tutorial-spotlight')) return;
+      if (document.querySelector('.quiz-overlay')) return;
       if (pauseOverlay && pauseOverlay.classList.contains('show')) { closePause(); return; }
       if (winOverlay && winOverlay.classList.contains('show'))      { winOverlay.classList.remove('show'); return; }
       if (loseOverlay && loseOverlay.classList.contains('show'))    { loseOverlay.classList.remove('show'); return; }
@@ -2389,6 +2330,116 @@ document.addEventListener('DOMContentLoaded', function() {
       goToLevels();
     }
   });
+
+  // ============================================================
+  // PRE-LEVEL QUIZ — appears for every level EXCEPT level 1
+  // Asks 1 multiple-choice question about the PREVIOUS level
+  // NOTE: kept inside DOMContentLoaded so it can see subjectTopics,
+  //       shuffle, level, stopTimer, isLocked, gameStarted
+  // ============================================================
+  function buildQuizQuestion(prevLevel) {
+    const prevTopic = subjectTopics[prevLevel];
+    if (!prevTopic || !prevTopic.cards || !prevTopic.cards.length) return null;
+
+    const correctCard = prevTopic.cards[Math.floor(Math.random() * prevTopic.cards.length)];
+    const correctAnswer = correctCard.name;
+
+    const otherNames = [];
+    Object.keys(subjectTopics).forEach(function (key) {
+      if (parseInt(key, 10) === prevLevel) return;
+      subjectTopics[key].cards.forEach(function (c) {
+        if (c.name !== correctAnswer && otherNames.indexOf(c.name) === -1) {
+          otherNames.push(c.name);
+        }
+      });
+    });
+
+    const distractors = shuffle([...otherNames]).slice(0, 3);
+    if (distractors.length < 3) return null;
+    const options = shuffle([correctAnswer, ...distractors]);
+
+    return {
+      question: 'From Level ' + prevLevel + ' (' + prevTopic.title + '), which of these did we learn?',
+      options: options,
+      correct: correctAnswer,
+      prevLevel: prevLevel
+    };
+  }
+
+  function showPreLevelQuiz(onComplete) {
+    if (level <= 1) { if (onComplete) onComplete(); return false; }
+
+    const quiz = buildQuizQuestion(level - 1);
+    if (!quiz) { if (onComplete) onComplete(); return false; }
+
+    stopTimer();
+    isLocked = true;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'quiz-overlay';
+    overlay.innerHTML =
+      '<div class="quiz-box">' +
+        '<div class="quiz-character">' +
+          '<img src="../Assets/character_moving.png" alt="Jojoma" draggable="false" />' +
+          '<div class="quiz-character-name">Jojoma</div>' +
+        '</div>' +
+        '<div class="quiz-content">' +
+          '<div class="quiz-badge">Quick Review!</div>' +
+          '<p class="quiz-question"></p>' +
+          '<div class="quiz-options"></div>' +
+          '<div class="quiz-feedback"></div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.quiz-question').textContent = quiz.question;
+    const optionsContainer = overlay.querySelector('.quiz-options');
+    const feedbackEl = overlay.querySelector('.quiz-feedback');
+    let answered = false;
+
+    function finishQuiz() {
+      overlay.classList.add('fade-out');
+      setTimeout(function () {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        isLocked = false;
+        gameStarted = false;
+        if (onComplete) onComplete();
+      }, 300);
+    }
+
+    quiz.options.forEach(function (opt) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.addEventListener('click', function () {
+        if (answered) return;
+        answered = true;
+
+        const isCorrect = opt === quiz.correct;
+        optionsContainer.querySelectorAll('.quiz-option').forEach(function (b) {
+          b.disabled = true;
+          if (b.textContent === quiz.correct) b.classList.add('correct');
+          if (b === btn && !isCorrect) b.classList.add('wrong');
+        });
+
+        if (isCorrect) {
+          feedbackEl.textContent = '✅ Correct! Great job!';
+          feedbackEl.className = 'quiz-feedback success';
+          if (window.MMSfx && MMSfx.click) MMSfx.click();
+        } else {
+          feedbackEl.textContent = '❌ Not quite — the answer is: ' + quiz.correct;
+          feedbackEl.className = 'quiz-feedback error';
+          if (window.MMSfx && window.MMSfx.wrong) window.MMSfx.wrong();
+        }
+
+        setTimeout(finishQuiz, isCorrect ? 1200 : 2200);
+      });
+      optionsContainer.appendChild(btn);
+    });
+
+    return true;
+  }
 
   // ============================================================
   // FIRST-TIME TUTORIAL — Level 1 only, shown once per player
@@ -2406,7 +2457,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var current = 0;
 
-    // Spotlight layer
     var spotlight = document.createElement('div');
     spotlight.className = 'tutorial-spotlight';
     var hole = document.createElement('div');
@@ -2414,7 +2464,6 @@ document.addEventListener('DOMContentLoaded', function() {
     spotlight.appendChild(hole);
     document.body.appendChild(spotlight);
 
-    // Instruction bubble
     var tooltip = document.createElement('div');
     tooltip.className = 'tutorial-tooltip';
     tooltip.innerHTML =
@@ -2424,7 +2473,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var tipText = tooltip.querySelector('.tutorial-tooltip-text');
     var tipBtn  = tooltip.querySelector('.tutorial-tooltip-btn');
 
-    // Fixed Skip button
     var skipBtn = document.createElement('button');
     skipBtn.type = 'button';
     skipBtn.className = 'tutorial-skip-fixed';
@@ -2501,9 +2549,8 @@ document.addEventListener('DOMContentLoaded', function() {
       comboCount = 0;
       bonusPoints = 0;
       isLocked = false;
-      gameStarted = true;
+      gameStarted = false;
       gameFinished = false;
-      startTimer();
       applyNoScrollLayout();
     }
 
@@ -2547,7 +2594,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (level !== 6) return;
     if (pGet('specialTutorialSeen', null) === '1') return;
 
-    // Pause game
     stopTimer();
     isLocked = true;
 
@@ -2583,7 +2629,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let current = 0;
     let tutorialActive = true;
 
-    // Spotlight overlay
     const spotlight = document.createElement('div');
     spotlight.className = 'l6-tutorial-spotlight';
     const hole = document.createElement('div');
@@ -2591,7 +2636,6 @@ document.addEventListener('DOMContentLoaded', function() {
     spotlight.appendChild(hole);
     document.body.appendChild(spotlight);
 
-    // Modal Tooltip Box
     const box = document.createElement('div');
     box.className = 'l6-tutorial-box-wrap';
     box.innerHTML = `
@@ -2615,7 +2659,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnEl   = box.querySelector('.l6-tutorial-btn');
     const dots    = box.querySelectorAll('.l6-tutorial-dot');
 
-    // Skip button
     const skipBtn = document.createElement('button');
     skipBtn.type = 'button';
     skipBtn.className = 'tutorial-skip-fixed';
@@ -2624,10 +2667,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(skipBtn);
 
     function positionHole(el) {
-      if (!el) {
-        hole.style.display = 'none';
-        return;
-      }
+      if (!el) { hole.style.display = 'none'; return; }
       hole.style.display = 'block';
       const r = el.getBoundingClientRect();
       const pad = 6;
@@ -2647,15 +2687,12 @@ document.addEventListener('DOMContentLoaded', function() {
         dot.classList.toggle('active', idx === current);
       });
 
-      // Unflip previously highlighted cards
       document.querySelectorAll('.card-item.flipped').forEach(c => {
         if (!c.classList.contains('matched')) c.classList.remove('flipped');
       });
 
       const targetEl = (typeof s.target === 'function') ? s.target() : null;
-      if (s.flipTarget && targetEl) {
-        targetEl.classList.add('flipped');
-      }
+      if (s.flipTarget && targetEl) targetEl.classList.add('flipped');
       if (s.flipBothKeyLock) {
         const k = document.querySelector('.card-item[data-pair="-2"]');
         const l = document.querySelector('.card-item[data-pair="-3"]');
@@ -2668,10 +2705,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function next() {
       current++;
-      if (current >= STEPS.length) {
-        finishTutorial();
-        return;
-      }
+      if (current >= STEPS.length) { finishTutorial(); return; }
       renderStep();
     }
 
@@ -2687,7 +2721,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (box.parentNode) box.parentNode.removeChild(box);
       if (skipBtn.parentNode) skipBtn.parentNode.removeChild(skipBtn);
 
-      // Reset the board to a clean state and start timer
       deck = buildDeck();
       totalCards = deck.length;
       pairs = totalCards / 2;
@@ -2725,7 +2758,16 @@ document.addEventListener('DOMContentLoaded', function() {
   renderCards();
   resetTimer();
   updateStarProgress();
+  applyNoScrollLayout();
 
-  initTutorial();
-  initLevel6Tutorial();
+  // 1. Quiz first (L2-10). For L1, onComplete fires immediately.
+  // 2. Then tutorial if unseen (L1 or L6).
+  // 3. Player ready — first card click starts the timer.
+  showPreLevelQuiz(function () {
+    if (level === 1 && pGet('tutorialSeen', null) !== '1') {
+      initTutorial();
+    } else if (level === 6 && pGet('specialTutorialSeen', null) !== '1') {
+      initLevel6Tutorial();
+    }
+  });
 });
