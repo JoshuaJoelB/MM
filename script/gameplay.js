@@ -1540,8 +1540,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   // CARD MATH + STAR BAR
   // ============================================================
-  const totalCards = 4 + level * 2;
-  const pairs      = totalCards / 2;
   const STAR_THRESHOLDS = [5, 30, 52];
   const BAR_START = 100;
   const BAR_PENALTY_WRONG = 4;
@@ -1574,8 +1572,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
 
-  let deck = [];
-  for (let i = 0; i < pairs; i++) { deck.push(i); deck.push(i); }
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -1583,7 +1579,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     return array;
   }
+
+  // ============================================================
+  // SPECIAL CARDS (negative deck values)
+  // ============================================================
+  const SPECIAL_IDS = { BOMB: -1, KEY: -2, LOCK: -3, FREEZE: -4, SHUFFLE: -5, GEM: -6 };
+  const SPECIAL_INFO = {
+    [-1]: { type: 'bomb',    label: 'Bomb',        icon: 'fa-bomb' },
+    [-2]: { type: 'key',     label: 'Key',         icon: 'fa-key' },
+    [-3]: { type: 'lock',    label: 'Lock',        icon: 'fa-lock' },
+    [-4]: { type: 'freeze',  label: 'Time Freeze', icon: 'fa-snowflake' },
+    [-5]: { type: 'shuffle', label: 'Shuffle',     icon: 'fa-shuffle' },
+    [-6]: { type: 'gem',     label: 'Multiplier',  icon: 'fa-gem' }
+  };
+  function isSpecialValue(v) { return typeof v === 'number' && v < 0; }
+
+  // Normal pairs: 2 (level 1) → 6 (level 5), capped at 6 for level 6+.
+  const normalPairs = Math.min(level + 1, 6);
+
+  function buildSpecialSelection(lvl) {
+    const all = [
+      [SPECIAL_IDS.BOMB, SPECIAL_IDS.BOMB],
+      [SPECIAL_IDS.KEY,  SPECIAL_IDS.LOCK],
+      [SPECIAL_IDS.FREEZE, SPECIAL_IDS.FREEZE],
+      [SPECIAL_IDS.SHUFFLE, SPECIAL_IDS.SHUFFLE],
+      [SPECIAL_IDS.GEM, SPECIAL_IDS.GEM]
+    ];
+    if (lvl === 6) {
+      // Level 6 always carries Bomb + Key/Lock so the tutorial can point at them.
+      const mandatory = [all[0], all[1]];
+      const extras = shuffle(all.slice(2));
+      return mandatory.concat(extras.slice(0, Math.random() < 0.6 ? 1 : 0));
+    }
+    return shuffle(all).slice(0, 2 + Math.floor(Math.random() * 2)); // 2 or 3
+  }
+
+  let deck = [];
+  for (let i = 0; i < normalPairs; i++) { deck.push(i); deck.push(i); }
+  if (level >= 6) {
+    buildSpecialSelection(level).forEach(function (pairArr) {
+      deck.push(pairArr[0], pairArr[1]);
+    });
+  }
   deck = shuffle(deck);
+
+  // Total number of pairs = number of cards / 2.
+  const pairs = deck.length / 2;
 
   // ============================================================
   // DOM REFS
@@ -1614,6 +1655,22 @@ document.addEventListener('DOMContentLoaded', function() {
   let timerInterval = null;
   let gameStarted   = false;
   let gameFinished  = false;
+  let comboCount    = 0;
+  let frozen        = false;
+
+  // ---- Transient toast notification ----
+  let toastEl = null;
+  function showToast(text) {
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.className = 'game-toast';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = text;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl.__t);
+    toastEl.__t = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
 
   if (levelDisplay) levelDisplay.textContent = level;
 
@@ -1639,16 +1696,78 @@ document.addEventListener('DOMContentLoaded', function() {
     return Array.isArray(arr) && arr.indexOf(level + 1) !== -1;
   }
 
+  function getGridLayout(total) {
+    if (total <= 4)  return [2, 2];
+    if (total <= 6)  return [3, 2];
+    if (total <= 8)  return [4, 2];
+    if (total <= 10) return [5, 2];
+    if (total <= 12) return [4, 3];
+    if (total <= 14) return [5, 3];
+    if (total <= 16) return [4, 4];
+    return [6, 3]; // 18 cards
+  }
+
+  function fitBoardToScreen() {
+    const board = document.querySelector('.gameplay-board');
+    if (!board) return;
+    const navbar = document.querySelector('.gameplay-navbar');
+    const subheader = document.querySelector('.gameplay-subheader');
+    let headerH = 0;
+    if (navbar) headerH += navbar.offsetHeight;
+    if (subheader) headerH += subheader.offsetHeight;
+    board.style.height = 'calc(100vh - ' + headerH + 'px)';
+    board.style.flex = '0 0 auto';
+  }
+
+  function applyGridLayout() {
+    if (!grid) return;
+    const layout = getGridLayout(deck.length);
+    grid.style.gridTemplateColumns = 'repeat(' + layout[0] + ', 1fr)';
+    grid.style.gridTemplateRows    = 'repeat(' + layout[1] + ', 1fr)';
+    fitBoardToScreen();
+  }
+
+  window.addEventListener('resize', fitBoardToScreen);
+
+  function buildFrontFace(pairValue) {
+    const front = document.createElement('div');
+    front.className = 'card-face card-face-front';
+    if (isSpecialValue(pairValue)) {
+      const info = SPECIAL_INFO[pairValue] || { type: 'special', label: 'Special', icon: 'fa-star' };
+      front.classList.add('card-special');
+      front.classList.add('special-' + info.type);
+      const icon = document.createElement('i');
+      icon.className = 'fas ' + info.icon + ' card-special-icon';
+      const label = document.createElement('span');
+      label.className = 'card-special-label';
+      label.textContent = info.label;
+      front.appendChild(icon);
+      front.appendChild(label);
+    } else {
+      const img = document.createElement('img');
+      img.className = 'card-image';
+      const cardName = getCardLabel(pairValue);
+      img.alt = `${topicInfo.title} — ${cardName}`;
+      img.loading = 'eager';
+      img.draggable = false;
+      attachImageFallback(img, pairValue);
+      front.appendChild(img);
+    }
+    return front;
+  }
+
   function renderCards() {
     if (!grid) return;
     grid.innerHTML = '';
-    deck.forEach((pairIndex, index) => {
+    deck.forEach((pairValue, index) => {
       const div = document.createElement('div');
       div.className = 'card-item';
       div.dataset.index = index;
-      div.dataset.pair  = pairIndex;
+      div.dataset.pair  = pairValue;
+
       const inner = document.createElement('div');
       inner.className = 'card-inner';
+
       const back = document.createElement('div');
       back.className = 'card-face card-face-back';
       const badge = document.createElement('div');
@@ -1665,21 +1784,14 @@ document.addEventListener('DOMContentLoaded', function() {
       badge.appendChild(subjectLabel);
       back.appendChild(badge);
       inner.appendChild(back);
-      const front = document.createElement('div');
-      front.className = 'card-face card-face-front';
-      const img = document.createElement('img');
-      img.className = 'card-image';
-      const cardName = getCardLabel(pairIndex);
-      img.alt = `${topicInfo.title} — ${cardName}`;
-      img.loading = 'eager';
-      img.draggable = false;
-      attachImageFallback(img, pairIndex);
-      front.appendChild(img);
-      inner.appendChild(front);
+
+      inner.appendChild(buildFrontFace(pairValue));
+
       div.appendChild(inner);
       div.addEventListener('click', () => onCardClick(index));
       grid.appendChild(div);
     });
+    applyGridLayout();
   }
 
   function updateStarProgress() {
@@ -1696,7 +1808,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function startTimer() {
     if (timerInterval || gameFinished) return;
     timerInterval = setInterval(() => {
-      if (dialogActive) return;
+      if (dialogActive || frozen) return;
       secondsLeft--;
       if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
       barPercent = Math.max(0, barPercent - BAR_PENALTY_TIME);
@@ -1728,25 +1840,190 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  function isMatch(a, b) {
+    if (a === b) return true;
+    if ((a === SPECIAL_IDS.KEY && b === SPECIAL_IDS.LOCK) ||
+        (a === SPECIAL_IDS.LOCK && b === SPECIAL_IDS.KEY)) return true;
+    return false;
+  }
+
+  function getSpecialPairType(a, b) {
+    if (a === SPECIAL_IDS.BOMB || b === SPECIAL_IDS.BOMB) return 'bomb';
+    if (a === SPECIAL_IDS.KEY || b === SPECIAL_IDS.KEY ||
+        a === SPECIAL_IDS.LOCK || b === SPECIAL_IDS.LOCK) return 'keylock';
+    if (a === SPECIAL_IDS.FREEZE || b === SPECIAL_IDS.FREEZE) return 'freeze';
+    if (a === SPECIAL_IDS.SHUFFLE || b === SPECIAL_IDS.SHUFFLE) return 'shuffle';
+    if (a === SPECIAL_IDS.GEM || b === SPECIAL_IDS.GEM) return 'gem';
+    return null;
+  }
+
+  function playSpecialSfx() {
+    if (window.MMSfx && MMSfx.play) { try { MMSfx.play('click'); } catch (e) {} }
+  }
+
+  function destroyRandomUnmatchedPair() {
+    const idxs = [];
+    deck.forEach(function (val, idx) {
+      const el = grid.children[idx];
+      if (el && !el.classList.contains('matched')) idxs.push(idx);
+    });
+    const candidates = [];
+    for (let i = 0; i < idxs.length; i++) {
+      for (let j = i + 1; j < idxs.length; j++) {
+        if (isMatch(deck[idxs[i]], deck[idxs[j]])) candidates.push([idxs[i], idxs[j]]);
+      }
+    }
+    if (!candidates.length) return false;
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    const a = grid.children[pick[0]];
+    const b = grid.children[pick[1]];
+    if (a && b) {
+      a.classList.add('matched', 'flipped');
+      b.classList.add('matched', 'flipped');
+      matchedPairs++;
+    }
+    return true;
+  }
+
+  function revealAllCards(onDone) {
+    const revealed = [];
+    deck.forEach(function (val, idx) {
+      const el = grid.children[idx];
+      if (el && !el.classList.contains('matched') && !el.classList.contains('flipped')) {
+        el.classList.add('flipped');
+        revealed.push(el);
+      }
+    });
+    setTimeout(function () {
+      revealed.forEach(function (el) { el.classList.remove('flipped'); });
+      onDone();
+    }, 2000);
+  }
+
+  function freezeTimer(onDone) {
+    frozen = true;
+    showToast('❄️ Time Freeze! Timer paused for 5 seconds.');
+    setTimeout(function () {
+      frozen = false;
+      onDone();
+    }, 5000);
+  }
+
+  function refreshCardFace(el) {
+    const inner = el.querySelector('.card-inner');
+    const oldFront = el.querySelector('.card-face-front');
+    const val = Number(el.dataset.pair);
+    const newFront = buildFrontFace(val);
+    if (inner) {
+      if (oldFront) inner.replaceChild(newFront, oldFront);
+      else inner.appendChild(newFront);
+    }
+  }
+
+  function shuffleUnmatchedCards() {
+    const idxs = [];
+    const vals = [];
+    deck.forEach(function (val, idx) {
+      const el = grid.children[idx];
+      if (el && !el.classList.contains('matched') && !el.classList.contains('flipped')) {
+        idxs.push(idx);
+        vals.push(val);
+      }
+    });
+    shuffle(vals);
+    idxs.forEach(function (idx, i) {
+      deck[idx] = vals[i];
+      const el = grid.children[idx];
+      if (el) { el.dataset.pair = vals[i]; refreshCardFace(el); }
+    });
+  }
+
+  function grantGemPoints() {
+    const amount = 100;
+    if (typeof window.addPoints === 'function') {
+      window.addPoints(amount);
+    } else {
+      const cur = parseInt(pGet('pointsTotal', '0'), 10) || 0;
+      pSet('pointsTotal', String(cur + amount));
+    }
+    showToast('💎 Multiplier! +100 points');
+    if (typeof window.updatePlayerLevelBox === 'function') window.updatePlayerLevelBox();
+  }
+
+  function afterMatch() {
+    isLocked = false;
+    if (matchedPairs === pairs) {
+      stopTimer();
+      setTimeout(showWin, 300);
+    }
+  }
+
+  function handleSpecialMatch(a, b, onDone) {
+    const type = getSpecialPairType(a, b);
+    playSpecialSfx();
+    switch (type) {
+      case 'bomb':
+        showToast('💣 Bomb! A random pair was destroyed!');
+        destroyRandomUnmatchedPair();
+        onDone();
+        break;
+      case 'keylock':
+        showToast('🔑 Key & Lock! Revealing the board...');
+        revealAllCards(onDone);
+        break;
+      case 'freeze':
+        freezeTimer(onDone);
+        break;
+      case 'shuffle':
+        showToast('🔄 Shuffle! Cards moved around!');
+        shuffleUnmatchedCards();
+        onDone();
+        break;
+      case 'gem':
+        grantGemPoints();
+        onDone();
+        break;
+      default:
+        onDone();
+    }
+  }
+
   function checkMatch() {
     isLocked = true;
     const [first, second] = flippedCards;
-    if (first.pair === second.pair) {
+    const a = first.pair;
+    const b = second.pair;
+
+    if (isMatch(a, b)) {
       first.el.classList.add('matched');
       second.el.classList.add('matched');
       matchedPairs++;
       flippedCards = [];
-      const pairIndex = first.pair;
-      const isLast    = (matchedPairs === pairs);
-      speakCard(pairIndex, function () {
-        isLocked = false;
-        if (isLast) {
-          stopTimer();
-          setTimeout(showWin, 300);
-        }
-      });
+
+      // Combo tracking
+      comboCount++;
+      if (comboCount >= 3) {
+        comboCount = 0;
+        secondsLeft += 15;
+        if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
+        showToast('🔥 3 Combo! +15 seconds');
+      }
+
+      if (isSpecialValue(a) || isSpecialValue(b)) {
+        handleSpecialMatch(a, b, afterMatch);
+      } else {
+        const isLast = (matchedPairs === pairs);
+        speakCard(a, function () {
+          isLocked = false;
+          if (isLast) {
+            stopTimer();
+            setTimeout(showWin, 300);
+          }
+        });
+      }
     } else {
       if (window.MMSfx && MMSfx.wrong) MMSfx.wrong();
+      comboCount = 0;
       barPercent = Math.max(0, barPercent - BAR_PENALTY_WRONG);
       updateStarProgress();
       setTimeout(() => {
@@ -2135,10 +2412,152 @@ document.addEventListener('DOMContentLoaded', function() {
     renderStep();
   }
 
+  // ============================================================
+  // LEVEL 6 SPECIAL CARDS TUTORIAL (first time only)
+  // ============================================================
+  function initSpecialTutorial() {
+    if (level !== 6) return;
+    if (pGet('specialTutorialSeen', null) === '1') return;
+
+    var STEPS = [
+      { sel: '.card-grid',    text: 'Welcome to Level 6! Special cards are now in play.', flip: null },
+      { sel: '.special-bomb', text: 'Match Bombs to destroy a random pair!', flip: '.card-item[data-pair="-1"]' },
+      { sel: '.special-key',  text: 'Match the Key and Lock to reveal the whole board!', flip: '.card-item[data-pair="-2"], .card-item[data-pair="-3"]' },
+      { sel: '.card-grid',    text: 'Good luck!', flip: null }
+    ];
+
+    var current = 0;
+    var tutorialActive = true;
+
+    var spotlight = document.createElement('div');
+    spotlight.className = 'tutorial-spotlight';
+    var hole = document.createElement('div');
+    hole.className = 'spotlight-hole';
+    spotlight.appendChild(hole);
+    document.body.appendChild(spotlight);
+
+    var tooltip = document.createElement('div');
+    tooltip.className = 'tutorial-tooltip';
+    tooltip.innerHTML =
+      '<div class="tutorial-tooltip-text"></div>' +
+      '<button type="button" class="tutorial-tooltip-btn"></button>';
+    document.body.appendChild(tooltip);
+    var tipText = tooltip.querySelector('.tutorial-tooltip-text');
+    var tipBtn  = tooltip.querySelector('.tutorial-tooltip-btn');
+
+    var skipBtn = document.createElement('button');
+    skipBtn.type = 'button';
+    skipBtn.className = 'tutorial-skip-fixed';
+    skipBtn.textContent = 'Skip';
+    skipBtn.setAttribute('aria-label', 'Skip tutorial');
+    document.body.appendChild(skipBtn);
+
+    function unflipAll() {
+      document.querySelectorAll('.tutorial-flipped').forEach(function (el) {
+        el.classList.remove('flipped', 'tutorial-flipped');
+      });
+    }
+
+    function flipStep(sel) {
+      if (!sel) return;
+      document.querySelectorAll(sel).forEach(function (el) {
+        el.classList.add('flipped', 'tutorial-flipped');
+      });
+    }
+
+    function position() {
+      var el = document.querySelector(STEPS[current].sel);
+      if (!el) { finishTutorial(); return; }
+      var r = el.getBoundingClientRect();
+      var pad = 8;
+      hole.style.left   = (r.left - pad) + 'px';
+      hole.style.top    = (r.top - pad) + 'px';
+      hole.style.width  = (r.width + pad * 2) + 'px';
+      hole.style.height = (r.height + pad * 2) + 'px';
+
+      var tipW = tooltip.offsetWidth || 280;
+      var tipH = tooltip.offsetHeight || 90;
+      var left = Math.max(12, Math.min(r.left + r.width / 2 - tipW / 2, window.innerWidth - tipW - 12));
+      var top = r.bottom + 16;
+      var arrowDown = false;
+      if (top + tipH > window.innerHeight - 12) {
+        top = r.top - tipH - 16;
+        arrowDown = true;
+      }
+      if (top < 12) { top = 12; }
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+      tooltip.classList.toggle('arrow-down', arrowDown);
+    }
+
+    function renderStep() {
+      var s = STEPS[current];
+      tipText.textContent = s.text;
+      tipBtn.style.display = 'inline-flex';
+      tipBtn.textContent = (current === STEPS.length - 1) ? "Let's Play!" : 'Next';
+      unflipAll();
+      flipStep(s.flip);
+      position();
+    }
+
+    function next() {
+      current++;
+      if (current >= STEPS.length) { finishTutorial(); return; }
+      renderStep();
+    }
+
+    function finishTutorial() {
+      if (!tutorialActive) return;
+      tutorialActive = false;
+      try { pSet('specialTutorialSeen', '1'); } catch (e) {}
+      unflipAll();
+      document.removeEventListener('click', onDocClick, true);
+      document.removeEventListener('keydown', onDocKeydown);
+      window.removeEventListener('resize', position);
+      if (spotlight.parentNode) spotlight.parentNode.removeChild(spotlight);
+      if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
+      if (skipBtn.parentNode) skipBtn.parentNode.removeChild(skipBtn);
+      // Reset to a clean state and start fresh.
+      renderCards();
+      resetTimer();
+      barPercent = BAR_START;
+      updateStarProgress();
+      flippedCards = [];
+      matchedPairs = 0;
+      moves = 0;
+      comboCount = 0;
+      frozen = false;
+      isLocked = false;
+      gameStarted = false;
+      gameFinished = false;
+    }
+
+    function onDocClick(e) {
+      if (!tutorialActive) return;
+      if (e.target.closest && (e.target.closest('.tutorial-tooltip') || e.target.closest('.tutorial-skip-fixed'))) return;
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
+    function onDocKeydown(e) {
+      if (e.key === 'Escape' && tutorialActive) finishTutorial();
+    }
+
+    document.addEventListener('click', onDocClick, true);
+    document.addEventListener('keydown', onDocKeydown);
+    window.addEventListener('resize', position);
+
+    tipBtn.addEventListener('click', function (e) { e.stopPropagation(); next(); });
+    skipBtn.addEventListener('click', function (e) { e.stopPropagation(); finishTutorial(); });
+
+    renderStep();
+  }
+
   barPercent = BAR_START;
   renderCards();
   resetTimer();
   updateStarProgress();
 
   initTutorial();
+  initSpecialTutorial();
 });
