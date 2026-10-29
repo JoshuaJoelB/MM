@@ -97,7 +97,7 @@
         }
       } catch (e) {}
 
-      const subjectNames = { computer: 'EPP', science: 'Science', ap: 'AP' };
+      const subjectNames = { computer: 'Edukasyong Pantahanan at Pangkabuhayan', science: 'Science', ap: 'Araling Panlipunan' };
       const titleEl = document.getElementById('subjectMapTitle');
       if (titleEl) titleEl.textContent = (subjectNames[subject] || 'Subject') + ' Map';
 
@@ -299,7 +299,7 @@
           }
         } else if (targetPos) {
           const jojoEl = document.createElement('img');
-          jojoEl.src = 'Assets/jojoma.png';
+          jojoEl.src = 'Assets/character_moving.png'; // <--- CHANGED HERE
           jojoEl.alt = '';
           jojoEl.className = 'jojoma-character';
           jojoEl.draggable = false;

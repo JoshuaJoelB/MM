@@ -110,11 +110,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 || (window.location.pathname.match(/Gameplay-(\w+)\.html/)?.[1])
                 || 'computer';
 
+  // ADDED shortName HERE
   const subjectInfo = {
-    ap:       { name: 'AP',       icon: '../Assets/icons/ap_icon.png' },
-    computer: { name: 'EPP',      icon: '../Assets/icons/computer_icon.png' },
-    science:  { name: 'Science',  icon: '../Assets/icons/science_icon.png' }
-  }[subject] || { name: 'Subject', icon: '../Assets/icons/computer_icon.png' };
+    ap:       { name: 'Araling Panlipunan', shortName: 'AP', icon: '../Assets/icons/ap_icon.png' },
+    computer: { name: 'Edukasyong Pantahanan at Pangkabuhayan', shortName: 'EPP', icon: '../Assets/icons/computer_icon.png' },
+    science:  { name: 'Science', shortName: 'Science', icon: '../Assets/icons/science_icon.png' }
+  }[subject] || { name: 'Subject', shortName: 'Subject', icon: '../Assets/icons/computer_icon.png' };
 
   // ============================================================
   // DYNAMIC TAB TITLE + FAVICON
@@ -141,10 +142,10 @@ document.addEventListener('DOMContentLoaded', function() {
     ap:       function (n) { return ['level ' + n, 'lvl' + n, 'lvl ' + n, 'Level ' + n]; }
   };
 
-  const IMG_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+  const IMG_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'JPG', 'JPEG', 'PNG', 'WEBP', 'AVIF'];
 
   // ============================================================
-  // FILE_MAP — image filenames
+  // FILE_MAP — image filenames (UPDATED)
   // ============================================================
   const FILE_MAP = {
     // ---- AP 1 ----
@@ -200,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:8:Datu':                 'Datu (chief)',
     'ap:8:Maharlika':            'Maharlika (noble)',
     'ap:8:Timawa':               'Timawa (freeman)',
-    'ap:8:Babaylan':             'Babaylan (spiritual leader)',
+    'ap:8:Babaylan':             'Babaylan (spiritual leader', 
     'ap:8:Balangay':             'Balangay (boat)',
     'ap:8:Baybayin':             'Baybayin (ancient writing)',
     'ap:8:Bahay Kubo':           'Bahay Kubo',
@@ -258,13 +259,15 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    'Using bad words',
     'computer:5:Fake news':          'fake news',
 
-    'computer:6:Kind words':         'kind words',
-    'computer:6:Ask permission':     'Ask permission before posting others_ photos',
-    'computer:6:Be respectful':      'Be respectful in online class',
-    'computer:6:Typing in ALL CAPS': 'Typing in ALL CAPS',
-    'computer:6:Sharing password':   'Sharing password',
-    'computer:6:Using bad words':    'Using bad words',
-    'computer:6:Fake news':          'fake news',
+    // EPP Level 6 (Domain Types)
+    'computer:6:com':  'com',
+    'computer:6:edu':  'edu',
+    'computer:6:gov':  'gov',
+    'computer:6:info': 'info',
+    'computer:6:int':  'int',
+    'computer:6:net':  'net',
+    'computer:6:org':  'org',
+    'computer:6:proj': 'proj',
 
     'computer:7:Browser window buttons': 'Browser window buttons',
     'computer:7:Tab name':               'tab name',
@@ -283,8 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:8:Cc':          'cc',
     'computer:8:Bcc':         'bcc',
     'computer:8:Subject':     'subject_',
-    'computer:8:Body':        'body',
-    'computer:8:Attach File': 'attachfile',
+    'computer:8:Forward':     'forward',
     'computer:8:Send':        'send',
 
     'computer:9:Gmail':        'gmail',
@@ -313,9 +315,9 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:10:Touchpad':        'touch pad',
 
     // ---- Science ----
-    'science:1:Rock':            'rock',
+    'science:1:Rock':            'Rock',
     'science:1:Water':           'Water',
-    'science:1:Air':             'air',
+    'science:1:Air':             'Air',
     'science:2:Chair':           'Chair',
     'science:2:Desk':            'Desk',
     'science:2:Bag':             'Bag',
@@ -353,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:7:Centimeter':            'cm',
     'science:7:Meter':                 'meter',
     'science:7:Degree Celsius':        'degree',
+    'science:7:Cubic centimeter':      'Cubic-Centimeters-to-Liters',
     'science:7:Cubic meter':           'cubic meter',
     'science:8:Melting':               'melting',
     'science:8:Freezing':              'freeze',
@@ -395,434 +398,81 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const AUDIO_MAP = {
     // ---- AP ----
-    'ap:1:Pacific Ocean':       'pacific ocean',
-    'ap:1:Pasig River':         'pasig river',
-    'ap:1:Laguna de Bay':       'laguna de bay',
-    'ap:2:Mount Apo':           'mount apo',
-    'ap:2:Mayon Volcano':       'mayon',
-    'ap:2:Chocolate Hills':     'chocolate hills',
-    'ap:2:Central Luzon Plain': 'Central Luzon Plain',
-    'ap:3:Malaysia':            'malaysia',
-    'ap:3:Indonesia':           'Indonesia',
-    'ap:3:Vietnam':             'Vietnam',
-    'ap:3:Thailand':            'Thailand',
-    'ap:3:Brunei':              'Brunei',
-    'ap:4:Weather':             'weather',
-    'ap:4:Climate':             'climate',
-    'ap:4:Temperature':         'temperature',
-    'ap:4:Humidity':            'humidity',
-    'ap:4:Rainfall':            'rainfall',
-    'ap:4:PAGASA':              'PAGASA',
-    'ap:5:Cool dry season':     'cool dry season',
-    'ap:5:Dry season':          'dry season',
-    'ap:5:Hot dry season':      'hot dry season',
-    'ap:5:May':                 'hottest month',
-    'ap:5:January':             'coolest month',
-    'ap:5:Rainy season':        'rainy season',
-    'ap:5:Tropical climate':    'tropical climate',
-    'ap:6:Luzon':               'Luzon',
-    'ap:6:Visayas':             'visayas',
-    'ap:6:Mindanao':            'Mindanao',
-    'ap:6:Palawan':             'palawan',
-    'ap:6:Mindoro':             'mindoro',
-    'ap:6:Samar':               'samar',
-    'ap:6:Leyte':               'leyte',
-    'ap:6:Cebu':                'cebu',
-    'ap:7:Mount Pulag':         'mount pulag',
-    'ap:7:Mount Pinatubo':      'mount pinatubo',
-    'ap:7:Taal Volcano':        'taal volcano',
-    'ap:7:Cagayan River':       'cagayan river',
-    'ap:7:Agusan River':        'agusan river',
-    'ap:7:Lake Lanao':          'lake lanao',
-    'ap:7:Subic Bay':           'subic',
-    'ap:7:Davao Gulf':          'davao gulf',
-    'ap:7:Sibuyan Sea':         'sibuyan sea',
-    'ap:8:Barangay':            'baragay',
-    'ap:8:Datu':                'datu',
-    'ap:8:Maharlika':           'maharlika',
-    'ap:8:Timawa':              'timawa',
-    'ap:8:Alipin':              'alipin',
-    'ap:8:Babaylan':            'babaylan',
-    'ap:8:Balangay':            'balangay',
-    'ap:8:Baybayin':            'baybayin',
-    'ap:8:Bahay Kubo':          'bahay kubo',
-    'ap:8:Panday':              'panday',
-    'ap:9:Manunggul Jar':       'manunggal jar',
-    'ap:9:Banaue Rice Terraces':'banaue rice terrace',
-    'ap:9:Bulul':               'bulul',
-    'ap:9:Laguna Copperplate':  'Laguna Copperplate Inscription',
-    'ap:9:Golden Tara':         'Golden Tara of Agusan',
-    'ap:9:Tabon Cave':          'tabon cave',
-    'ap:9:Angono Petroglyphs':  'angono',
-    'ap:9:Fort Santiago':       'fort santiago',
-    'ap:9:San Agustin Church':  'san agustin church',
-    'ap:9:Bahay na Bato':       'bahay na bato',
-    'ap:9:Barasoain Church':    'barasain church',
-    'ap:10:Hudhud':             'hudhud',
-    'ap:10:Biag ni Lam-ang':    'Biag ni Lam-ang',
-    'ap:10:Alamat':             'alamat',
-    'ap:10:Bugtong':            'bugtong',
-    'ap:10:Salawikain':         'salawikain',
-    'ap:10:Kundiman':           'kundiman',
-    'ap:10:Tinikling':          'tinikling',
-    'ap:10:Singkil':            'singkil',
-    'ap:10:Pandanggo sa Ilaw':  'Pandanggo sa Ilaw',
-    'ap:10:Fiesta':             'fiesta',
-    'ap:10:Pamahiin':           'pamahiin',
-    'ap:10:Mano po':            'mano po',
+    'ap:1:Pacific Ocean':       'pacific ocean', 'ap:1:Pasig River': 'pasig river', 'ap:1:Laguna de Bay': 'laguna de bay',
+    'ap:2:Mount Apo':           'mount apo', 'ap:2:Mayon Volcano': 'mayon', 'ap:2:Chocolate Hills': 'chocolate hills', 'ap:2:Central Luzon Plain': 'Central Luzon Plain',
+    'ap:3:Malaysia':            'malaysia', 'ap:3:Indonesia': 'Indonesia', 'ap:3:Vietnam': 'Vietnam', 'ap:3:Thailand': 'Thailand', 'ap:3:Brunei': 'Brunei',
+    'ap:4:Weather':             'weather', 'ap:4:Climate': 'climate', 'ap:4:Temperature': 'temperature', 'ap:4:Humidity': 'humidity', 'ap:4:Rainfall': 'rainfall', 'ap:4:PAGASA': 'PAGASA',
+    'ap:5:Cool dry season':     'cool dry season', 'ap:5:Dry season': 'dry season', 'ap:5:Hot dry season': 'hot dry season', 'ap:5:May': 'hottest month', 'ap:5:January': 'coolest month', 'ap:5:Rainy season': 'rainy season', 'ap:5:Tropical climate': 'tropical climate',
+    'ap:6:Luzon':               'Luzon', 'ap:6:Visayas': 'visayas', 'ap:6:Mindanao': 'Mindanao', 'ap:6:Palawan': 'palawan', 'ap:6:Mindoro': 'mindoro', 'ap:6:Samar': 'samar', 'ap:6:Leyte': 'leyte', 'ap:6:Cebu': 'cebu',
+    'ap:7:Mount Pulag':         'mount pulag', 'ap:7:Mount Pinatubo': 'mount pinatubo', 'ap:7:Taal Volcano': 'taal volcano', 'ap:7:Cagayan River': 'cagayan river', 'ap:7:Agusan River': 'agusan river', 'ap:7:Lake Lanao': 'lake lanao', 'ap:7:Subic Bay': 'subic', 'ap:7:Davao Gulf': 'davao gulf', 'ap:7:Sibuyan Sea': 'sibuyan sea',
+    'ap:8:Datu':                'datu', 'ap:8:Maharlika': 'maharlika', 'ap:8:Timawa': 'timawa', 'ap:8:Babaylan': 'babaylan', 'ap:8:Balangay': 'balangay', 'ap:8:Baybayin': 'baybayin', 'ap:8:Bahay Kubo': 'bahay kubo', 'ap:8:Panday': 'panday',
+    'ap:9:Manunggul Jar':       'manunggal jar', 'ap:9:Banaue Rice Terraces':'banaue rice terrace', 'ap:9:Bulul': 'bulul', 'ap:9:Laguna Copperplate': 'Laguna Copperplate Inscription', 'ap:9:Golden Tara': 'Golden Tara of Agusan', 'ap:9:Tabon Cave': 'tabon cave', 'ap:9:Angono Petroglyphs': 'angono', 'ap:9:Fort Santiago': 'fort santiago', 'ap:9:San Agustin Church': 'san agustin church', 'ap:9:Bahay na Bato': 'bahay na bato', 'ap:9:Barasoain Church': 'barasain church',
+    'ap:10:Hudhud':             'hudhud', 'ap:10:Biag ni Lam-ang': 'Biag ni Lam-ang', 'ap:10:Alamat': 'alamat', 'ap:10:Bugtong': 'bugtong', 'ap:10:Salawikain': 'salawikain', 'ap:10:Kundiman': 'kundiman', 'ap:10:Tinikling': 'tinikling', 'ap:10:Singkil': 'singkil', 'ap:10:Pandanggo sa Ilaw': 'Pandanggo sa Ilaw', 'ap:10:Fiesta': 'fiesta', 'ap:10:Pamahiin': 'pamahiin', 'ap:10:Mano po': 'mano po',
 
     // ---- EPP ----
-    'computer:1:Google':         'google',
-    'computer:1:Yahoo':          'yahoo',
-    'computer:1:Lycos':          'lycos',
-    'computer:2:Search box':     'search box',
-    'computer:2:Search button':  'search button',
-    'computer:2:Search results': 'search results',
-    'computer:2:Tabs':           'tabs',
-    'computer:3:Safari':         'safari',
-    'computer:3:Opera':          'opera',
-    'computer:3:Microsoft Edge': 'Microsoft edge',
-    'computer:3:Mozilla Firefox':'Mozilla Firefox',
-    'computer:3:Google Chrome':  'google chrome',
-    'computer:4:Email':          'email',
-    'computer:4:Chat':           'chat',
-    'computer:4:Instant message':'instant message',
-    'computer:4:Video call':     'video call',
-    'computer:4:Social media':   'social media',
-    'computer:4:Online class':   'online class',
-    'computer:5:Kind words':         'use kind words',
-    'computer:5:Ask permission':     'Ask permission before posting others_ photos (do)',
-    'computer:5:Be respectful':      'be respectful',
-    'computer:5:Typing in ALL CAPS': 'typing in all caps',
-    'computer:5:Sharing password':   'sharing your password',
-    'computer:5:Using bad words':    'using bad words',
-    'computer:5:Fake news':          'spreading fake news',
+    'computer:1:Google':         'google', 'computer:1:Yahoo': 'yahoo', 'computer:1:Lycos': 'lycos',
+    'computer:2:Search box':     'search box', 'computer:2:Search button': 'search button', 'computer:2:Search results': 'search results', 'computer:2:Tabs': 'tabs',
+    'computer:3:Safari':         'safari', 'computer:3:Opera': 'opera', 'computer:3:Microsoft Edge': 'Microsoft edge', 'computer:3:Mozilla Firefox':'Mozilla Firefox', 'computer:3:Google Chrome': 'google chrome',
+    'computer:4:Email':          'email', 'computer:4:Chat': 'chat', 'computer:4:Instant message':'instant message', 'computer:4:Video call': 'video call', 'computer:4:Social media': 'social media', 'computer:4:Online class': 'online class',
+    'computer:5:Kind words':         'use kind words', 'computer:5:Ask permission': 'Ask permission before posting others_ photos (do)', 'computer:5:Be respectful': 'be respectful', 'computer:5:Typing in ALL CAPS': 'typing in all caps', 'computer:5:Sharing password': 'sharing your password', 'computer:5:Using bad words': 'using bad words', 'computer:5:Fake news': 'spreading fake news',
+    
+    'computer:6:com':  'com', 'computer:6:edu': 'edu', 'computer:6:gov': 'gov', 'computer:6:info': 'info', 'computer:6:int': 'int', 'computer:6:net': 'net', 'computer:6:org': 'org', 'computer:6:proj': 'proj',
 
-    'computer:6:Kind words':         'kind words',
-    'computer:6:Ask permission':     'Ask permission before posting others_ photos',
-    'computer:6:Be respectful':      'Be respectful in online class',
-    'computer:6:Typing in ALL CAPS': 'Typing in ALL CAPS',
-    'computer:6:Sharing password':   'Sharing password',
-    'computer:6:Using bad words':    'Using bad words',
-    'computer:6:Fake news':          'fake news',
-
-    'computer:7:Browser window buttons': 'browser window button',
-    'computer:7:Tab name':               'tab name',
-    'computer:7:Navigation buttons':     'navigation buttons',
-    'computer:7:New tab':                'new tab',
-    'computer:7:Customize and control':  'customize and control',
-    'computer:7:Bookmark this page':     'bookmark',
-    'computer:7:Address bar':            'address bar',
-    'computer:7:Display window':         'display window',
-    'computer:7:Scroll bar':             'scroll bar',
-    'computer:8:Username':    'username',
-    'computer:8:Domain name': 'domain name',
-    'computer:8:Domain type': 'domain type',
-    'computer:8:To':          'to',
-    'computer:8:Cc':          'Cc',
-    'computer:8:Bcc':         'Bcc',
-    'computer:8:Subject':     'subject',
-    'computer:8:Body':        'body',
-    'computer:8:Attach File': 'attach file',
-    'computer:8:Send':        'send',
-    'computer:9:Gmail':        'gmail',
-    'computer:9:Yahoo Mail':   'yahoo mail',
-    'computer:9:Outlook':      'outlook',
-    'computer:9:Compose Mail': 'compose mail',
-    'computer:9:Inbox':        'inbox',
-    'computer:9:Sent':         'sent',
-    'computer:9:Drafts':       'draft',
-    'computer:9:Spam':         'spam',
-    'computer:9:Attachment':   'attachment',
-    'computer:9:Reply':        'reply',
-    'computer:9:Forward':      'forward',
-    'computer:10:Monitor':         'monitor',
-    'computer:10:Keyboard':        'keyboard',
-    'computer:10:Mouse':           'mouse',
-    'computer:10:System unit':     'system unit',
-    'computer:10:Speakers':        'speakers',
-    'computer:10:Printer':         'printer',
-    'computer:10:Webcam':          'webcam',
-    'computer:10:Microphone':      'microphone',
-    'computer:10:Headset':         'headset',
-    'computer:10:Scanner':         'scanner',
-    'computer:10:USB flash drive': 'usb flash drive',
-    'computer:10:Touchpad':        'touch pad',
+    'computer:7:Browser window buttons': 'browser window button', 'computer:7:Tab name': 'tab name', 'computer:7:Navigation buttons': 'navigation buttons', 'computer:7:New tab': 'new tab', 'computer:7:Customize and control': 'customize and control', 'computer:7:Bookmark this page': 'bookmark', 'computer:7:Address bar': 'address bar', 'computer:7:Display window': 'display window', 'computer:7:Scroll bar': 'scroll bar',
+    
+    'computer:8:Username':    'username', 'computer:8:Domain name': 'domain name', 'computer:8:Domain type': 'domain type', 'computer:8:To': 'to', 'computer:8:Cc': 'Cc', 'computer:8:Bcc': 'Bcc', 'computer:8:Subject': 'subject', 'computer:8:Forward': 'forward', 'computer:8:Send': 'send',
+    
+    'computer:9:Gmail':        'gmail', 'computer:9:Yahoo Mail': 'yahoo mail', 'computer:9:Outlook': 'outlook', 'computer:9:Compose Mail': 'compose mail', 'computer:9:Inbox': 'inbox', 'computer:9:Sent': 'sent', 'computer:9:Drafts': 'draft', 'computer:9:Spam': 'spam', 'computer:9:Attachment': 'attachment', 'computer:9:Reply': 'reply', 'computer:9:Forward': 'forward',
+    
+    'computer:10:Monitor':         'monitor', 'computer:10:Keyboard': 'keyboard', 'computer:10:Mouse': 'mouse', 'computer:10:System unit': 'system unit', 'computer:10:Speakers': 'speakers', 'computer:10:Printer': 'printer', 'computer:10:Webcam': 'webcam', 'computer:10:Microphone': 'microphone', 'computer:10:Headset': 'headset', 'computer:10:Scanner': 'scanner', 'computer:10:USB flash drive': 'usb flash drive', 'computer:10:Touchpad': 'touch pad',
 
     // ---- Science ----
-    'science:1:Rock':  'rock',
-    'science:1:Water': 'water',
-    'science:1:Air':   'airr',
-    'science:2:Chair': 'chair',
-    'science:2:Desk':  'desk',
-    'science:2:Bag':   'bag',
-    'science:2:Shoes': 'shoes',
-    'science:3:Water':           'waterr',
-    'science:3:Coffee':          'coffee',
-    'science:3:Chocolate drink': 'chocolate drink',
-    'science:3:Juice':           'juice',
-    'science:3:Milk':            'milk',
-    'science:4:Air':            'airr',
-    'science:4:Wind':           'wind',
-    'science:4:Oxygen':         'oxygen',
-    'science:4:Carbon dioxide': 'carbon dioxide',
-    'science:4:Water vapor':    'water vapor',
-    'science:4:Helium':         'hellum',
-    'science:5:Mass':    'mass',
-    'science:5:Weight':  'weight',
-    'science:5:Volume':  'volume',
-    'science:5:Shape':   'shape',
-    'science:5:Color':   'color',
-    'science:5:Texture': 'twxture',
-    'science:5:Smell':   'smell',
-    'science:6:Platform balance':    'platform balance',
-    'science:6:Triple beam balance': 'triple beam balance',
-    'science:6:Weighing scale':      'Weighing scale',
-    'science:6:Graduated cylinder':  'graduated cylinder',
-    'science:6:Meter stick':         'meter stick',
-    'science:6:Thermometer':         'thermometer',
-    'science:6:Measuring cup':       'measuring cup',
-    'science:6:Beaker':              'beaker',
-    'science:7:Gram':             'gram',
-    'science:7:Kilogram':         'kg',
-    'science:7:Milliliter':       'milliliter',
-    'science:7:Liter':            'liter',
-    'science:7:Centimeter':       'cm',
-    'science:7:Meter':            'meter',
-    'science:7:Degree Celsius':   'degree Celsius',
-    'science:7:Cubic meter':      'cubic meter',
-    'science:7:Cubic centimeter': 'cubic centimeter',
-    'science:8:Melting':          'melting',
-    'science:8:Freezing':         'freezing',
-    'science:8:Evaporation':      'evaporation',
-    'science:8:Condensation':     'condensation',
-    'science:8:Boiling':          'boilimg',
-    'science:8:Cutting paper':    'cutting paper',
-    'science:8:Tearing paper':    'tearing paper',
-    'science:8:Crushing a can':   'crushing a can',
-    'science:8:Dissolving sugar': 'dissolving sugar',
-    'science:8:Folding paper':    'folding paper',
-    'science:9:Mouth':           'mouth',
-    'science:9:Teeth':           'teeth',
-    'science:9:Salivary glands': 'salivary glands',
-    'science:9:Esophagus':       'esophagus',
-    'science:9:Liver':           'liver',
-    'science:9:Gallbladder':     'gallbladder',
-    'science:9:Pancreas':        'pancreas',
-    'science:9:Small intestine': 'small intestine',
-    'science:9:Large intestine': 'large intestine',
-    'science:9:Rectum':          'rectum',
-    'science:10:Nose':         'nose',
-    'science:10:Nasal cavity': 'nasal cavity',
-    'science:10:Mouth':        'mouth',
-    'science:10:Pharynx':      'Pharynx',
-    'science:10:Larynx':       'Larynx',
-    'science:10:Trachea':      'Trachea',
-    'science:10:Bronchi':      'Bronchi',
-    'science:10:Bronchioles':  'Bronchioles',
-    'science:10:Alveoli':      'Alveoli',
-    'science:10:Lungs':        'lungs',
-    'science:10:Diaphragm':    'diaphragm',
-    'science:10:Ribs':         'ribs'
+    'science:1:Rock':  'rock', 'science:1:Water': 'water', 'science:1:Air': 'airr',
+    'science:2:Chair': 'chair', 'science:2:Desk': 'desk', 'science:2:Bag': 'bag', 'science:2:Shoes': 'shoes',
+    'science:3:Water': 'waterr', 'science:3:Coffee': 'coffee', 'science:3:Chocolate drink': 'chocolate drink', 'science:3:Juice': 'juice', 'science:3:Milk': 'milk',
+    'science:4:Air': 'airr', 'science:4:Wind': 'wind', 'science:4:Oxygen': 'oxygen', 'science:4:Carbon dioxide': 'carbon dioxide', 'science:4:Water vapor': 'water vapor', 'science:4:Helium': 'hellum',
+    'science:5:Mass': 'mass', 'science:5:Weight': 'weight', 'science:5:Volume': 'volume', 'science:5:Shape': 'shape', 'science:5:Color': 'color', 'science:5:Texture': 'twxture', 'science:5:Smell': 'smell',
+    'science:6:Platform balance': 'platform balance', 'science:6:Triple beam balance': 'triple beam balance', 'science:6:Weighing scale': 'Weighing scale', 'science:6:Graduated cylinder': 'graduated cylinder', 'science:6:Meter stick': 'meter stick', 'science:6:Thermometer': 'thermometer', 'science:6:Measuring cup': 'measuring cup', 'science:6:Beaker': 'beaker',
+    'science:7:Gram': 'gram', 'science:7:Kilogram': 'kg', 'science:7:Milliliter': 'milliliter', 'science:7:Liter': 'liter', 'science:7:Centimeter': 'cm', 'science:7:Meter': 'meter', 'science:7:Degree Celsius': 'degree Celsius', 'science:7:Cubic meter': 'cubic meter', 'science:7:Cubic centimeter': 'cubic centimeter',
+    'science:8:Melting': 'melting', 'science:8:Freezing': 'freezing', 'science:8:Evaporation': 'evaporation', 'science:8:Condensation': 'condensation', 'science:8:Boiling': 'boilimg', 'science:8:Cutting paper': 'cutting paper', 'science:8:Tearing paper': 'tearing paper', 'science:8:Crushing a can': 'crushing a can', 'science:8:Dissolving sugar': 'dissolving sugar', 'science:8:Folding paper': 'folding paper',
+    'science:9:Mouth': 'mouth', 'science:9:Teeth': 'teeth', 'science:9:Salivary glands': 'salivary glands', 'science:9:Esophagus': 'esophagus', 'science:9:Liver': 'liver', 'science:9:Gallbladder': 'gallbladder', 'science:9:Pancreas': 'pancreas', 'science:9:Small intestine': 'small intestine', 'science:9:Large intestine': 'large intestine', 'science:9:Rectum': 'rectum',
+    'science:10:Nose': 'nose', 'science:10:Nasal cavity': 'nasal cavity', 'science:10:Mouth': 'mouth', 'science:10:Pharynx': 'Pharynx', 'science:10:Larynx': 'Larynx', 'science:10:Trachea': 'Trachea', 'science:10:Bronchi': 'Bronchi', 'science:10:Bronchioles': 'Bronchioles', 'science:10:Alveoli': 'Alveoli', 'science:10:Lungs': 'lungs', 'science:10:Diaphragm': 'diaphragm', 'science:10:Ribs': 'ribs'
   };
 
   // ============================================================
   // DESC_MAP
   // ============================================================
   const DESC_MAP = {
-    'ap:1:Pacific Ocean':       "Earth's largest and deepest ocean.",
-    'ap:1:Pasig River':         "Historic river running through Manila.",
-    'ap:1:Laguna de Bay':       "Largest lake in the Philippines.",
-    'ap:2:Mount Apo':           "The highest peak in the Philippines.",
-    'ap:2:Mayon Volcano':       "Volcano famous for its perfect cone.",
-    'ap:2:Chocolate Hills':     "Famous brown hills in Bohol.",
-    'ap:2:Central Luzon Plain': "The rice granary of the country.",
-    'ap:3:Malaysia':            "Southeast Asian country near Palawan.",
-    'ap:3:Indonesia':           "Giant archipelago south of Mindanao.",
-    'ap:3:Vietnam':             "Country across the West Philippine Sea.",
-    'ap:3:Thailand':            "Asian country famous for tourism.",
-    'ap:3:Brunei':              "Small, wealthy nation on Borneo.",
-    'ap:4:Weather':             "Day-to-day condition of the atmosphere.",
-    'ap:4:Climate':             "Long-term average weather pattern.",
-    'ap:4:Temperature':         "Measure of hotness or coldness.",
-    'ap:4:Humidity':            "Amount of moisture in air.",
-    'ap:4:Rainfall':            "Water falling down as rain.",
-    'ap:4:PAGASA':              "Philippine official weather forecasting agency.",
-    'ap:5:Rainy season':        "Months with heavy rainfall (June-November).",
-    'ap:5:Dry season':          "Months with very little rain.",
-    'ap:5:Cool dry season':     "Pleasant weather with cool breezes.",
-    'ap:5:Hot dry season':      "Warmest months of the year.",
-    'ap:5:May':                 "Peak of the dry season.",
-    'ap:5:January':             "Time of lowest yearly temperatures.",
-    'ap:5:Tropical climate':    "Warm, humid climate near the equator.",
-    'ap:6:Luzon':               "Largest northern Philippine island group.",
-    'ap:6:Visayas':             "Central island group of the Philippines.",
-    'ap:6:Mindanao':            "Southern island group of the Philippines.",
-    'ap:6:Palawan':             "Island known as the last frontier.",
-    'ap:6:Mindoro':             "Island located south of Luzon.",
-    'ap:6:Samar':               "Large island in eastern Visayas.",
-    'ap:6:Leyte':               "Visayan island next to Samar.",
-    'ap:6:Cebu':                "Major hub in the central Philippines.",
-    'ap:7:Mount Pulag':         "Luzon's highest peak, above a sea of clouds.",
-    'ap:7:Mount Pinatubo':      "Volcano that erupted in 1991.",
-    'ap:7:Taal Volcano':        "Small active volcano within a lake.",
-    'ap:7:Cagayan River':       "Longest river in the Philippines.",
-    'ap:7:Agusan River':        "Large river in eastern Mindanao.",
-    'ap:7:Lake Lanao':          "Large ancient lake in Mindanao.",
-    'ap:7:Subic Bay':           "Famous harbor in Central Luzon.",
-    'ap:7:Davao Gulf':          "Large gulf in southern Mindanao.",
-    'ap:7:Sibuyan Sea':         "Sea at the center of the Philippines.",
-    'ap:8:Barangay':            "Ancient Filipino community or village.",
-    'ap:8:Datu':                "Ruler of an ancient barangay.",
-    'ap:8:Maharlika':           "Feudal warrior class of the Tagalogs.",
-    'ap:8:Timawa':              "Free citizens of ancient society.",
-    'ap:8:Alipin':              "Servant class in ancient times.",
-    'ap:8:Babaylan':            "Priestess or shaman of the community.",
-    'ap:8:Balangay':            "Ancient Filipino wooden water vessel.",
-    'ap:8:Baybayin':            "Pre-colonial native writing system.",
-    'ap:8:Bahay Kubo':          "Traditional Filipino stilt house.",
-    'ap:8:Panday':              "Maker of metal tools and weapons.",
-    'ap:9:Manunggul Jar':       "Ancient burial jar found in Palawan.",
-    'ap:9:Banaue Rice Terraces':"Hand-carved mountainside agricultural terraces.",
-    'ap:9:Bulul':               "Wooden Igorot rice granary god.",
-    'ap:9:Laguna Copperplate':  "Oldest written document in the Philippines.",
-    'ap:9:Golden Tara':         "Ancient Hindu golden statue artifact.",
-    'ap:9:Tabon Cave':          "Site of early human remains.",
-    'ap:9:Angono Petroglyphs':  "Oldest known rock art carvings.",
-    'ap:9:Fort Santiago':       "Spanish defense fortress in Manila.",
-    'ap:9:San Agustin Church':  "Oldest stone church in Manila.",
-    'ap:9:Bahay na Bato':       "Spanish colonial noble stone house.",
-    'ap:9:Barasoain Church':    "Historic site of the first republic.",
-    'ap:10:Hudhud':             "Chanted epic stories of the Ifugao.",
-    'ap:10:Biag ni Lam-ang':    "Famous Ilocano folk epic poem.",
-    'ap:10:Alamat':             "Traditional story explaining origins.",
-    'ap:10:Bugtong':            "Filipino rhyming word puzzle game.",
-    'ap:10:Salawikain':         "Traditional saying containing wisdom.",
-    'ap:10:Kundiman':           "Traditional Filipino love song genre.",
-    'ap:10:Tinikling':          "Bamboo pole traditional dance.",
-    'ap:10:Singkil':            "Royal Maranao bamboo dance.",
-    'ap:10:Pandanggo sa Ilaw':  "Dance with balancing oil lamps.",
-    'ap:10:Fiesta':             "Community celebration honoring patron saints.",
-    'ap:10:Pamahiin':           "Traditional cultural beliefs and myths.",
-    'ap:10:Mano po':            "Respect gesture for greeting elders.",
+    'ap:1:Pacific Ocean':       "Earth's largest and deepest ocean.", 'ap:1:Pasig River': "Historic river running through Manila.", 'ap:1:Laguna de Bay': "Largest lake in the Philippines.",
+    'ap:2:Mount Apo':           "The highest peak in the Philippines.", 'ap:2:Mayon Volcano': "Volcano famous for its perfect cone.", 'ap:2:Chocolate Hills': "Famous brown hills in Bohol.", 'ap:2:Central Luzon Plain': "The rice granary of the country.",
+    'ap:3:Malaysia':            "Southeast Asian country near Palawan.", 'ap:3:Indonesia': "Giant archipelago south of Mindanao.", 'ap:3:Vietnam': "Country across the West Philippine Sea.", 'ap:3:Thailand': "Asian country famous for tourism.", 'ap:3:Brunei': "Small, wealthy nation on Borneo.",
+    'ap:4:Weather':             "Day-to-day condition of the atmosphere.", 'ap:4:Climate': "Long-term average weather pattern.", 'ap:4:Temperature': "Measure of hotness or coldness.", 'ap:4:Humidity': "Amount of moisture in air.", 'ap:4:Rainfall': "Water falling down as rain.", 'ap:4:PAGASA': "Philippine official weather forecasting agency.",
+    'ap:5:Rainy season':        "Months with heavy rainfall (June-November).", 'ap:5:Dry season': "Months with very little rain.", 'ap:5:Cool dry season': "Pleasant weather with cool breezes.", 'ap:5:Hot dry season': "Warmest months of the year.", 'ap:5:May': "Peak of the dry season.", 'ap:5:January': "Time of lowest yearly temperatures.", 'ap:5:Tropical climate': "Warm, humid climate near the equator.",
+    'ap:6:Luzon':               "Largest northern Philippine island group.", 'ap:6:Visayas': "Central island group of the Philippines.", 'ap:6:Mindanao': "Southern island group of the Philippines.", 'ap:6:Palawan': "Island known as the last frontier.", 'ap:6:Mindoro': "Island located south of Luzon.", 'ap:6:Samar': "Large island in eastern Visayas.", 'ap:6:Leyte': "Visayan island next to Samar.", 'ap:6:Cebu': "Major hub in the central Philippines.",
+    'ap:7:Mount Pulag':         "Luzon's highest peak, above a sea of clouds.", 'ap:7:Mount Pinatubo': "Volcano that erupted in 1991.", 'ap:7:Taal Volcano': "Small active volcano within a lake.", 'ap:7:Cagayan River': "Longest river in the Philippines.", 'ap:7:Agusan River': "Large river in eastern Mindanao.", 'ap:7:Lake Lanao': "Large ancient lake in Mindanao.", 'ap:7:Subic Bay': "Famous harbor in Central Luzon.", 'ap:7:Davao Gulf': "Large gulf in southern Mindanao.", 'ap:7:Sibuyan Sea': "Sea at the center of the Philippines.",
+    'ap:8:Datu':                "Ruler of an ancient barangay.", 'ap:8:Maharlika': "Feudal warrior class of the Tagalogs.", 'ap:8:Timawa': "Free citizens of ancient society.", 'ap:8:Babaylan': "Priestess or shaman of the community.", 'ap:8:Balangay': "Ancient Filipino wooden water vessel.", 'ap:8:Baybayin': "Pre-colonial native writing system.", 'ap:8:Bahay Kubo': "Traditional Filipino stilt house.", 'ap:8:Panday': "Maker of metal tools and weapons.",
+    'ap:9:Manunggul Jar':       "Ancient burial jar found in Palawan.", 'ap:9:Banaue Rice Terraces':"Hand-carved mountainside agricultural terraces.", 'ap:9:Bulul': "Wooden Igorot rice granary god.", 'ap:9:Laguna Copperplate': "Oldest written document in the Philippines.", 'ap:9:Golden Tara': "Ancient Hindu golden statue artifact.", 'ap:9:Tabon Cave': "Site of early human remains.", 'ap:9:Angono Petroglyphs': "Oldest known rock art carvings.", 'ap:9:Fort Santiago': "Spanish defense fortress in Manila.", 'ap:9:San Agustin Church': "Oldest stone church in Manila.", 'ap:9:Bahay na Bato': "Spanish colonial noble stone house.", 'ap:9:Barasoain Church': "Historic site of the first republic.",
+    'ap:10:Hudhud':             "Chanted epic stories of the Ifugao.", 'ap:10:Biag ni Lam-ang': "Famous Ilocano folk epic poem.", 'ap:10:Alamat': "Traditional story explaining origins.", 'ap:10:Bugtong': "Filipino rhyming word puzzle game.", 'ap:10:Salawikain': "Traditional saying containing wisdom.", 'ap:10:Kundiman': "Traditional Filipino love song genre.", 'ap:10:Tinikling': "Bamboo pole traditional dance.", 'ap:10:Singkil': "Royal Maranao bamboo dance.", 'ap:10:Pandanggo sa Ilaw': "Dance with balancing oil lamps.", 'ap:10:Fiesta': "Community celebration honoring patron saints.", 'ap:10:Pamahiin': "Traditional cultural beliefs and myths.", 'ap:10:Mano po': "Respect gesture for greeting elders.",
 
-    'computer:1:Google':         "Most popular modern search engine.",
-    'computer:1:Yahoo':          "Search engine with internet directory.",
-    'computer:1:Lycos':          "Pioneer search engine from the nineties.",
-    'computer:2:Search box':     "Where you type keywords online.",
-    'computer:2:Search button':  "Click this to start searching.",
-    'computer:2:Search results': "List of websites found online.",
-    'computer:2:Tabs':           "Filters search results into categories.",
-    'computer:3:Safari':         "Apple devices default web browser.",
-    'computer:3:Opera':          "Browser known for speed features.",
-    'computer:3:Microsoft Edge': "Windows default built-in web browser.",
-    'computer:3:Mozilla Firefox':"Independent, open-source web browser.",
-    'computer:3:Google Chrome':  "Widely used browser by Google.",
-    'computer:4:Email':          "Digital letters sent over the internet.",
-    'computer:4:Chat':           "Real-time text messaging with others.",
-    'computer:4:Instant message':"Fast text sent instantly online.",
-    'computer:4:Video call':     "See and hear people digitally.",
-    'computer:4:Social media':   "Platforms for sharing media content.",
-    'computer:4:Online class':   "Learning using internet-connected devices.",
-    'computer:5:Kind words':         "Be polite in online messages.",
-    'computer:5:Ask permission':     "Respect privacy of other people.",
-    'computer:5:Be respectful':      "Listen carefully to your teacher.",
-    'computer:5:Typing in ALL CAPS': "Feels like shouting at someone.",
-    'computer:5:Sharing password':   "Keep account access keys secret.",
-    'computer:5:Using bad words':    "Never use offensive language online.",
-    'computer:5:Fake news':          "Never share unverified false information.",
+    'computer:1:Google':         "Most popular modern search engine.", 'computer:1:Yahoo': "Search engine with internet directory.", 'computer:1:Lycos': "Pioneer search engine from the nineties.",
+    'computer:2:Search box':     "Where you type keywords online.", 'computer:2:Search button': "Click this to start searching.", 'computer:2:Search results': "List of websites found online.", 'computer:2:Tabs': "Filters search results into categories.",
+    'computer:3:Safari':         "Apple devices default web browser.", 'computer:3:Opera': "Browser known for speed features.", 'computer:3:Microsoft Edge': "Windows default built-in web browser.", 'computer:3:Mozilla Firefox':"Independent, open-source web browser.", 'computer:3:Google Chrome': "Widely used browser by Google.",
+    'computer:4:Email':          "Digital letters sent over the internet.", 'computer:4:Chat': "Real-time text messaging with others.", 'computer:4:Instant message':"Fast text sent instantly online.", 'computer:4:Video call': "See and hear people digitally.", 'computer:4:Social media': "Platforms for sharing media content.", 'computer:4:Online class': "Learning using internet-connected devices.",
+    'computer:5:Kind words':         "Be polite in online messages.", 'computer:5:Ask permission': "Respect privacy of other people.", 'computer:5:Be respectful': "Listen carefully to your teacher.", 'computer:5:Typing in ALL CAPS': "Feels like shouting at someone.", 'computer:5:Sharing password': "Keep account access keys secret.", 'computer:5:Using bad words': "Never use offensive language online.", 'computer:5:Fake news': "Never share unverified false information.",
 
-    'computer:6:Kind words':         "Be polite in online messages.",
-    'computer:6:Ask permission':     "Respect privacy of other people.",
-    'computer:6:Be respectful':      "Listen carefully to your teacher.",
-    'computer:6:Typing in ALL CAPS': "Feels like shouting at someone.",
-    'computer:6:Sharing password':   "Keep account access keys secret.",
-    'computer:6:Using bad words':    "Never use offensive language online.",
-    'computer:6:Fake news':          "Never share unverified false information.",
+    'computer:6:com': "Commercial website domain type.", 'computer:6:edu': "Educational institution domain type.", 'computer:6:gov': "Government website domain type.", 'computer:6:info': "Informational website domain type.", 'computer:6:int': "International organization domain type.", 'computer:6:net': "Network infrastructure domain type.", 'computer:6:org': "Non-profit organization domain type.", 'computer:6:proj': "Project website domain type.",
 
-    'science:1:Rock':  "Hard solid form of matter.",
-    'science:1:Water': "Life-sustaining liquid type of matter.",
-    'science:1:Air':   "The gaseous atmosphere of Earth.",
-    'science:2:Chair': "Solid furniture piece for sitting.",
-    'science:2:Desk':  "Solid table used for working.",
-    'science:2:Bag':   "Solid container carrying school items.",
-    'science:2:Shoes': "Solid protective footwear worn.",
-    'science:3:Water':           "Clear liquid essential for life.",
-    'science:3:Coffee':          "Hot liquid energy morning drink.",
-    'science:3:Chocolate drink': "Sweet liquid treat enjoyed cold.",
-    'science:3:Juice':           "Flavorful liquid squeezed from fruits.",
-    'science:3:Milk':            "Nutritious white dairy drink.",
-    'science:4:Air':            "The gaseous atmosphere of Earth.",
-    'science:4:Wind':           "Moving air across landscape terrains.",
-    'science:4:Oxygen':         "Gas living organisms breathe in.",
-    'science:4:Carbon dioxide': "Gas released when breathing out.",
-    'science:4:Water vapor':    "Water existing in gaseous state.",
-    'science:4:Helium':         "Light gas inflating flying balloons.",
-    'science:5:Mass':    "Amount of matter inside object.",
-    'science:5:Weight':  "Gravitational pull force on object.",
-    'science:5:Volume':  "Amount of space object occupies.",
-    'science:5:Shape':   "External form outline of matter.",
-    'science:5:Color':   "Visual appearance shade of matter.",
-    'science:5:Texture': "Feel of surface when touched.",
-    'science:5:Smell':   "Odor detected by your nose.",
-    'science:6:Platform balance':    "Tool comparing heavy item masses.",
-    'science:6:Triple beam balance': "Measures mass very precisely.",
-    'science:6:Weighing scale':      "Displays object current weight.",
-    'science:6:Graduated cylinder':  "Measures exact liquid volume.",
-    'science:6:Meter stick':         "Ruler measuring long object length.",
-    'science:6:Thermometer':         "Tracks hotness or coldness.",
-    'science:6:Measuring cup':       "Cup for kitchen fluid measurements.",
-    'science:6:Beaker':              "Glass cup measuring laboratory liquids.",
-    'science:7:Gram':            "Metric unit tracking light mass.",
-    'science:7:Kilogram':        "Base unit tracking heavy mass.",
-    'science:7:Milliliter':      "Small unit tracking liquid volume.",
-    'science:7:Liter':           "Common unit tracking liquid volume.",
-    'science:7:Centimeter':      "Unit measuring small item lengths.",
-    'science:7:Meter':           "Base unit measuring distance.",
-    'science:7:Cubic centimeter':"Volume unit for solid matter.",
-    'science:7:Degree Celsius':  "Unit measuring temperature level.",
-    'science:7:Cubic meter':     "Large unit measuring massive volumes.",
-    'science:8:Melting':          "Solid turning into a liquid.",
-    'science:8:Freezing':         "Liquid turning into a solid.",
-    'science:8:Evaporation':      "Liquid turning into a gas.",
-    'science:8:Condensation':     "Gas turning into a liquid.",
-    'science:8:Boiling':          "Liquid rapidly vaporizing from heat.",
-    'science:8:Cutting paper':    "Changing shape using scissors.",
-    'science:8:Tearing paper':    "Pulling paper apart into pieces.",
-    'science:8:Crushing a can':   "Smashing metal changing its form.",
-    'science:8:Dissolving sugar': "Mixing crystals into liquid.",
-    'science:8:Folding paper':    "Creasing paper without tearing.",
-    'science:9:Mouth':           "Where food enters digestive path.",
-    'science:9:Teeth':           "Hard structures crushing food items.",
-    'science:9:Salivary glands': "Glands producing spit to dissolve food.",
-    'science:9:Esophagus':       "Tube moving food down to stomach.",
-    'science:9:Stomach':         "Organ churning food using acid.",
-    'science:9:Liver':           "Filters toxins, produces bile.",
-    'science:9:Gallbladder':     "Small sac storing digestive bile.",
-    'science:9:Pancreas':        "Produces useful digestive enzymes.",
-    'science:9:Small intestine': "Where most nutrients get absorbed.",
-    'science:9:Large intestine': "Absorbs water from waste.",
-    'science:9:Rectum':          "Final storage area for waste.",
-    'science:10:Nose':         "Main external pathway for breathing.",
-    'science:10:Nasal cavity': "Warms and filters inhaled air.",
-    'science:10:Mouth':        "Secondary opening used for breathing.",
-    'science:10:Pharynx':      "Throat passage connecting nose and mouth.",
-    'science:10:Larynx':       "Voice box housing vocal cords.",
-    'science:10:Trachea':      "Main windpipe tube leading to lungs.",
-    'science:10:Bronchi':      "Two large air tube branches.",
-    'science:10:Bronchioles':  "Smallest air tubes inside the lungs.",
-    'science:10:Alveoli':      "Tiny sacs where gas exchange happens.",
-    'science:10:Lungs':        "Primary organs used for breathing.",
-    'science:10:Diaphragm':    "Muscle driving lung breathing actions.",
-    'science:10:Ribs':         "Bones protecting vital lung organs."
+    'science:1:Rock':  "Hard solid form of matter.", 'science:1:Water': "Life-sustaining liquid type of matter.", 'science:1:Air': "The gaseous atmosphere of Earth.",
+    'science:2:Chair': "Solid furniture piece for sitting.", 'science:2:Desk': "Solid table used for working.", 'science:2:Bag': "Solid container carrying school items.", 'science:2:Shoes': "Solid protective footwear worn.",
+    'science:3:Water': "Clear liquid essential for life.", 'science:3:Coffee': "Hot liquid energy morning drink.", 'science:3:Chocolate drink': "Sweet liquid treat enjoyed cold.", 'science:3:Juice': "Flavorful liquid squeezed from fruits.", 'science:3:Milk': "Nutritious white dairy drink.",
+    'science:4:Air': "The gaseous atmosphere of Earth.", 'science:4:Wind': "Moving air across landscape terrains.", 'science:4:Oxygen': "Gas living organisms breathe in.", 'science:4:Carbon dioxide': "Gas released when breathing out.", 'science:4:Water vapor': "Water existing in gaseous state.", 'science:4:Helium': "Light gas inflating flying balloons.",
+    'science:5:Mass': "Amount of matter inside object.", 'science:5:Weight': "Gravitational pull force on object.", 'science:5:Volume': "Amount of space object occupies.", 'science:5:Shape': "External form outline of matter.", 'science:5:Color': "Visual appearance shade of matter.", 'science:5:Texture': "Feel of surface when touched.", 'science:5:Smell': "Odor detected by your nose.",
+    'science:6:Platform balance': "Tool comparing heavy item masses.", 'science:6:Triple beam balance': "Measures mass very precisely.", 'science:6:Weighing scale': "Displays object current weight.", 'science:6:Graduated cylinder': "Measures exact liquid volume.", 'science:6:Meter stick': "Ruler measuring long object length.", 'science:6:Thermometer': "Tracks hotness or coldness.", 'science:6:Measuring cup': "Cup for kitchen fluid measurements.", 'science:6:Beaker': "Glass cup measuring laboratory liquids.",
+    'science:7:Gram': "Metric unit tracking light mass.", 'science:7:Kilogram': "Base unit tracking heavy mass.", 'science:7:Milliliter': "Small unit tracking liquid volume.", 'science:7:Liter': "Common unit tracking liquid volume.", 'science:7:Centimeter': "Unit measuring small item lengths.", 'science:7:Meter': "Base unit measuring distance.", 'science:7:Cubic centimeter':"Volume unit for solid matter.", 'science:7:Degree Celsius': "Unit measuring temperature level.", 'science:7:Cubic meter': "Large unit measuring massive volumes.",
+    'science:8:Melting': "Solid turning into a liquid.", 'science:8:Freezing': "Liquid turning into a solid.", 'science:8:Evaporation': "Liquid turning into a gas.", 'science:8:Condensation': "Gas turning into a liquid.", 'science:8:Boiling': "Liquid rapidly vaporizing from heat.", 'science:8:Cutting paper': "Changing shape using scissors.", 'science:8:Tearing paper': "Pulling paper apart into pieces.", 'science:8:Crushing a can': "Smashing metal changing its form.", 'science:8:Dissolving sugar': "Mixing crystals into liquid.", 'science:8:Folding paper': "Creasing paper without tearing.",
+    'science:9:Mouth': "Where food enters digestive path.", 'science:9:Teeth': "Hard structures crushing food items.", 'science:9:Salivary glands': "Glands producing spit to dissolve food.", 'science:9:Esophagus': "Tube moving food down to stomach.", 'science:9:Liver': "Filters toxins, produces bile.", 'science:9:Gallbladder': "Small sac storing digestive bile.", 'science:9:Pancreas': "Produces useful digestive enzymes.", 'science:9:Small intestine': "Where most nutrients get absorbed.", 'science:9:Large intestine': "Absorbs water from waste.", 'science:9:Rectum': "Final storage area for waste.",
+    'science:10:Nose': "Main external pathway for breathing.", 'science:10:Nasal cavity': "Warms and filters inhaled air.", 'science:10:Mouth': "Secondary opening used for breathing.", 'science:10:Pharynx': "Throat passage connecting nose and mouth.", 'science:10:Larynx': "Voice box housing vocal cords.", 'science:10:Trachea': "Main windpipe tube leading to lungs.", 'science:10:Bronchi': "Two large air tube branches.", 'science:10:Bronchioles': "Smallest air tubes inside the lungs.", 'science:10:Alveoli': "Tiny sacs where gas exchange happens.", 'science:10:Lungs': "Primary organs used for breathing.", 'science:10:Diaphragm': "Muscle driving lung breathing actions.", 'science:10:Ribs': "Bones protecting vital lung organs."
   };
-
-  function getCardDescription(pairIndex) {
-    const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
-    if (!entry) return '';
-    const key = subject + ':' + level + ':' + entry.name;
-    return DESC_MAP[key] || entry.desc || entry.name;
-  }
 
   // ============================================================
   // IMG — Unsplash fallback
@@ -904,297 +554,294 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // ============================================================
-  // TOPIC_DATA
+  // TOPIC_DATA (UPDATED WITH NICKNAMES)
   // ============================================================
   const TOPIC_DATA = {
     computer: {
       1: { title: 'Search Engines', cards: [
-        { id: IMG.codeScreen, name: 'Google' },
-        { id: IMG.analytics,  name: 'Yahoo'  },
-        { id: IMG.binary,     name: 'Lycos'  }
+        { id: IMG.codeScreen, name: 'Google', nickname: 'Google' }, 
+        { id: IMG.analytics,  name: 'Yahoo', nickname: 'Yahoo'  }, 
+        { id: IMG.binary,     name: 'Lycos', nickname: 'Lycos'  }
       ]},
       2: { title: 'Parts of a Search Engine Home Page', cards: [
-        { id: IMG.uiDesign,  name: 'Search box'     },
-        { id: IMG.uiDesign,  name: 'Search button'  },
-        { id: IMG.docs,      name: 'Search results' },
-        { id: IMG.dashboard, name: 'Tabs'           }
+        { id: IMG.uiDesign,  name: 'Search box', nickname: 'Search Box'     }, 
+        { id: IMG.uiDesign,  name: 'Search button', nickname: 'Search Btn'  },
+        { id: IMG.docs,      name: 'Search results', nickname: 'Results' }, 
+        { id: IMG.dashboard, name: 'Tabs', nickname: 'Tabs'           }
       ]},
       3: { title: 'Web Browsers', cards: [
-        { id: IMG.macbook,    name: 'Safari'          },
-        { id: IMG.codeScreen, name: 'Opera'           },
-        { id: IMG.monitor,    name: 'Microsoft Edge'  },
-        { id: IMG.code2,      name: 'Mozilla Firefox' },
-        { id: IMG.workspace,  name: 'Google Chrome'   }
+        { id: IMG.macbook,    name: 'Safari', nickname: 'Safari'          }, 
+        { id: IMG.codeScreen, name: 'Opera', nickname: 'Opera'           },
+        { id: IMG.monitor,    name: 'Microsoft Edge', nickname: 'Edge'  }, 
+        { id: IMG.code2,      name: 'Mozilla Firefox', nickname: 'Firefox' },
+        { id: IMG.workspace,  name: 'Google Chrome', nickname: 'Chrome'   }
       ]},
       4: { title: 'Ways to Communicate Online', cards: [
-        { id: IMG.docs,       name: 'Email'           },
-        { id: IMG.codeScreen, name: 'Chat'            },
-        { id: IMG.notebook,   name: 'Instant message' },
-        { id: IMG.webcam,     name: 'Video call'      },
-        { id: IMG.uiDesign,   name: 'Social media'    },
-        { id: IMG.studying,   name: 'Online class'    }
+        { id: IMG.docs,       name: 'Email', nickname: 'Email'           }, 
+        { id: IMG.codeScreen, name: 'Chat', nickname: 'Chat'            },
+        { id: IMG.notebook,   name: 'Instant message', nickname: 'IM' }, 
+        { id: IMG.webcam,     name: 'Video call', nickname: 'Video Call'      },
+        { id: IMG.uiDesign,   name: 'Social media', nickname: 'Social Media'    }, 
+        { id: IMG.studying,   name: 'Online class', nickname: 'Online Class'    }
       ]},
       5: { title: "Netiquette: Do's and Don'ts", cards: [
-        { id: IMG.writing,   name: 'Kind words'         },
-        { id: IMG.docs,      name: 'Ask permission'     },
-        { id: IMG.studying,  name: 'Be respectful'      },
-        { id: IMG.code1,     name: 'Typing in ALL CAPS' },
-        { id: IMG.password,  name: 'Sharing password'   },
-        { id: IMG.docs,      name: 'Using bad words'    },
-        { id: IMG.analytics, name: 'Fake news'          }
+        { id: IMG.writing,   name: 'Kind words', nickname: 'Kind Words'         }, 
+        { id: IMG.docs,      name: 'Ask permission', nickname: 'Ask Permission'     },
+        { id: IMG.studying,  name: 'Be respectful', nickname: 'Be Respectful'      }, 
+        { id: IMG.code1,     name: 'Typing in ALL CAPS', nickname: 'ALL CAPS' },
+        { id: IMG.password,  name: 'Sharing password', nickname: 'Share Pass'   }, 
+        { id: IMG.docs,      name: 'Using bad words', nickname: 'Bad Words'    },
+        { id: IMG.analytics, name: 'Fake news', nickname: 'Fake News'          }
       ]},
-      6: { title: "Netiquette: Do's and Don'ts", cards: [
-        { id: IMG.writing,   name: 'Kind words'         },
-        { id: IMG.docs,      name: 'Ask permission'     },
-        { id: IMG.studying,  name: 'Be respectful'      },
-        { id: IMG.code1,     name: 'Typing in ALL CAPS' },
-        { id: IMG.password,  name: 'Sharing password'   },
-        { id: IMG.docs,      name: 'Using bad words'    },
-        { id: IMG.analytics, name: 'Fake news'          }
+      6: { title: "Domain Types", cards: [
+        { id: IMG.dashboard, name: 'com', nickname: '.com' }, 
+        { id: IMG.dashboard, name: 'edu', nickname: '.edu' }, 
+        { id: IMG.dashboard, name: 'gov', nickname: '.gov' },
+        { id: IMG.dashboard, name: 'info', nickname: '.info' }, 
+        { id: IMG.dashboard, name: 'int', nickname: '.int' }, 
+        { id: IMG.dashboard, name: 'net', nickname: '.net' },
+        { id: IMG.dashboard, name: 'org', nickname: '.org' }, 
+        { id: IMG.dashboard, name: 'proj', nickname: '.proj' }
       ]},
       7: { title: 'Parts of a Web Browser', cards: [
-        { id: IMG.monitor,    name: 'Browser window buttons' },
-        { id: IMG.uiDesign,   name: 'Tab name'               },
-        { id: IMG.mouse,      name: 'Navigation buttons'     },
-        { id: IMG.dashboard,  name: 'New tab'                },
-        { id: IMG.security,   name: 'Customize and control'  },
-        { id: IMG.books,      name: 'Bookmark this page'     },
-        { id: IMG.codeScreen, name: 'Address bar'            },
-        { id: IMG.workspace,  name: 'Display window'         },
-        { id: IMG.officeDesk, name: 'Scroll bar'             }
+        { id: IMG.monitor,    name: 'Browser window buttons', nickname: 'Window Btns' }, 
+        { id: IMG.uiDesign,   name: 'Tab name', nickname: 'Tab Name'               },
+        { id: IMG.mouse,      name: 'Navigation buttons', nickname: 'Nav Btns'     }, 
+        { id: IMG.dashboard,  name: 'New tab', nickname: 'New Tab'                },
+        { id: IMG.security,   name: 'Customize and control', nickname: 'Customize'  }, 
+        { id: IMG.books,      name: 'Bookmark this page', nickname: 'Bookmark'     },
+        { id: IMG.codeScreen, name: 'Address bar', nickname: 'Address Bar'            }, 
+        { id: IMG.workspace,  name: 'Display window', nickname: 'Display Btns'         },
+        { id: IMG.officeDesk, name: 'Scroll bar', nickname: 'Scroll Bar'             }
       ]},
       8: { title: 'Parts of an Email', cards: [
-        { id: IMG.face,       name: 'Username'    },
-        { id: IMG.analytics,  name: 'Domain name' },
-        { id: IMG.dashboard,  name: 'Domain type' },
-        { id: IMG.docs,       name: 'To'          },
-        { id: IMG.docs,       name: 'Cc'          },
-        { id: IMG.security,   name: 'Bcc'         },
-        { id: IMG.writing,    name: 'Subject'     },
-        { id: IMG.docs,       name: 'Body'        },
-        { id: IMG.gadgets,    name: 'Attach File' },
-        { id: IMG.uiDesign,   name: 'Send'        }
+        { id: IMG.face,       name: 'Username', nickname: 'Username'    }, 
+        { id: IMG.analytics,  name: 'Domain name', nickname: 'Domain Name' },
+        { id: IMG.dashboard,  name: 'Domain type', nickname: 'Domain Type' }, 
+        { id: IMG.docs,       name: 'To', nickname: 'To'          },
+        { id: IMG.docs,       name: 'Cc', nickname: 'Cc'          }, 
+        { id: IMG.security,   name: 'Bcc', nickname: 'Bcc'         },
+        { id: IMG.writing,    name: 'Subject', nickname: 'Subject'     }, 
+        { id: IMG.uiDesign,   name: 'Forward', nickname: 'Forward'     },
+        { id: IMG.uiDesign,   name: 'Send', nickname: 'Send'        }
       ]},
       9: { title: 'Email Words', cards: [
-        { id: IMG.dashboard,  name: 'Gmail'        },
-        { id: IMG.docs,       name: 'Yahoo Mail'   },
-        { id: IMG.macbook,    name: 'Outlook'      },
-        { id: IMG.writing,    name: 'Compose Mail' },
-        { id: IMG.docs,       name: 'Inbox'        },
-        { id: IMG.analytics,  name: 'Sent'         },
-        { id: IMG.notebook,   name: 'Drafts'       },
-        { id: IMG.security,   name: 'Spam'         },
-        { id: IMG.gadgets,    name: 'Attachment'   },
-        { id: IMG.mouse,      name: 'Reply'        },
-        { id: IMG.uiDesign,   name: 'Forward'      }
+        { id: IMG.dashboard,  name: 'Gmail', nickname: 'Gmail'        }, 
+        { id: IMG.docs,       name: 'Yahoo Mail', nickname: 'Yahoo Mail'   },
+        { id: IMG.macbook,    name: 'Outlook', nickname: 'Outlook'      }, 
+        { id: IMG.writing,    name: 'Compose Mail', nickname: 'Compose' },
+        { id: IMG.docs,       name: 'Inbox', nickname: 'Inbox'        }, 
+        { id: IMG.analytics,  name: 'Sent', nickname: 'Sent'         },
+        { id: IMG.notebook,   name: 'Drafts', nickname: 'Drafts'       }, 
+        { id: IMG.security,   name: 'Spam', nickname: 'Spam'         },
+        { id: IMG.gadgets,    name: 'Attachment', nickname: 'Attach'   }, 
+        { id: IMG.mouse,      name: 'Reply', nickname: 'Reply'        },
+        { id: IMG.uiDesign,   name: 'Forward', nickname: 'Forward'      }
       ]},
       10: { title: 'Parts of a Computer', cards: [
-        { id: IMG.monitor,    name: 'Monitor'         },
-        { id: IMG.keyboard,   name: 'Keyboard'        },
-        { id: IMG.mouse,      name: 'Mouse'           },
-        { id: IMG.macbook,    name: 'System unit'     },
-        { id: IMG.headset,    name: 'Speakers'        },
-        { id: IMG.printer,    name: 'Printer'         },
-        { id: IMG.webcam,     name: 'Webcam'          },
-        { id: IMG.headphones, name: 'Microphone'      },
-        { id: IMG.headset,    name: 'Headset'         },
-        { id: IMG.printer,    name: 'Scanner'         },
-        { id: IMG.gadgets,    name: 'USB flash drive' },
-        { id: IMG.laptopSide, name: 'Touchpad'        }
+        { id: IMG.monitor,    name: 'Monitor', nickname: 'Monitor'         }, 
+        { id: IMG.keyboard,   name: 'Keyboard', nickname: 'Keyboard'        },
+        { id: IMG.mouse,      name: 'Mouse', nickname: 'Mouse'           }, 
+        { id: IMG.macbook,    name: 'System unit', nickname: 'System Unit'     },
+        { id: IMG.headset,    name: 'Speakers', nickname: 'Speakers'        }, 
+        { id: IMG.printer,    name: 'Printer', nickname: 'Printer'         },
+        { id: IMG.webcam,     name: 'Webcam', nickname: 'Webcam'          }, 
+        { id: IMG.headphones, name: 'Microphone', nickname: 'Mic'      },
+        { id: IMG.headset,    name: 'Headset', nickname: 'Headset'         }, 
+        { id: IMG.printer,    name: 'Scanner', nickname: 'Scanner'         },
+        { id: IMG.gadgets,    name: 'USB flash drive', nickname: 'USB Drive' }, 
+        { id: IMG.laptopSide, name: 'Touchpad', nickname: 'Touchpad'        }
       ]}
     },
     science: {
       1: { title: 'Matter', cards: [
-        { id: IMG.mountain, name: 'Rock'  },
-        { id: IMG.water,    name: 'Water' },
-        { id: IMG.clouds,   name: 'Air'   }
+        { id: IMG.mountain, name: 'Rock', nickname: 'Rock'  }, 
+        { id: IMG.water,    name: 'Water', nickname: 'Water' }, 
+        { id: IMG.clouds,   name: 'Air', nickname: 'Air'   }
       ]},
       2: { title: 'Solids', cards: [
-        { id: IMG.officeDesk, name: 'Chair' },
-        { id: IMG.workspace,  name: 'Desk'  },
-        { id: IMG.schoolBag,  name: 'Bag'   },
-        { id: IMG.bike,       name: 'Shoes' }
+        { id: IMG.officeDesk, name: 'Chair', nickname: 'Chair' }, 
+        { id: IMG.workspace,  name: 'Desk', nickname: 'Desk'  },
+        { id: IMG.schoolBag,  name: 'Bag', nickname: 'Bag'   }, 
+        { id: IMG.bike,       name: 'Shoes', nickname: 'Shoes' }
       ]},
       3: { title: 'Liquids', cards: [
-        { id: IMG.water,  name: 'Water'           },
-        { id: IMG.coffee, name: 'Coffee'          },
-        { id: IMG.coffee, name: 'Chocolate drink' },
-        { id: IMG.juice,  name: 'Juice'           },
-        { id: IMG.fruit,  name: 'Milk'            }
+        { id: IMG.water,  name: 'Water', nickname: 'Water'           }, 
+        { id: IMG.coffee, name: 'Coffee', nickname: 'Coffee'          },
+        { id: IMG.coffee, name: 'Chocolate drink', nickname: 'Choco' }, 
+        { id: IMG.juice,  name: 'Juice', nickname: 'Juice'           },
+        { id: IMG.fruit,  name: 'Milk', nickname: 'Milk'            }
       ]},
       4: { title: 'Gases', cards: [
-        { id: IMG.clouds,  name: 'Air'            },
-        { id: IMG.clouds2, name: 'Wind'           },
-        { id: IMG.forest,  name: 'Oxygen'         },
-        { id: IMG.sky,     name: 'Carbon dioxide' },
-        { id: IMG.clouds,  name: 'Water vapor'    },
-        { id: IMG.rainbow, name: 'Helium'         }
+        { id: IMG.clouds,  name: 'Air', nickname: 'Air'            }, 
+        { id: IMG.clouds2, name: 'Wind', nickname: 'Wind'           },
+        { id: IMG.forest,  name: 'Oxygen', nickname: 'Oxygen'         }, 
+        { id: IMG.sky,     name: 'Carbon dioxide', nickname: 'CO2' },
+        { id: IMG.clouds,  name: 'Water vapor', nickname: 'Vapor'    }, 
+        { id: IMG.rainbow, name: 'Helium', nickname: 'Helium'         }
       ]},
       5: { title: 'Properties of Matter', cards: [
-        { id: IMG.analytics, name: 'Mass'    },
-        { id: IMG.analytics, name: 'Weight'  },
-        { id: IMG.dashboard, name: 'Volume'  },
-        { id: IMG.uiDesign,  name: 'Shape'   },
-        { id: IMG.flower,    name: 'Color'   },
-        { id: IMG.leaves,    name: 'Texture' },
-        { id: IMG.flower2,   name: 'Smell'   }
+        { id: IMG.analytics, name: 'Mass', nickname: 'Mass'    }, 
+        { id: IMG.analytics, name: 'Weight', nickname: 'Weight'  },
+        { id: IMG.dashboard, name: 'Volume', nickname: 'Volume'  }, 
+        { id: IMG.uiDesign,  name: 'Shape', nickname: 'Shape'   },
+        { id: IMG.flower,    name: 'Color', nickname: 'Color'   }, 
+        { id: IMG.leaves,    name: 'Texture', nickname: 'Texture' },
+        { id: IMG.flower2,   name: 'Smell', nickname: 'Smell'   }
       ]},
       6: { title: 'Measuring Tools', cards: [
-        { id: IMG.analytics,  name: 'Platform balance'    },
-        { id: IMG.analytics,  name: 'Triple beam balance' },
-        { id: IMG.analytics,  name: 'Weighing scale'      },
-        { id: IMG.workspace,  name: 'Graduated cylinder'  },
-        { id: IMG.officeDesk, name: 'Meter stick'         },
-        { id: IMG.analytics,  name: 'Thermometer'         },
-        { id: IMG.workspace,  name: 'Measuring cup'       },
-        { id: IMG.soup,       name: 'Beaker'              }
+        { id: IMG.analytics,  name: 'Platform balance', nickname: 'Platform'    }, 
+        { id: IMG.analytics,  name: 'Triple beam balance', nickname: 'Triple Beam' },
+        { id: IMG.analytics,  name: 'Weighing scale', nickname: 'Scale'      }, 
+        { id: IMG.workspace,  name: 'Graduated cylinder', nickname: 'Cylinder'  },
+        { id: IMG.officeDesk, name: 'Meter stick', nickname: 'Meter Stick'         }, 
+        { id: IMG.analytics,  name: 'Thermometer', nickname: 'Thermo'         },
+        { id: IMG.workspace,  name: 'Measuring cup', nickname: 'Meas Cup'       }, 
+        { id: IMG.soup,       name: 'Beaker', nickname: 'Beaker'              }
       ]},
       7: { title: 'Units of Measurement', cards: [
-        { id: IMG.analytics,  name: 'Gram'             },
-        { id: IMG.analytics,  name: 'Kilogram'         },
-        { id: IMG.water,      name: 'Milliliter'       },
-        { id: IMG.water,      name: 'Liter'            },
-        { id: IMG.officeDesk, name: 'Centimeter'       },
-        { id: IMG.officeDesk, name: 'Meter'            },
-        { id: IMG.dashboard,  name: 'Cubic centimeter' },
-        { id: IMG.snow,       name: 'Degree Celsius'   },
-        { id: IMG.dashboard,  name: 'Cubic meter'      }
+        { id: IMG.analytics,  name: 'Gram', nickname: 'Gram'             }, 
+        { id: IMG.analytics,  name: 'Kilogram', nickname: 'Kg'         },
+        { id: IMG.water,      name: 'Milliliter', nickname: 'mL'       }, 
+        { id: IMG.water,      name: 'Liter', nickname: 'Liter'            },
+        { id: IMG.officeDesk, name: 'Centimeter', nickname: 'Cm'       }, 
+        { id: IMG.officeDesk, name: 'Meter', nickname: 'Meter'            },
+        { id: IMG.dashboard,  name: 'Cubic centimeter', nickname: 'Cu Cm' }, 
+        { id: IMG.snow,       name: 'Degree Celsius', nickname: 'Celsius'   },
+        { id: IMG.dashboard,  name: 'Cubic meter', nickname: 'Cu Meter'      }
       ]},
       8: { title: 'Physical Changes', cards: [
-        { id: IMG.snow,    name: 'Melting'          },
-        { id: IMG.snow,    name: 'Freezing'         },
-        { id: IMG.clouds,  name: 'Evaporation'      },
-        { id: IMG.clouds2, name: 'Condensation'     },
-        { id: IMG.soup,    name: 'Boiling'          },
-        { id: IMG.docs,    name: 'Cutting paper'    },
-        { id: IMG.docs,    name: 'Tearing paper'    },
-        { id: IMG.gadgets, name: 'Crushing a can'   },
-        { id: IMG.coffee,  name: 'Dissolving sugar' },
-        { id: IMG.docs,    name: 'Folding paper'    }
+        { id: IMG.snow,    name: 'Melting', nickname: 'Melting'          }, 
+        { id: IMG.snow,    name: 'Freezing', nickname: 'Freezing'         },
+        { id: IMG.clouds,  name: 'Evaporation', nickname: 'Evap'      }, 
+        { id: IMG.clouds2, name: 'Condensation', nickname: 'Condense'     },
+        { id: IMG.soup,    name: 'Boiling', nickname: 'Boiling'          }, 
+        { id: IMG.docs,    name: 'Cutting paper', nickname: 'Cut'    },
+        { id: IMG.docs,    name: 'Tearing paper', nickname: 'Tear'    }, 
+        { id: IMG.gadgets, name: 'Crushing a can', nickname: 'Crush'   },
+        { id: IMG.coffee,  name: 'Dissolving sugar', nickname: 'Dissolve' }, 
+        { id: IMG.docs,    name: 'Folding paper', nickname: 'Fold'    }
       ]},
       9: { title: 'Digestive System', cards: [
-        { id: IMG.face,      name: 'Mouth'           },
-        { id: IMG.face,      name: 'Teeth'           },
-        { id: IMG.face,      name: 'Salivary glands' },
-        { id: IMG.analytics, name: 'Esophagus'       },
-        { id: IMG.analytics, name: 'Stomach'         },
-        { id: IMG.analytics, name: 'Liver'           },
-        { id: IMG.analytics, name: 'Gallbladder'     },
-        { id: IMG.analytics, name: 'Pancreas'        },
-        { id: IMG.analytics, name: 'Small intestine' },
-        { id: IMG.analytics, name: 'Large intestine' },
-        { id: IMG.analytics, name: 'Rectum'          }
+        { id: IMG.face,      name: 'Mouth', nickname: 'Mouth'           }, 
+        { id: IMG.face,      name: 'Teeth', nickname: 'Teeth'           },
+        { id: IMG.face,      name: 'Salivary glands', nickname: 'Glands' }, 
+        { id: IMG.analytics, name: 'Esophagus', nickname: 'Esophagus'       },
+        { id: IMG.analytics, name: 'Liver', nickname: 'Liver'           }, 
+        { id: IMG.analytics, name: 'Gallbladder', nickname: 'Gallbladder'     },
+        { id: IMG.analytics, name: 'Pancreas', nickname: 'Pancreas'        }, 
+        { id: IMG.analytics, name: 'Small intestine', nickname: 'Small Int.' },
+        { id: IMG.analytics, name: 'Large intestine', nickname: 'Large Int.' }, 
+        { id: IMG.analytics, name: 'Rectum', nickname: 'Rectum'          }
       ]},
       10: { title: 'Respiratory System', cards: [
-        { id: IMG.face,      name: 'Nose'         },
-        { id: IMG.face,      name: 'Nasal cavity' },
-        { id: IMG.face,      name: 'Mouth'        },
-        { id: IMG.analytics, name: 'Pharynx'      },
-        { id: IMG.analytics, name: 'Larynx'       },
-        { id: IMG.analytics, name: 'Trachea'      },
-        { id: IMG.analytics, name: 'Bronchi'      },
-        { id: IMG.analytics, name: 'Bronchioles'  },
-        { id: IMG.analytics, name: 'Alveoli'      },
-        { id: IMG.analytics, name: 'Lungs'        },
-        { id: IMG.analytics, name: 'Diaphragm'    },
-        { id: IMG.analytics, name: 'Ribs'         }
+        { id: IMG.face,      name: 'Nose', nickname: 'Nose'         }, 
+        { id: IMG.face,      name: 'Nasal cavity', nickname: 'Nasal' },
+        { id: IMG.face,      name: 'Mouth', nickname: 'Mouth'        }, 
+        { id: IMG.analytics, name: 'Pharynx', nickname: 'Pharynx'      },
+        { id: IMG.analytics, name: 'Larynx', nickname: 'Larynx'       }, 
+        { id: IMG.analytics, name: 'Trachea', nickname: 'Trachea'      },
+        { id: IMG.analytics, name: 'Bronchi', nickname: 'Bronchi'      }, 
+        { id: IMG.analytics, name: 'Bronchioles', nickname: 'Bronchioles'  },
+        { id: IMG.analytics, name: 'Alveoli', nickname: 'Alveoli'      }, 
+        { id: IMG.analytics, name: 'Lungs', nickname: 'Lungs'        },
+        { id: IMG.analytics, name: 'Diaphragm', nickname: 'Diaphragm'    }, 
+        { id: IMG.analytics, name: 'Ribs', nickname: 'Ribs'         }
       ]}
     },
     ap: {
       1: { title: 'Bodies of Water', cards: [
-        { id: IMG.ocean, name: 'Pacific Ocean' },
-        { id: IMG.river, name: 'Pasig River'   },
-        { id: IMG.lake,  name: 'Laguna de Bay' }
+        { id: IMG.ocean, name: 'Pacific Ocean', nickname: 'Pacific' }, 
+        { id: IMG.river, name: 'Pasig River', nickname: 'Pasig'   }, 
+        { id: IMG.lake,  name: 'Laguna de Bay', nickname: 'Laguna' }
       ]},
       2: { title: 'Landforms', cards: [
-        { id: IMG.mountain,   name: 'Mount Apo'           },
-        { id: IMG.mountains2, name: 'Mayon Volcano'       },
-        { id: IMG.mountains2, name: 'Chocolate Hills'     },
-        { id: IMG.forest,     name: 'Central Luzon Plain' }
+        { id: IMG.mountain,   name: 'Mount Apo', nickname: 'Mt. Apo'           }, 
+        { id: IMG.mountains2, name: 'Mayon Volcano', nickname: 'Mayon'       },
+        { id: IMG.mountains2, name: 'Chocolate Hills', nickname: 'Choco Hills'     }, 
+        { id: IMG.forest,     name: 'Central Luzon Plain', nickname: 'Central Luzon' }
       ]},
       3: { title: 'Southeast Asian Neighbors', cards: [
-        { id: IMG.city,      name: 'Malaysia'  },
-        { id: IMG.island,    name: 'Indonesia' },
-        { id: IMG.river,     name: 'Vietnam'   },
-        { id: IMG.town,      name: 'Thailand'  },
-        { id: IMG.buildings, name: 'Brunei'    }
+        { id: IMG.city,      name: 'Malaysia', nickname: 'Malaysia'  }, 
+        { id: IMG.island,    name: 'Indonesia', nickname: 'Indonesia' },
+        { id: IMG.river,     name: 'Vietnam', nickname: 'Vietnam'   }, 
+        { id: IMG.town,      name: 'Thailand', nickname: 'Thailand'  },
+        { id: IMG.buildings, name: 'Brunei', nickname: 'Brunei'    }
       ]},
       4: { title: 'Weather and Climate Terms', cards: [
-        { id: IMG.clouds,  name: 'Weather'     },
-        { id: IMG.sunset,  name: 'Climate'     },
-        { id: IMG.sunset,  name: 'Temperature' },
-        { id: IMG.clouds2, name: 'Humidity'    },
-        { id: IMG.clouds,  name: 'Rainfall'    },
-        { id: IMG.storm,   name: 'PAGASA'      }
+        { id: IMG.clouds,  name: 'Weather', nickname: 'Weather'     }, 
+        { id: IMG.sunset,  name: 'Climate', nickname: 'Climate'     },
+        { id: IMG.sunset,  name: 'Temperature', nickname: 'Temp' }, 
+        { id: IMG.clouds2, name: 'Humidity', nickname: 'Humidity'    },
+        { id: IMG.clouds,  name: 'Rainfall', nickname: 'Rainfall'    }, 
+        { id: IMG.storm,   name: 'PAGASA', nickname: 'PAGASA'      }
       ]},
       5: { title: 'Climate and Seasons', cards: [
-        { id: IMG.clouds,  name: 'Rainy season'     },
-        { id: IMG.sunset,  name: 'Dry season'       },
-        { id: IMG.clouds2, name: 'Cool dry season'  },
-        { id: IMG.sunset2, name: 'Hot dry season'   },
-        { id: IMG.sunset,  name: 'May'              },
-        { id: IMG.snow,    name: 'January'          },
-        { id: IMG.forest,  name: 'Tropical climate' }
+        { id: IMG.clouds,  name: 'Rainy season', nickname: 'Rainy'     }, 
+        { id: IMG.sunset,  name: 'Dry season', nickname: 'Dry'       },
+        { id: IMG.clouds2, name: 'Cool dry season', nickname: 'Cool Dry'  }, 
+        { id: IMG.sunset2, name: 'Hot dry season', nickname: 'Hot Dry'   },
+        { id: IMG.sunset,  name: 'May', nickname: 'May'              }, 
+        { id: IMG.snow,    name: 'January', nickname: 'Jan'          },
+        { id: IMG.forest,  name: 'Tropical climate', nickname: 'Tropical' }
       ]},
       6: { title: 'Island Groups and Major Islands', cards: [
-        { id: IMG.mountains2, name: 'Luzon'    },
-        { id: IMG.island,     name: 'Visayas'  },
-        { id: IMG.island,     name: 'Mindanao' },
-        { id: IMG.beach,      name: 'Palawan'  },
-        { id: IMG.island,     name: 'Mindoro'  },
-        { id: IMG.island,     name: 'Samar'    },
-        { id: IMG.beach,      name: 'Leyte'    },
-        { id: IMG.city,       name: 'Cebu'     }
+        { id: IMG.mountains2, name: 'Luzon', nickname: 'Luzon'    }, 
+        { id: IMG.island,     name: 'Visayas', nickname: 'Visayas'  },
+        { id: IMG.island,     name: 'Mindanao', nickname: 'Mindanao' }, 
+        { id: IMG.beach,      name: 'Palawan', nickname: 'Palawan'  },
+        { id: IMG.island,     name: 'Mindoro', nickname: 'Mindoro'  }, 
+        { id: IMG.island,     name: 'Samar', nickname: 'Samar'    },
+        { id: IMG.beach,      name: 'Leyte', nickname: 'Leyte'    }, 
+        { id: IMG.city,       name: 'Cebu', nickname: 'Cebu'     }
       ]},
       7: { title: 'More Landforms and Bodies of Water', cards: [
-        { id: IMG.mountain,   name: 'Mount Pulag'    },
-        { id: IMG.mountains2, name: 'Mount Pinatubo' },
-        { id: IMG.lake2,      name: 'Taal Volcano'   },
-        { id: IMG.river,      name: 'Cagayan River'  },
-        { id: IMG.river,      name: 'Agusan River'   },
-        { id: IMG.lake,       name: 'Lake Lanao'     },
-        { id: IMG.ocean,      name: 'Subic Bay'      },
-        { id: IMG.ocean,      name: 'Davao Gulf'     },
-        { id: IMG.ocean,      name: 'Sibuyan Sea'    }
+        { id: IMG.mountain,   name: 'Mount Pulag', nickname: 'Mt. Pulag'    }, 
+        { id: IMG.mountains2, name: 'Mount Pinatubo', nickname: 'Pinatubo' },
+        { id: IMG.lake2,      name: 'Taal Volcano', nickname: 'Taal'   }, 
+        { id: IMG.river,      name: 'Cagayan River', nickname: 'Cagayan'  },
+        { id: IMG.river,      name: 'Agusan River', nickname: 'Agusan'   }, 
+        { id: IMG.lake,       name: 'Lake Lanao', nickname: 'Lanao'     },
+        { id: IMG.ocean,      name: 'Subic Bay', nickname: 'Subic'      }, 
+        { id: IMG.ocean,      name: 'Davao Gulf', nickname: 'Davao'     },
+        { id: IMG.ocean,      name: 'Sibuyan Sea', nickname: 'Sibuyan'    }
       ]},
       8: { title: 'Ancient Filipino Society and Life', cards: [
-        { id: IMG.town,      name: 'Barangay'   },
-        { id: IMG.face,      name: 'Datu'       },
-        { id: IMG.police,    name: 'Maharlika'  },
-        { id: IMG.farmer,    name: 'Timawa'     },
-        { id: IMG.farmer,    name: 'Alipin'     },
-        { id: IMG.tradition, name: 'Babaylan'   },
-        { id: IMG.boat,      name: 'Balangay'   },
-        { id: IMG.weaving,   name: 'Baybayin'   },
-        { id: IMG.houses,    name: 'Bahay Kubo' },
-        { id: IMG.farmer,    name: 'Panday'     }
+        { id: IMG.face,      name: 'Datu', nickname: 'Datu'       }, 
+        { id: IMG.police,    name: 'Maharlika', nickname: 'Maharlika'  },
+        { id: IMG.farmer,    name: 'Timawa', nickname: 'Timawa'     }, 
+        { id: IMG.tradition, name: 'Babaylan', nickname: 'Babaylan'   },
+        { id: IMG.boat,      name: 'Balangay', nickname: 'Balangay'   }, 
+        { id: IMG.weaving,   name: 'Baybayin', nickname: 'Baybayin'   },
+        { id: IMG.houses,    name: 'Bahay Kubo', nickname: 'Bahay Kubo' }, 
+        { id: IMG.farmer,    name: 'Panday', nickname: 'Panday'     }
       ]},
       9: { title: 'Material Culture', cards: [
-        { id: IMG.tradition,    name: 'Manunggul Jar'      },
-        { id: IMG.riceTerraces, name: 'Banaue Rice Terraces'},
-        { id: IMG.weaving,      name: 'Bulul'              },
-        { id: IMG.phHistory,    name: 'Laguna Copperplate' },
-        { id: IMG.costume,      name: 'Golden Tara'        },
-        { id: IMG.phHistory,    name: 'Tabon Cave'         },
-        { id: IMG.phHistory,    name: 'Angono Petroglyphs' },
-        { id: IMG.buildings,    name: 'Fort Santiago'      },
-        { id: IMG.church,       name: 'San Agustin Church' },
-        { id: IMG.houses,       name: 'Bahay na Bato'      },
-        { id: IMG.church,       name: 'Barasoain Church'   }
+        { id: IMG.tradition,    name: 'Manunggul Jar', nickname: 'Manunggul'      }, 
+        { id: IMG.riceTerraces, name: 'Banaue Rice Terraces', nickname: 'Banaue'},
+        { id: IMG.weaving,      name: 'Bulul', nickname: 'Bulul'              }, 
+        { id: IMG.phHistory,    name: 'Laguna Copperplate', nickname: 'Copperplate' },
+        { id: IMG.costume,      name: 'Golden Tara', nickname: 'Golden Tara'        }, 
+        { id: IMG.phHistory,    name: 'Tabon Cave', nickname: 'Tabon'         },
+        { id: IMG.phHistory,    name: 'Angono Petroglyphs', nickname: 'Angono' }, 
+        { id: IMG.buildings,    name: 'Fort Santiago', nickname: 'Fort Santiago'      },
+        { id: IMG.church,       name: 'San Agustin Church', nickname: 'San Agustin' }, 
+        { id: IMG.houses,       name: 'Bahay na Bato', nickname: 'Bahay na Bato'      },
+        { id: IMG.church,       name: 'Barasoain Church', nickname: 'Barasoain'   }
       ]},
       10: { title: 'Non-Material Culture', cards: [
-        { id: IMG.books,         name: 'Hudhud'           },
-        { id: IMG.books,         name: 'Biag ni Lam-ang'  },
-        { id: IMG.books,         name: 'Alamat'           },
-        { id: IMG.books,         name: 'Bugtong'          },
-        { id: IMG.books,         name: 'Salawikain'       },
-        { id: IMG.motherChild,   name: 'Kundiman'         },
-        { id: IMG.culturalDance, name: 'Tinikling'        },
-        { id: IMG.culturalDance, name: 'Singkil'          },
-        { id: IMG.culturalDance, name: 'Pandanggo sa Ilaw'},
-        { id: IMG.festival,      name: 'Fiesta'           },
-        { id: IMG.tradition,     name: 'Pamahiin'         },
-        { id: IMG.family,        name: 'Mano po'          }
+        { id: IMG.books,         name: 'Hudhud', nickname: 'Hudhud'           }, 
+        { id: IMG.books,         name: 'Biag ni Lam-ang', nickname: 'Lam-ang'  },
+        { id: IMG.books,         name: 'Alamat', nickname: 'Alamat'           }, 
+        { id: IMG.books,         name: 'Bugtong', nickname: 'Bugtong'          },
+        { id: IMG.books,         name: 'Salawikain', nickname: 'Salawikain'       }, 
+        { id: IMG.motherChild,   name: 'Kundiman', nickname: 'Kundiman'         },
+        { id: IMG.culturalDance, name: 'Tinikling', nickname: 'Tinikling'        }, 
+        { id: IMG.culturalDance, name: 'Singkil', nickname: 'Singkil'          },
+        { id: IMG.culturalDance, name: 'Pandanggo sa Ilaw', nickname: 'Pandanggo'}, 
+        { id: IMG.festival,      name: 'Fiesta', nickname: 'Fiesta'           },
+        { id: IMG.tradition,     name: 'Pamahiin', nickname: 'Pamahiin'         }, 
+        { id: IMG.family,        name: 'Mano po', nickname: 'Mano po'          }
       ]}
     }
   };
@@ -1207,7 +854,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   function getCardLabel(pairIndex) {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
-    return entry ? entry.name : topicInfo.title;
+    return entry ? (entry.nickname || entry.name) : topicInfo.title;
   }
   function makePlaceholderDataUri(label) {
     const safe = String(label).replace(/[<>&"']/g, '');
@@ -1533,11 +1180,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   const SPECIAL_PAIRS = [
-    [-1, -1],
-    [-2, -3],
-    [-4, -4],
-    [-5, -5],
-    [-6, -6]
+    [-1, -1], [-2, -3], [-4, -4], [-5, -5], [-6, -6]
   ];
 
   function isSpecialMatch(pairA, pairB) {
@@ -1670,7 +1313,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2200);
   }
 
-    function showFloatingTimeBonus(seconds) {
+  function showFloatingTimeBonus(seconds) {
     const anchor = document.getElementById('timerDisplay');
     if (!anchor) return;
     const rect = anchor.getBoundingClientRect();
@@ -1793,6 +1436,8 @@ document.addEventListener('DOMContentLoaded', function() {
       front.appendChild(labelEl);
     } else {
       front.className = 'card-face card-face-front';
+      const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
+      
       const img = document.createElement('img');
       img.className = 'card-image';
       const cardName = getCardLabel(pairIndex);
@@ -1801,6 +1446,12 @@ document.addEventListener('DOMContentLoaded', function() {
       img.draggable = false;
       attachImageFallback(img, pairIndex);
       front.appendChild(img);
+
+      // Add the Nickname Label to the bottom of the image
+      const nameLabel = document.createElement('div');
+      nameLabel.className = 'card-name-label';
+      nameLabel.textContent = entry.nickname || entry.name;
+      front.appendChild(nameLabel);
     }
   }
 
@@ -1841,7 +1492,7 @@ document.addEventListener('DOMContentLoaded', function() {
       badge.appendChild(iconImg);
       const subjectLabel = document.createElement('span');
       subjectLabel.className = 'card-subject-name';
-      subjectLabel.textContent = subjectInfo.name;
+      subjectLabel.textContent = subjectInfo.shortName; // Short name here!
       badge.appendChild(subjectLabel);
       back.appendChild(badge);
       inner.appendChild(back);
@@ -1921,7 +1572,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-   function checkMatch() {
+  function checkMatch() {
     isLocked = true;
     const [first, second] = flippedCards;
     const isPairNormal  = (first.pair === second.pair && first.pair >= 0);
@@ -2365,9 +2016,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ============================================================
   // PRE-LEVEL QUIZ — appears for every level EXCEPT level 1
-  // Asks 1 multiple-choice question about the PREVIOUS level
-  // NOTE: kept inside DOMContentLoaded so it can see subjectTopics,
-  //       shuffle, level, stopTimer, isLocked, gameStarted
   // ============================================================
   function buildQuizQuestion(prevLevel) {
     const prevTopic = subjectTopics[prevLevel];
@@ -2457,7 +2105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (isCorrect) {
           pendingQuizBonus = 10;
-           if (timerDisplay) {
+          if (timerDisplay) {
             timerDisplay.textContent = formatTime(secondsLeft + pendingQuizBonus);
             timerDisplay.classList.add('timer-bonus');
             setTimeout(() => timerDisplay.classList.remove('timer-bonus'), 800);
@@ -2798,9 +2446,6 @@ document.addEventListener('DOMContentLoaded', function() {
   updateStarProgress();
   applyNoScrollLayout();
 
-  // 1. Quiz first (L2-10). For L1, onComplete fires immediately.
-  // 2. Then tutorial if unseen (L1 or L6).
-  // 3. Player ready — first card click starts the timer.
   showPreLevelQuiz(function () {
     if (level === 1 && pGet('tutorialSeen', null) !== '1') {
       initTutorial();
