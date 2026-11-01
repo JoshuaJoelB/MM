@@ -55,12 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
   `;
   document.body.appendChild(audioLoader);
 
-  function showAudioLoader() {
-    audioLoader.style.opacity = '1';
-  }
-  function hideAudioLoader() {
-    audioLoader.style.opacity = '0';
-  }
+  function showAudioLoader() { audioLoader.style.opacity = '1'; }
+  function hideAudioLoader() { audioLoader.style.opacity = '0'; }
 
   // ============================================================
   // CONFETTI
@@ -262,7 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Using bad words':    'Using bad words',
     'computer:5:Fake news':          'fake news',
 
-    // ---- EPP Level 6 ----
     'computer:6:Kind words':         'kind words',
     'computer:6:Ask permission':     'Ask permission before posting others_ photos',
     'computer:6:Be respectful':      'Be respectful in online class',
@@ -271,7 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:6:Using bad words':    'Using bad words',
     'computer:6:Fake news':          'fake news',
 
-    // ---- EPP Level 7 ----
     'computer:7:Browser window buttons': 'Browser window buttons',
     'computer:7:Tab name':               'tab name',
     'computer:7:Navigation buttons':     'navigation button',
@@ -282,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:7:Display window':         'Display window buttons',
     'computer:7:Scroll bar':             'scroll bar',
 
-    // ---- EPP Level 8 ----
     'computer:8:Username':    'usemname',
     'computer:8:Domain name': 'domainname',
     'computer:8:Domain type': 'domain type',
@@ -294,7 +287,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:8:Attach File': 'attachfile',
     'computer:8:Send':        'send',
 
-    // ---- EPP Level 9 ----
     'computer:9:Gmail':        'gmail',
     'computer:9:Yahoo Mail':   'yahoo mail',
     'computer:9:Outlook':      'out look',
@@ -307,7 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:9:Reply':        'reply',
     'computer:9:Forward':      'forward',
 
-    // ---- EPP Level 10 ----
     'computer:10:Monitor':         'monitor',
     'computer:10:Keyboard':        'keyboard',
     'computer:10:Mouse':           'mouse',
@@ -506,8 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:5:Sharing password':   'sharing your password',
     'computer:5:Using bad words':    'using bad words',
     'computer:5:Fake news':          'spreading fake news',
-    
-    // ---- EPP Level 6 ----
+
     'computer:6:Kind words':         'kind words',
     'computer:6:Ask permission':     'Ask permission before posting others_ photos',
     'computer:6:Be respectful':      'Be respectful in online class',
@@ -1276,7 +1266,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const AUDIO_BUDGET_MS  = 3000;
   const AUDIO_PER_TRY_MS = 400;
 
-  // Web Audio API context for boosting volume above 100%
   let voiceAudioCtx = null;
   function getVoiceCtx() {
     if (!voiceAudioCtx) {
@@ -1342,7 +1331,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const src = candidates[idx++];
         const audio = new Audio();
         audio.preload = 'auto';
-        audio.crossOrigin = 'anonymous'; // Required for Web Audio API boosting
+        audio.crossOrigin = 'anonymous';
 
         let settled = false;
         const perTry = setTimeout(function () {
@@ -1357,17 +1346,13 @@ document.addEventListener('DOMContentLoaded', function() {
           settled = true;
           clearTimeout(perTry);
 
-          // 🎵 BOOST VOLUME USING WEB AUDIO API
           const ctx = getVoiceCtx();
           if (ctx) {
             if (ctx.state === 'suspended') ctx.resume().catch(function(){});
             try {
               const source = ctx.createMediaElementSource(audio);
               const gainNode = ctx.createGain();
-              
-              // 🔥 ADJUST THE BOOST HERE (1.0 is normal, 3.0 is 300%)
-              gainNode.gain.value = 2.5; 
-              
+              gainNode.gain.value = 2.5;
               source.connect(gainNode);
               gainNode.connect(ctx.destination);
             } catch (err) {
@@ -1375,7 +1360,7 @@ document.addEventListener('DOMContentLoaded', function() {
               audio.volume = 1.0;
             }
           } else {
-            audio.volume = 1.0; // Fallback
+            audio.volume = 1.0;
           }
 
           const p = audio.play();
@@ -1468,7 +1453,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     showCharacterDialog(title);
 
-    // 🎵 PAUSE BACKGROUND MUSIC WHILE SPEAKING
     if (window.MMBgMusic) window.MMBgMusic.pause();
 
     let typingDone   = false;
@@ -1484,8 +1468,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try { currentAudio.pause(); } catch (e) {}
             currentAudio = null;
           }
-          
-          // 🎵 RESUME BACKGROUND MUSIC WHEN DONE
+
           if (window.MMBgMusic) window.MMBgMusic.play();
 
           const cb = dialogOnDone;
@@ -1538,6 +1521,95 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
+  // SPECIAL CARDS DEFINITION & PAIRS (LEVEL 6+)
+  // ============================================================
+  const SPECIAL_CARDS = {
+    '-1': { type: 'bomb',    emoji: '💣', icon: 'fa-bomb',      label: 'Bomb',       class: 'special-bomb'    },
+    '-2': { type: 'key',     emoji: '🔑', icon: 'fa-key',       label: 'Key',        class: 'special-key'     },
+    '-3': { type: 'lock',    emoji: '🔒', icon: 'fa-lock',      label: 'Lock',       class: 'special-lock'    },
+    '-4': { type: 'freeze',  emoji: '❄️', icon: 'fa-snowflake', label: 'Freeze',     class: 'special-freeze'  },
+    '-5': { type: 'shuffle', emoji: '🔄', icon: 'fa-shuffle',   label: 'Shuffle',    class: 'special-shuffle' },
+    '-6': { type: 'gem',     emoji: '💎', icon: 'fa-gem',       label: 'Multiplier', class: 'special-gem'     }
+  };
+
+  const SPECIAL_PAIRS = [
+    [-1, -1],
+    [-2, -3],
+    [-4, -4],
+    [-5, -5],
+    [-6, -6]
+  ];
+
+  function isSpecialMatch(pairA, pairB) {
+    if (pairA >= 0 || pairB >= 0) return false;
+    if (pairA === -1 && pairB === -1) return true;
+    if ((pairA === -2 && pairB === -3) || (pairA === -3 && pairB === -2)) return true;
+    if (pairA === -4 && pairB === -4) return true;
+    if (pairA === -5 && pairB === -5) return true;
+    if (pairA === -6 && pairB === -6) return true;
+    return false;
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // ============================================================
+  // DECK GENERATION
+  // ============================================================
+  function buildDeck() {
+    if (level <= 5) {
+      const cardCount = 4 + (level - 1) * 2;
+      const numPairs = cardCount / 2;
+      const d = [];
+      for (let i = 0; i < numPairs; i++) {
+        d.push(i);
+        d.push(i);
+      }
+      return shuffle(d);
+    } else {
+      const numSpecialPairs = (level >= 8) ? 3 : 2;
+      const normalPairsCount = 6 - numSpecialPairs;
+      const d = [];
+
+      const topicCardTotal = (topicInfo && topicInfo.cards) ? topicInfo.cards.length : 6;
+      const availableIndices = [];
+      for (let i = 0; i < topicCardTotal; i++) availableIndices.push(i);
+      const shuffledIndices = shuffle(availableIndices).slice(0, normalPairsCount);
+      shuffledIndices.forEach(p => {
+        d.push(p);
+        d.push(p);
+      });
+
+      const chosenSpecials = [];
+      if (level === 6 && pGet('specialTutorialSeen', null) !== '1') {
+        chosenSpecials.push([-1, -1]);
+        chosenSpecials.push([-2, -3]);
+      } else {
+        const pool = shuffle([...SPECIAL_PAIRS]);
+        for (let s = 0; s < numSpecialPairs; s++) {
+          chosenSpecials.push(pool[s % pool.length]);
+        }
+      }
+
+      chosenSpecials.forEach(sp => {
+        d.push(sp[0]);
+        d.push(sp[1]);
+      });
+
+      return shuffle(d);
+    }
+  }
+
+  let deck = buildDeck();
+  let totalCards = deck.length;
+  let pairs      = totalCards / 2;
+
+  // ============================================================
   // CARD MATH + STAR BAR
   // ============================================================
   const STAR_THRESHOLDS = [5, 30, 52];
@@ -1564,6 +1636,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const GAME_DURATION = 120;
   let secondsLeft = GAME_DURATION;
+  let isTimerFrozen = false;
+  let freezeTimeout = null;
 
   function formatTime(secs) {
     secs = Math.max(0, Math.floor(secs));
@@ -1572,59 +1646,69 @@ document.addEventListener('DOMContentLoaded', function() {
     return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
 
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+  // ============================================================
+  // COMBO SYSTEM
+  // ============================================================
+  let comboCount  = 0;
+  let bonusPoints = 0;
+
+  function showComboToast(message) {
+    const existing = document.querySelector('.combo-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'combo-toast';
+    toast.innerHTML = message;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('visible'));
+
+    setTimeout(() => {
+      toast.classList.remove('visible');
+      setTimeout(() => {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 400);
+    }, 2200);
+  }
+
+    function showFloatingTimeBonus(seconds) {
+    const anchor = document.getElementById('timerDisplay');
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+
+    const el = document.createElement('div');
+    el.className = 'floating-time-bonus';
+    el.textContent = '+' + seconds + 's';
+    el.style.left = (rect.left + rect.width / 2) + 'px';
+    el.style.top  = (rect.top + rect.height / 2) + 'px';
+    document.body.appendChild(el);
+
+    setTimeout(() => {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 1400);
   }
 
   // ============================================================
-  // SPECIAL CARDS (negative deck values)
+  // GRID LAYOUT
   // ============================================================
-  const SPECIAL_IDS = { BOMB: -1, KEY: -2, LOCK: -3, FREEZE: -4, SHUFFLE: -5, GEM: -6 };
-  const SPECIAL_INFO = {
-    [-1]: { type: 'bomb',    label: 'Bomb',        icon: 'fa-bomb' },
-    [-2]: { type: 'key',     label: 'Key',         icon: 'fa-key' },
-    [-3]: { type: 'lock',    label: 'Lock',        icon: 'fa-lock' },
-    [-4]: { type: 'freeze',  label: 'Time Freeze', icon: 'fa-snowflake' },
-    [-5]: { type: 'shuffle', label: 'Shuffle',     icon: 'fa-shuffle' },
-    [-6]: { type: 'gem',     label: 'Multiplier',  icon: 'fa-gem' }
-  };
-  function isSpecialValue(v) { return typeof v === 'number' && v < 0; }
-
-  // Normal pairs: 2 (level 1) → 6 (level 5), capped at 6 for level 6+.
-  const normalPairs = Math.min(level + 1, 6);
-
-  function buildSpecialSelection(lvl) {
-    const all = [
-      [SPECIAL_IDS.BOMB, SPECIAL_IDS.BOMB],
-      [SPECIAL_IDS.KEY,  SPECIAL_IDS.LOCK],
-      [SPECIAL_IDS.FREEZE, SPECIAL_IDS.FREEZE],
-      [SPECIAL_IDS.SHUFFLE, SPECIAL_IDS.SHUFFLE],
-      [SPECIAL_IDS.GEM, SPECIAL_IDS.GEM]
-    ];
-    if (lvl === 6) {
-      // Level 6 always carries Bomb + Key/Lock so the tutorial can point at them.
-      const mandatory = [all[0], all[1]];
-      const extras = shuffle(all.slice(2));
-      return mandatory.concat(extras.slice(0, Math.random() < 0.6 ? 1 : 0));
-    }
-    return shuffle(all).slice(0, 2 + Math.floor(Math.random() * 2)); // 2 or 3
+  function getGridCols(count) {
+    if (count <= 4) return 2;
+    if (count <= 6) return 3;
+    if (count <= 8) return 4;
+    if (count <= 10) return 5;
+    if (count <= 12) return 4;
+    if (count <= 16) return 4;
+    if (count <= 18) return 6;
+    if (count <= 20) return 5;
+    return 4;
   }
 
-  let deck = [];
-  for (let i = 0; i < normalPairs; i++) { deck.push(i); deck.push(i); }
-  if (level >= 6) {
-    buildSpecialSelection(level).forEach(function (pairArr) {
-      deck.push(pairArr[0], pairArr[1]);
-    });
+  function applyNoScrollLayout() {
+    const board = document.querySelector('.gameplay-board');
+    if (!board) return;
+    board.style.height = 'auto';
+    board.style.maxHeight = 'none';
   }
-  deck = shuffle(deck);
-
-  // Total number of pairs = number of cards / 2.
-  const pairs = deck.length / 2;
+  window.addEventListener('resize', applyNoScrollLayout);
 
   // ============================================================
   // DOM REFS
@@ -1655,22 +1739,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let timerInterval = null;
   let gameStarted   = false;
   let gameFinished  = false;
-  let comboCount    = 0;
-  let frozen        = false;
-
-  // ---- Transient toast notification ----
-  let toastEl = null;
-  function showToast(text) {
-    if (!toastEl) {
-      toastEl = document.createElement('div');
-      toastEl.className = 'game-toast';
-      document.body.appendChild(toastEl);
-    }
-    toastEl.textContent = text;
-    toastEl.classList.add('show');
-    clearTimeout(toastEl.__t);
-    toastEl.__t = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
-  }
+  let pendingQuizBonus = 0;   // seconds earned from a correct pre-level quiz
 
   if (levelDisplay) levelDisplay.textContent = level;
 
@@ -1683,7 +1752,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (existing) existing.remove();
     const topicEl = document.createElement('p');
     topicEl.className = 'gameplay-topic-title';
-    topicEl.textContent = `Level ${level}: ${topicInfo.title}`;
+    topicEl.textContent = 'Level ' + level + ': ' + topicInfo.title;
     subjectTitleEl.insertAdjacentElement('afterend', topicEl);
   })();
 
@@ -1696,74 +1765,66 @@ document.addEventListener('DOMContentLoaded', function() {
     return Array.isArray(arr) && arr.indexOf(level + 1) !== -1;
   }
 
-  function getGridLayout(total) {
-    if (total <= 4)  return [2, 2];
-    if (total <= 6)  return [3, 2];
-    if (total <= 8)  return [4, 2];
-    if (total <= 10) return [5, 2];
-    if (total <= 12) return [4, 3];
-    if (total <= 14) return [5, 3];
-    if (total <= 16) return [4, 4];
-    return [6, 3]; // 18 cards
-  }
+  function renderCardFront(front, pairIndex) {
+    front.innerHTML = '';
+    if (pairIndex < 0) {
+      const spec = SPECIAL_CARDS[String(pairIndex)] || {
+        type: 'special', emoji: '⭐', icon: 'fa-star', label: 'Special', class: 'special-gem'
+      };
+      front.className = 'card-face card-face-front card-special-face ' + spec.class;
 
-  function fitBoardToScreen() {
-    const board = document.querySelector('.gameplay-board');
-    if (!board) return;
-    const navbar = document.querySelector('.gameplay-navbar');
-    const subheader = document.querySelector('.gameplay-subheader');
-    let headerH = 0;
-    if (navbar) headerH += navbar.offsetHeight;
-    if (subheader) headerH += subheader.offsetHeight;
-    board.style.height = 'calc(100vh - ' + headerH + 'px)';
-    board.style.flex = '0 0 auto';
-  }
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'special-card-icon-wrap';
 
-  function applyGridLayout() {
-    if (!grid) return;
-    const layout = getGridLayout(deck.length);
-    grid.style.gridTemplateColumns = 'repeat(' + layout[0] + ', 1fr)';
-    grid.style.gridTemplateRows    = 'repeat(' + layout[1] + ', 1fr)';
-    fitBoardToScreen();
-  }
+      const iconEl = document.createElement('i');
+      iconEl.className = 'fas ' + spec.icon + ' special-card-fa';
+      iconWrap.appendChild(iconEl);
 
-  window.addEventListener('resize', fitBoardToScreen);
+      const emojiEl = document.createElement('span');
+      emojiEl.className = 'special-card-emoji';
+      emojiEl.textContent = spec.emoji;
+      iconWrap.appendChild(emojiEl);
 
-  function buildFrontFace(pairValue) {
-    const front = document.createElement('div');
-    front.className = 'card-face card-face-front';
-    if (isSpecialValue(pairValue)) {
-      const info = SPECIAL_INFO[pairValue] || { type: 'special', label: 'Special', icon: 'fa-star' };
-      front.classList.add('card-special');
-      front.classList.add('special-' + info.type);
-      const icon = document.createElement('i');
-      icon.className = 'fas ' + info.icon + ' card-special-icon';
-      const label = document.createElement('span');
-      label.className = 'card-special-label';
-      label.textContent = info.label;
-      front.appendChild(icon);
-      front.appendChild(label);
+      const labelEl = document.createElement('span');
+      labelEl.className = 'special-card-label';
+      labelEl.textContent = spec.label;
+
+      front.appendChild(iconWrap);
+      front.appendChild(labelEl);
     } else {
+      front.className = 'card-face card-face-front';
       const img = document.createElement('img');
       img.className = 'card-image';
-      const cardName = getCardLabel(pairValue);
-      img.alt = `${topicInfo.title} — ${cardName}`;
+      const cardName = getCardLabel(pairIndex);
+      img.alt = topicInfo.title + ' — ' + cardName;
       img.loading = 'eager';
       img.draggable = false;
-      attachImageFallback(img, pairValue);
+      attachImageFallback(img, pairIndex);
       front.appendChild(img);
     }
-    return front;
   }
 
   function renderCards() {
     if (!grid) return;
     grid.innerHTML = '';
-    deck.forEach((pairValue, index) => {
+
+    const cols = getGridCols(deck.length);
+    grid.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
+    grid.style.gridTemplateRows = '';
+    grid.classList.toggle('grid-5col', cols === 5);
+
+    if (cols === 2)      grid.style.maxWidth = '380px';
+    else if (cols === 3) grid.style.maxWidth = '570px';
+    else if (cols === 4) grid.style.maxWidth = '760px';
+    else if (cols === 5) grid.style.maxWidth = '1000px';
+    else                 grid.style.maxWidth = '760px';
+
+    deck.forEach((pairIndex, index) => {
       const div = document.createElement('div');
       div.className = 'card-item';
+      if (pairIndex < 0) div.classList.add('card-special');
       div.dataset.index = index;
-      div.dataset.pair  = pairValue;
+      div.dataset.pair  = pairIndex;
 
       const inner = document.createElement('div');
       inner.className = 'card-inner';
@@ -1785,13 +1846,16 @@ document.addEventListener('DOMContentLoaded', function() {
       back.appendChild(badge);
       inner.appendChild(back);
 
-      inner.appendChild(buildFrontFace(pairValue));
+      const front = document.createElement('div');
+      renderCardFront(front, pairIndex);
+      inner.appendChild(front);
 
       div.appendChild(inner);
       div.addEventListener('click', () => onCardClick(index));
       grid.appendChild(div);
     });
-    applyGridLayout();
+
+    applyNoScrollLayout();
   }
 
   function updateStarProgress() {
@@ -1808,7 +1872,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function startTimer() {
     if (timerInterval || gameFinished) return;
     timerInterval = setInterval(() => {
-      if (dialogActive || frozen) return;
+      if (dialogActive || isTimerFrozen) return;
       secondsLeft--;
       if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
       barPercent = Math.max(0, barPercent - BAR_PENALTY_TIME);
@@ -1820,7 +1884,12 @@ document.addEventListener('DOMContentLoaded', function() {
   function resetTimer() {
     stopTimer();
     secondsLeft = GAME_DURATION;
-    if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
+    if (timerDisplay) {
+      timerDisplay.textContent = formatTime(secondsLeft + pendingQuizBonus);
+      timerDisplay.classList.remove('timer-frozen', 'timer-bonus');
+    }
+    isTimerFrozen = false;
+    if (freezeTimeout) { clearTimeout(freezeTimeout); freezeTimeout = null; }
     gameStarted  = false;
     gameFinished = false;
   }
@@ -1830,9 +1899,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const el = grid.children[index];
     if (!el) return;
     if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
-    if (!gameStarted) { gameStarted = true; startTimer(); }
+
+    if (!gameStarted) {
+      gameStarted = true;
+      if (pendingQuizBonus > 0) {
+        secondsLeft += pendingQuizBonus;
+        if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
+        showFloatingTimeBonus(pendingQuizBonus);
+        pendingQuizBonus = 0;
+      }
+      startTimer();
+    }
+
     el.classList.add('flipped');
     flippedCards.push({ index, el, pair: deck[index] });
+
     if (flippedCards.length === 2) {
       moves++;
       updateStarProgress();
@@ -1840,190 +1921,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  function isMatch(a, b) {
-    if (a === b) return true;
-    if ((a === SPECIAL_IDS.KEY && b === SPECIAL_IDS.LOCK) ||
-        (a === SPECIAL_IDS.LOCK && b === SPECIAL_IDS.KEY)) return true;
-    return false;
-  }
-
-  function getSpecialPairType(a, b) {
-    if (a === SPECIAL_IDS.BOMB || b === SPECIAL_IDS.BOMB) return 'bomb';
-    if (a === SPECIAL_IDS.KEY || b === SPECIAL_IDS.KEY ||
-        a === SPECIAL_IDS.LOCK || b === SPECIAL_IDS.LOCK) return 'keylock';
-    if (a === SPECIAL_IDS.FREEZE || b === SPECIAL_IDS.FREEZE) return 'freeze';
-    if (a === SPECIAL_IDS.SHUFFLE || b === SPECIAL_IDS.SHUFFLE) return 'shuffle';
-    if (a === SPECIAL_IDS.GEM || b === SPECIAL_IDS.GEM) return 'gem';
-    return null;
-  }
-
-  function playSpecialSfx() {
-    if (window.MMSfx && MMSfx.play) { try { MMSfx.play('click'); } catch (e) {} }
-  }
-
-  function destroyRandomUnmatchedPair() {
-    const idxs = [];
-    deck.forEach(function (val, idx) {
-      const el = grid.children[idx];
-      if (el && !el.classList.contains('matched')) idxs.push(idx);
-    });
-    const candidates = [];
-    for (let i = 0; i < idxs.length; i++) {
-      for (let j = i + 1; j < idxs.length; j++) {
-        if (isMatch(deck[idxs[i]], deck[idxs[j]])) candidates.push([idxs[i], idxs[j]]);
-      }
-    }
-    if (!candidates.length) return false;
-    const pick = candidates[Math.floor(Math.random() * candidates.length)];
-    const a = grid.children[pick[0]];
-    const b = grid.children[pick[1]];
-    if (a && b) {
-      a.classList.add('matched', 'flipped');
-      b.classList.add('matched', 'flipped');
-      matchedPairs++;
-    }
-    return true;
-  }
-
-  function revealAllCards(onDone) {
-    const revealed = [];
-    deck.forEach(function (val, idx) {
-      const el = grid.children[idx];
-      if (el && !el.classList.contains('matched') && !el.classList.contains('flipped')) {
-        el.classList.add('flipped');
-        revealed.push(el);
-      }
-    });
-    setTimeout(function () {
-      revealed.forEach(function (el) { el.classList.remove('flipped'); });
-      onDone();
-    }, 2000);
-  }
-
-  function freezeTimer(onDone) {
-    frozen = true;
-    showToast('❄️ Time Freeze! Timer paused for 5 seconds.');
-    setTimeout(function () {
-      frozen = false;
-      onDone();
-    }, 5000);
-  }
-
-  function refreshCardFace(el) {
-    const inner = el.querySelector('.card-inner');
-    const oldFront = el.querySelector('.card-face-front');
-    const val = Number(el.dataset.pair);
-    const newFront = buildFrontFace(val);
-    if (inner) {
-      if (oldFront) inner.replaceChild(newFront, oldFront);
-      else inner.appendChild(newFront);
-    }
-  }
-
-  function shuffleUnmatchedCards() {
-    const idxs = [];
-    const vals = [];
-    deck.forEach(function (val, idx) {
-      const el = grid.children[idx];
-      if (el && !el.classList.contains('matched') && !el.classList.contains('flipped')) {
-        idxs.push(idx);
-        vals.push(val);
-      }
-    });
-    shuffle(vals);
-    idxs.forEach(function (idx, i) {
-      deck[idx] = vals[i];
-      const el = grid.children[idx];
-      if (el) { el.dataset.pair = vals[i]; refreshCardFace(el); }
-    });
-  }
-
-  function grantGemPoints() {
-    const amount = 100;
-    if (typeof window.addPoints === 'function') {
-      window.addPoints(amount);
-    } else {
-      const cur = parseInt(pGet('pointsTotal', '0'), 10) || 0;
-      pSet('pointsTotal', String(cur + amount));
-    }
-    showToast('💎 Multiplier! +100 points');
-    if (typeof window.updatePlayerLevelBox === 'function') window.updatePlayerLevelBox();
-  }
-
-  function afterMatch() {
-    isLocked = false;
-    if (matchedPairs === pairs) {
-      stopTimer();
-      setTimeout(showWin, 300);
-    }
-  }
-
-  function handleSpecialMatch(a, b, onDone) {
-    const type = getSpecialPairType(a, b);
-    playSpecialSfx();
-    switch (type) {
-      case 'bomb':
-        showToast('💣 Bomb! A random pair was destroyed!');
-        destroyRandomUnmatchedPair();
-        onDone();
-        break;
-      case 'keylock':
-        showToast('🔑 Key & Lock! Revealing the board...');
-        revealAllCards(onDone);
-        break;
-      case 'freeze':
-        freezeTimer(onDone);
-        break;
-      case 'shuffle':
-        showToast('🔄 Shuffle! Cards moved around!');
-        shuffleUnmatchedCards();
-        onDone();
-        break;
-      case 'gem':
-        grantGemPoints();
-        onDone();
-        break;
-      default:
-        onDone();
-    }
-  }
-
-  function checkMatch() {
+   function checkMatch() {
     isLocked = true;
     const [first, second] = flippedCards;
-    const a = first.pair;
-    const b = second.pair;
+    const isPairNormal  = (first.pair === second.pair && first.pair >= 0);
+    const isPairSpecial = isSpecialMatch(first.pair, second.pair);
 
-    if (isMatch(a, b)) {
+    if (isPairNormal || isPairSpecial) {
       first.el.classList.add('matched');
       second.el.classList.add('matched');
       matchedPairs++;
       flippedCards = [];
 
-      // Combo tracking
       comboCount++;
-      if (comboCount >= 3) {
-        comboCount = 0;
-        secondsLeft += 15;
-        if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
-        showToast('🔥 3 Combo! +15 seconds');
+      if (comboCount >= 3 && comboCount % 3 === 0) {
+        const COMBO_TIME_BONUS = 15;
+        secondsLeft += COMBO_TIME_BONUS;
+        if (timerDisplay) {
+          timerDisplay.textContent = formatTime(secondsLeft);
+          timerDisplay.classList.add('timer-bonus');
+          setTimeout(() => timerDisplay.classList.remove('timer-bonus'), 800);
+        }
+        showComboToast('🔥 ' + comboCount + ' Combo! +' + COMBO_TIME_BONUS + 's');
+        showFloatingTimeBonus(COMBO_TIME_BONUS);
+        showAudioLoader();
+        setTimeout(hideAudioLoader, 1000);
       }
 
-      if (isSpecialValue(a) || isSpecialValue(b)) {
-        handleSpecialMatch(a, b, afterMatch);
+      if (isPairSpecial) {
+        handleSpecialMatch(first.pair, second.pair);
       } else {
-        const isLast = (matchedPairs === pairs);
-        speakCard(a, function () {
+        const pairIndex = first.pair;
+        const isLast    = (matchedPairs === pairs);
+
+        if (isTimerFrozen) {
           isLocked = false;
           if (isLast) {
             stopTimer();
             setTimeout(showWin, 300);
           }
-        });
+        } else {
+          speakCard(pairIndex, function () {
+            isLocked = false;
+            if (isLast) {
+              stopTimer();
+              setTimeout(showWin, 300);
+            }
+          });
+        }
       }
     } else {
-      if (window.MMSfx && MMSfx.wrong) MMSfx.wrong();
       comboCount = 0;
+      if (window.MMSfx && MMSfx.wrong) MMSfx.wrong();
       barPercent = Math.max(0, barPercent - BAR_PENALTY_WRONG);
       updateStarProgress();
       setTimeout(() => {
@@ -2033,6 +1982,146 @@ document.addEventListener('DOMContentLoaded', function() {
         isLocked = false;
       }, 800);
     }
+  }
+
+  function handleSpecialMatch(pairA, pairB) {
+    if (window.MMSfx && MMSfx.click) MMSfx.click();
+
+    if (pairA === -1 && pairB === -1) {
+      showComboToast('💣 Bomb! Auto-destroyed a random pair!');
+      showAudioLoader();
+      setTimeout(() => { hideAudioLoader(); destroyRandomPair(); }, 500);
+      return;
+    }
+
+    if ((pairA === -2 && pairB === -3) || (pairA === -3 && pairB === -2)) {
+      showComboToast('🔑 Key & Lock! Board revealed for 2s!');
+      showAudioLoader();
+      setTimeout(() => { hideAudioLoader(); revealBoardFor2Seconds(); }, 400);
+      return;
+    }
+
+    if (pairA === -4 && pairB === -4) {
+      showComboToast('❄️ Time Freeze! Timer paused for 5s!');
+      triggerTimeFreeze();
+      finishSpecialTurn();
+      return;
+    }
+
+    if (pairA === -5 && pairB === -5) {
+      showComboToast('🔄 Shuffle! Unmatched cards rearranged!');
+      showAudioLoader();
+      setTimeout(() => { hideAudioLoader(); shuffleRemainingCards(); }, 400);
+      return;
+    }
+
+    if (pairA === -6 && pairB === -6) {
+      bonusPoints += 100;
+      showComboToast('💎 Multiplier! +100 Flat Points!');
+      showAudioLoader();
+      setTimeout(hideAudioLoader, 1000);
+      finishSpecialTurn();
+      return;
+    }
+
+    finishSpecialTurn();
+  }
+
+  function finishSpecialTurn() {
+    isLocked = false;
+    if (matchedPairs >= pairs) {
+      stopTimer();
+      setTimeout(showWin, 400);
+    }
+  }
+
+  function destroyRandomPair() {
+    const unmatchedElements = Array.from(grid.children).filter(el => !el.classList.contains('matched'));
+    const pairMap = {};
+    unmatchedElements.forEach(el => {
+      const p = parseInt(el.dataset.pair, 10);
+      if (!pairMap[p]) pairMap[p] = [];
+      pairMap[p].push(el);
+    });
+
+    const validPairs = Object.keys(pairMap).filter(p => {
+      const pairId = parseInt(p, 10);
+      if (pairId === -2 || pairId === -3) {
+        return (pairMap['-2'] && pairMap['-2'].length > 0 && pairMap['-3'] && pairMap['-3'].length > 0);
+      }
+      return pairMap[p].length === 2;
+    });
+
+    if (validPairs.length > 0) {
+      const chosenP = validPairs[Math.floor(Math.random() * validPairs.length)];
+      let cardsToMatch = [];
+      if (chosenP === '-2' || chosenP === '-3') {
+        cardsToMatch = [pairMap['-2'][0], pairMap['-3'][0]];
+      } else {
+        cardsToMatch = pairMap[chosenP];
+      }
+
+      cardsToMatch.forEach(card => {
+        card.classList.add('flipped', 'matched', 'bomb-destroyed');
+      });
+      matchedPairs++;
+    }
+
+    finishSpecialTurn();
+  }
+
+  function revealBoardFor2Seconds() {
+    const unmatchedElements = Array.from(grid.children).filter(el => !el.classList.contains('matched'));
+    unmatchedElements.forEach(el => el.classList.add('flipped'));
+
+    setTimeout(() => {
+      unmatchedElements.forEach(el => {
+        if (!el.classList.contains('matched')) el.classList.remove('flipped');
+      });
+      finishSpecialTurn();
+    }, 2000);
+  }
+
+  function triggerTimeFreeze() {
+    isTimerFrozen = true;
+    if (timerDisplay) timerDisplay.classList.add('timer-frozen');
+    if (freezeTimeout) clearTimeout(freezeTimeout);
+
+    freezeTimeout = setTimeout(() => {
+      isTimerFrozen = false;
+      if (timerDisplay) timerDisplay.classList.remove('timer-frozen');
+      hideAudioLoader();
+    }, 5000);
+  }
+
+  function shuffleRemainingCards() {
+    const unmatchedElements = Array.from(grid.children).filter(el => !el.classList.contains('matched'));
+    if (unmatchedElements.length <= 1) {
+      finishSpecialTurn();
+      return;
+    }
+
+    const currentPairs = unmatchedElements.map(el => parseInt(el.dataset.pair, 10));
+    const shuffledPairs = shuffle([...currentPairs]);
+
+    unmatchedElements.forEach((el, idx) => {
+      const newP = shuffledPairs[idx];
+      el.dataset.pair = newP;
+      const index = parseInt(el.dataset.index, 10);
+      deck[index] = newP;
+      el.classList.remove('flipped');
+
+      if (newP < 0) el.classList.add('card-special');
+      else el.classList.remove('card-special');
+
+      const front = el.querySelector('.card-face-front');
+      if (front) renderCardFront(front, newP);
+
+      el.classList.add('card-shuffling');
+      setTimeout(() => el.classList.remove('card-shuffling'), 500);
+    });
+
+    finishSpecialTurn();
   }
 
   function loseGame() {
@@ -2056,7 +2145,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gameFinished) return;
     gameFinished = true;
 
-    // 🎵 PAUSE BACKGROUND MUSIC ON WIN
     if (window.MMBgMusic) window.MMBgMusic.pause();
 
     if (window.MMSfx && window.MMSfx.win) {
@@ -2078,7 +2166,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (winTime)  winTime.textContent  = formatTime(elapsed);
     const wasCompletedBefore = wasLevelCompletedBefore();
     const starsEarned  = calculateStars();
-    const pointsEarned = getPointsForStars(basePoints, starsEarned);
+    const pointsEarned = getPointsForStars(basePoints, starsEarned) + bonusPoints;
 
     try {
       sessionStorage.setItem('mm_preWin', JSON.stringify({
@@ -2099,9 +2187,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const cur = parseInt(pGet('pointsTotal', '0'), 10) || 0;
         pSet('pointsTotal', String(cur + pointsEarned));
       }
+    } else if (bonusPoints > 0) {
+      if (typeof window.addPoints === 'function') {
+        window.addPoints(bonusPoints);
+      } else {
+        const cur = parseInt(pGet('pointsTotal', '0'), 10) || 0;
+        pSet('pointsTotal', String(cur + bonusPoints));
+      }
     }
     if (winCoinsEarned) {
-      winCoinsEarned.textContent = wasCompletedBefore ? '+0' : '+' + pointsEarned;
+      winCoinsEarned.textContent = wasCompletedBefore ? (bonusPoints > 0 ? '+' + bonusPoints : '+0') : '+' + pointsEarned;
     }
 
     if (!winStarsRow) {
@@ -2111,7 +2206,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const starRow = document.createElement('div');
         starRow.id = 'winStarRating';
         starRow.className = 'win-star-rating';
-        starRow.innerHTML = `<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>`;
+        starRow.innerHTML = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
         if (pTag && pTag.parentNode) pTag.parentNode.insertBefore(starRow, pTag.nextSibling);
         else container.insertBefore(starRow, container.firstChild);
         winStarsRow = starRow;
@@ -2138,7 +2233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         MMLeaderboard.recordWin({
           nickname: nickname, subject: subject, level: level,
           stars: starsEarned, time: elapsed,
-          pointsEarned: wasCompletedBefore ? 0 : pointsEarned
+          pointsEarned: wasCompletedBefore ? bonusPoints : pointsEarned
         });
         MMLeaderboard.prune();
       }
@@ -2150,15 +2245,15 @@ document.addEventListener('DOMContentLoaded', function() {
       if (nextLevel <= 10) {
         const nextUnlocked = isNextLevelUnlocked();
         if (nextUnlocked) {
-          nextLevelBtn.innerHTML = `Next Level <i class="fas fa-arrow-right ms-2"></i>`;
+          nextLevelBtn.innerHTML = 'Next Level <i class="fas fa-arrow-right ms-2"></i>';
           nextLevelBtn.onclick = function () {
-            window.location.href = `Gameplay-${subject}.html?level=${nextLevel}&subject=${subject}`;
+            window.location.href = 'Gameplay-' + subject + '.html?level=' + nextLevel + '&subject=' + subject;
           };
         } else {
-          nextLevelBtn.innerHTML = `<i class="fas fa-unlock me-2"></i> Unlock Next Level`;
+          nextLevelBtn.innerHTML = '<i class="fas fa-unlock me-2"></i> Unlock Next Level';
           nextLevelBtn.onclick = function () {
             if (typeof window.tryUnlockLevel !== 'function') {
-              window.location.href = `../Level.html?subject=${subject}`;
+              window.location.href = '../Level.html?subject=' + subject;
               return;
             }
             const result = window.tryUnlockLevel(subject, nextLevel);
@@ -2166,22 +2261,22 @@ document.addEventListener('DOMContentLoaded', function() {
               if (!result.alreadyUnlocked) {
                 try { sessionStorage.setItem('mm_just_unlocked', JSON.stringify({ subject: subject, level: nextLevel })); } catch (e) {}
               }
-              window.location.href = `../Level.html?subject=${subject}`;
+              window.location.href = '../Level.html?subject=' + subject;
             } else if (result.reason === 'not_enough_points') {
-              alert(`⭐ Not enough points!\n\nLevel ${nextLevel} costs ${result.cost} points.\nYou have ${result.points} points.\n\nPlay more levels to earn points!`);
+              alert('⭐ Not enough points!\r\n\r\nLevel ' + nextLevel + ' costs ' + result.cost + ' points.\r\nYou have ' + result.points + ' points.\r\n\r\nPlay more levels to earn points!');
             } else if (result.reason === 'previous_not_completed') {
-              alert(`Finish Level ${nextLevel - 1} first!`);
+              alert('Finish Level ' + (nextLevel - 1) + ' first!');
             } else if (result.reason === 'previous_locked') {
-              alert(`Complete the previous level first!`);
+              alert('Complete the previous level first!');
             } else if (result.reason === 'save_failed') {
-              alert(`Could not save your progress. Please try again.`);
+              alert('Could not save your progress. Please try again.');
             }
           };
         }
         nextLevelBtn.style.display = 'inline-block';
       } else {
-        nextLevelBtn.innerHTML = `<i class="fas fa-trophy me-2"></i> All Done`;
-        nextLevelBtn.onclick = function () { window.location.href = `../Level.html?subject=${subject}`; };
+        nextLevelBtn.innerHTML = '<i class="fas fa-trophy me-2"></i> All Done';
+        nextLevelBtn.onclick = function () { window.location.href = '../Level.html?subject=' + subject; };
       }
     }
 
@@ -2201,7 +2296,7 @@ document.addEventListener('DOMContentLoaded', function() {
     pSet('rewardsCount', String(stats.rewards));
   }
 
-  function goToLevels() { window.location.href = `../Level.html?subject=${subject}`; }
+  function goToLevels() { window.location.href = '../Level.html?subject=' + subject; }
 
   const btnLevels = document.getElementById('btnLevels');
   if (btnLevels) btnLevels.addEventListener('click', goToLevels);
@@ -2249,7 +2344,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   function closePause() {
     if (pauseOverlay) pauseOverlay.classList.remove('show');
-    if (wasRunningBeforePause && !gameFinished && timerInterval === null) startTimer();
+    if (wasRunningBeforePause && !gameFinished && timerInterval === null && !isTimerFrozen) startTimer();
     wasRunningBeforePause = false;
   }
   if (btnPause)       btnPause.addEventListener('click', openPause);
@@ -2258,7 +2353,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      if (document.querySelector('.tutorial-spotlight')) return;
+      if (document.querySelector('.tutorial-spotlight') || document.querySelector('.l6-tutorial-spotlight')) return;
+      if (document.querySelector('.quiz-overlay')) return;
       if (pauseOverlay && pauseOverlay.classList.contains('show')) { closePause(); return; }
       if (winOverlay && winOverlay.classList.contains('show'))      { winOverlay.classList.remove('show'); return; }
       if (loseOverlay && loseOverlay.classList.contains('show'))    { loseOverlay.classList.remove('show'); return; }
@@ -2266,6 +2362,122 @@ document.addEventListener('DOMContentLoaded', function() {
       goToLevels();
     }
   });
+
+  // ============================================================
+  // PRE-LEVEL QUIZ — appears for every level EXCEPT level 1
+  // Asks 1 multiple-choice question about the PREVIOUS level
+  // NOTE: kept inside DOMContentLoaded so it can see subjectTopics,
+  //       shuffle, level, stopTimer, isLocked, gameStarted
+  // ============================================================
+  function buildQuizQuestion(prevLevel) {
+    const prevTopic = subjectTopics[prevLevel];
+    if (!prevTopic || !prevTopic.cards || !prevTopic.cards.length) return null;
+
+    const correctCard = prevTopic.cards[Math.floor(Math.random() * prevTopic.cards.length)];
+    const correctAnswer = correctCard.name;
+
+    const otherNames = [];
+    Object.keys(subjectTopics).forEach(function (key) {
+      if (parseInt(key, 10) === prevLevel) return;
+      subjectTopics[key].cards.forEach(function (c) {
+        if (c.name !== correctAnswer && otherNames.indexOf(c.name) === -1) {
+          otherNames.push(c.name);
+        }
+      });
+    });
+
+    const distractors = shuffle([...otherNames]).slice(0, 3);
+    if (distractors.length < 3) return null;
+    const options = shuffle([correctAnswer, ...distractors]);
+
+    return {
+      question: 'From Level ' + prevLevel + ' (' + prevTopic.title + '), which of these did we learn?',
+      options: options,
+      correct: correctAnswer,
+      prevLevel: prevLevel
+    };
+  }
+
+  function showPreLevelQuiz(onComplete) {
+    if (level <= 1) { if (onComplete) onComplete(); return false; }
+
+    const quiz = buildQuizQuestion(level - 1);
+    if (!quiz) { if (onComplete) onComplete(); return false; }
+
+    stopTimer();
+    isLocked = true;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'quiz-overlay';
+    overlay.innerHTML =
+      '<div class="quiz-box">' +
+        '<div class="quiz-character">' +
+          '<img src="../Assets/character_moving.png" alt="Jojoma" draggable="false" />' +
+          '<div class="quiz-character-name">Jojoma</div>' +
+        '</div>' +
+        '<div class="quiz-content">' +
+          '<div class="quiz-badge">Quick Review!</div>' +
+          '<p class="quiz-question"></p>' +
+          '<div class="quiz-options"></div>' +
+          '<div class="quiz-feedback"></div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.quiz-question').textContent = quiz.question;
+    const optionsContainer = overlay.querySelector('.quiz-options');
+    const feedbackEl = overlay.querySelector('.quiz-feedback');
+    let answered = false;
+
+    function finishQuiz() {
+      overlay.classList.add('fade-out');
+      setTimeout(function () {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        isLocked = false;
+        gameStarted = false;
+        if (onComplete) onComplete();
+      }, 300);
+    }
+
+    quiz.options.forEach(function (opt) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.addEventListener('click', function () {
+        if (answered) return;
+        answered = true;
+
+        const isCorrect = opt === quiz.correct;
+        optionsContainer.querySelectorAll('.quiz-option').forEach(function (b) {
+          b.disabled = true;
+          if (b.textContent === quiz.correct) b.classList.add('correct');
+          if (b === btn && !isCorrect) b.classList.add('wrong');
+        });
+
+        if (isCorrect) {
+          pendingQuizBonus = 10;
+           if (timerDisplay) {
+            timerDisplay.textContent = formatTime(secondsLeft + pendingQuizBonus);
+            timerDisplay.classList.add('timer-bonus');
+            setTimeout(() => timerDisplay.classList.remove('timer-bonus'), 800);
+          }
+          feedbackEl.textContent = 'Correct! +10s Time Bonus!';
+          feedbackEl.className = 'quiz-feedback success';
+          if (window.MMSfx && MMSfx.click) MMSfx.click();
+        } else {
+          feedbackEl.textContent = 'Not quite — the answer is: ' + quiz.correct;
+          feedbackEl.className = 'quiz-feedback error';
+          if (window.MMSfx && window.MMSfx.wrong) window.MMSfx.wrong();
+        }
+
+        setTimeout(finishQuiz, isCorrect ? 1200 : 2200);
+      });
+      optionsContainer.appendChild(btn);
+    });
+
+    return true;
+  }
 
   // ============================================================
   // FIRST-TIME TUTORIAL — Level 1 only, shown once per player
@@ -2283,7 +2495,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var current = 0;
 
-    // Spotlight layer (visual only — clicks pass through to the page)
     var spotlight = document.createElement('div');
     spotlight.className = 'tutorial-spotlight';
     var hole = document.createElement('div');
@@ -2291,7 +2502,6 @@ document.addEventListener('DOMContentLoaded', function() {
     spotlight.appendChild(hole);
     document.body.appendChild(spotlight);
 
-    // Instruction bubble
     var tooltip = document.createElement('div');
     tooltip.className = 'tutorial-tooltip';
     tooltip.innerHTML =
@@ -2301,7 +2511,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var tipText = tooltip.querySelector('.tutorial-tooltip-text');
     var tipBtn  = tooltip.querySelector('.tutorial-tooltip-btn');
 
-    // Fixed Skip button (top-right)
     var skipBtn = document.createElement('button');
     skipBtn.type = 'button';
     skipBtn.className = 'tutorial-skip-fixed';
@@ -2364,8 +2573,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (spotlight.parentNode) spotlight.parentNode.removeChild(spotlight);
       if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
       if (skipBtn.parentNode) skipBtn.parentNode.removeChild(skipBtn);
-      // Reset the board to a clean start (cards the player flipped during
-      // the demo go back face-down, timer and star bar untouched).
+
+      deck = buildDeck();
+      totalCards = deck.length;
+      pairs = totalCards / 2;
       renderCards();
       resetTimer();
       barPercent = BAR_START;
@@ -2373,9 +2584,12 @@ document.addEventListener('DOMContentLoaded', function() {
       flippedCards = [];
       matchedPairs = 0;
       moves = 0;
+      comboCount = 0;
+      bonusPoints = 0;
       isLocked = false;
       gameStarted = false;
       gameFinished = false;
+      applyNoScrollLayout();
     }
 
     function onDocClick(e) {
@@ -2393,7 +2607,6 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
       }
-      // Block everything else (back button, pause, cards during info steps).
       e.stopPropagation();
       e.preventDefault();
     }
@@ -2413,91 +2626,119 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // LEVEL 6 SPECIAL CARDS TUTORIAL (first time only)
+  // SPECIAL CARDS TUTORIAL — Level 6 only (First time)
   // ============================================================
-  function initSpecialTutorial() {
+  function initLevel6Tutorial() {
     if (level !== 6) return;
     if (pGet('specialTutorialSeen', null) === '1') return;
 
-    var STEPS = [
-      { sel: '.card-grid',    text: 'Welcome to Level 6! Special cards are now in play.', flip: null },
-      { sel: '.special-bomb', text: 'Match Bombs to destroy a random pair!', flip: '.card-item[data-pair="-1"]' },
-      { sel: '.special-key',  text: 'Match the Key and Lock to reveal the whole board!', flip: '.card-item[data-pair="-2"], .card-item[data-pair="-3"]' },
-      { sel: '.card-grid',    text: 'Good luck!', flip: null }
+    stopTimer();
+    isLocked = true;
+
+    const STEPS = [
+      {
+        title: "Level 6: Special Cards!",
+        text: "Welcome to Level 6! Special cards are now in play.",
+        target: null,
+        btnText: "Next"
+      },
+      {
+        title: "Bomb Card 💣",
+        text: "Match Bombs to destroy a random pair!",
+        target: () => document.querySelector('.card-item[data-pair="-1"]'),
+        flipTarget: true,
+        btnText: "Next"
+      },
+      {
+        title: "Key & Lock 🔑🔒",
+        text: "Match the Key and Lock to reveal the board!",
+        target: () => document.querySelector('.card-item[data-pair="-2"]') || document.querySelector('.card-item[data-pair="-3"]'),
+        flipBothKeyLock: true,
+        btnText: "Next"
+      },
+      {
+        title: "Ready to Play?",
+        text: "Good luck! Match all the cards to win!",
+        target: null,
+        btnText: "Let's Play!"
+      }
     ];
 
-    var current = 0;
-    var tutorialActive = true;
+    let current = 0;
+    let tutorialActive = true;
 
-    var spotlight = document.createElement('div');
-    spotlight.className = 'tutorial-spotlight';
-    var hole = document.createElement('div');
-    hole.className = 'spotlight-hole';
+    const spotlight = document.createElement('div');
+    spotlight.className = 'l6-tutorial-spotlight';
+    const hole = document.createElement('div');
+    hole.className = 'l6-spotlight-hole';
     spotlight.appendChild(hole);
     document.body.appendChild(spotlight);
 
-    var tooltip = document.createElement('div');
-    tooltip.className = 'tutorial-tooltip';
-    tooltip.innerHTML =
-      '<div class="tutorial-tooltip-text"></div>' +
-      '<button type="button" class="tutorial-tooltip-btn"></button>';
-    document.body.appendChild(tooltip);
-    var tipText = tooltip.querySelector('.tutorial-tooltip-text');
-    var tipBtn  = tooltip.querySelector('.tutorial-tooltip-btn');
+    const box = document.createElement('div');
+    box.className = 'l6-tutorial-box-wrap';
+    box.innerHTML = `
+      <div class="l6-tutorial-box">
+        <span class="l6-tutorial-icon">✨</span>
+        <h3 class="l6-tutorial-title"></h3>
+        <p class="l6-tutorial-text"></p>
+        <div class="l6-tutorial-progress">
+          <span class="l6-tutorial-dot"></span>
+          <span class="l6-tutorial-dot"></span>
+          <span class="l6-tutorial-dot"></span>
+          <span class="l6-tutorial-dot"></span>
+        </div>
+        <button type="button" class="l6-tutorial-btn"></button>
+      </div>
+    `;
+    document.body.appendChild(box);
 
-    var skipBtn = document.createElement('button');
+    const titleEl = box.querySelector('.l6-tutorial-title');
+    const textEl  = box.querySelector('.l6-tutorial-text');
+    const btnEl   = box.querySelector('.l6-tutorial-btn');
+    const dots    = box.querySelectorAll('.l6-tutorial-dot');
+
+    const skipBtn = document.createElement('button');
     skipBtn.type = 'button';
     skipBtn.className = 'tutorial-skip-fixed';
     skipBtn.textContent = 'Skip';
     skipBtn.setAttribute('aria-label', 'Skip tutorial');
     document.body.appendChild(skipBtn);
 
-    function unflipAll() {
-      document.querySelectorAll('.tutorial-flipped').forEach(function (el) {
-        el.classList.remove('flipped', 'tutorial-flipped');
-      });
-    }
-
-    function flipStep(sel) {
-      if (!sel) return;
-      document.querySelectorAll(sel).forEach(function (el) {
-        el.classList.add('flipped', 'tutorial-flipped');
-      });
-    }
-
-    function position() {
-      var el = document.querySelector(STEPS[current].sel);
-      if (!el) { finishTutorial(); return; }
-      var r = el.getBoundingClientRect();
-      var pad = 8;
+    function positionHole(el) {
+      if (!el) { hole.style.display = 'none'; return; }
+      hole.style.display = 'block';
+      const r = el.getBoundingClientRect();
+      const pad = 6;
       hole.style.left   = (r.left - pad) + 'px';
       hole.style.top    = (r.top - pad) + 'px';
       hole.style.width  = (r.width + pad * 2) + 'px';
       hole.style.height = (r.height + pad * 2) + 'px';
-
-      var tipW = tooltip.offsetWidth || 280;
-      var tipH = tooltip.offsetHeight || 90;
-      var left = Math.max(12, Math.min(r.left + r.width / 2 - tipW / 2, window.innerWidth - tipW - 12));
-      var top = r.bottom + 16;
-      var arrowDown = false;
-      if (top + tipH > window.innerHeight - 12) {
-        top = r.top - tipH - 16;
-        arrowDown = true;
-      }
-      if (top < 12) { top = 12; }
-      tooltip.style.left = left + 'px';
-      tooltip.style.top = top + 'px';
-      tooltip.classList.toggle('arrow-down', arrowDown);
     }
 
     function renderStep() {
-      var s = STEPS[current];
-      tipText.textContent = s.text;
-      tipBtn.style.display = 'inline-flex';
-      tipBtn.textContent = (current === STEPS.length - 1) ? "Let's Play!" : 'Next';
-      unflipAll();
-      flipStep(s.flip);
-      position();
+      const s = STEPS[current];
+      titleEl.textContent = s.title;
+      textEl.textContent  = s.text;
+      btnEl.textContent   = s.btnText;
+
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === current);
+      });
+
+      document.querySelectorAll('.card-item.flipped').forEach(c => {
+        if (!c.classList.contains('matched')) c.classList.remove('flipped');
+      });
+
+      const targetEl = (typeof s.target === 'function') ? s.target() : null;
+      if (s.flipTarget && targetEl) targetEl.classList.add('flipped');
+      if (s.flipBothKeyLock) {
+        const k = document.querySelector('.card-item[data-pair="-2"]');
+        const l = document.querySelector('.card-item[data-pair="-3"]');
+        if (k) k.classList.add('flipped');
+        if (l) l.classList.add('flipped');
+      }
+
+      positionHole(targetEl);
     }
 
     function next() {
@@ -2510,14 +2751,17 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!tutorialActive) return;
       tutorialActive = false;
       try { pSet('specialTutorialSeen', '1'); } catch (e) {}
-      unflipAll();
-      document.removeEventListener('click', onDocClick, true);
+
       document.removeEventListener('keydown', onDocKeydown);
-      window.removeEventListener('resize', position);
+      window.removeEventListener('resize', renderStep);
+
       if (spotlight.parentNode) spotlight.parentNode.removeChild(spotlight);
-      if (tooltip.parentNode) tooltip.parentNode.removeChild(tooltip);
+      if (box.parentNode) box.parentNode.removeChild(box);
       if (skipBtn.parentNode) skipBtn.parentNode.removeChild(skipBtn);
-      // Reset to a clean state and start fresh.
+
+      deck = buildDeck();
+      totalCards = deck.length;
+      pairs = totalCards / 2;
       renderCards();
       resetTimer();
       barPercent = BAR_START;
@@ -2526,38 +2770,42 @@ document.addEventListener('DOMContentLoaded', function() {
       matchedPairs = 0;
       moves = 0;
       comboCount = 0;
-      frozen = false;
+      bonusPoints = 0;
       isLocked = false;
       gameStarted = false;
       gameFinished = false;
-    }
-
-    function onDocClick(e) {
-      if (!tutorialActive) return;
-      if (e.target.closest && (e.target.closest('.tutorial-tooltip') || e.target.closest('.tutorial-skip-fixed'))) return;
-      e.stopPropagation();
-      e.preventDefault();
+      applyNoScrollLayout();
     }
 
     function onDocKeydown(e) {
       if (e.key === 'Escape' && tutorialActive) finishTutorial();
     }
 
-    document.addEventListener('click', onDocClick, true);
     document.addEventListener('keydown', onDocKeydown);
-    window.addEventListener('resize', position);
-
-    tipBtn.addEventListener('click', function (e) { e.stopPropagation(); next(); });
-    skipBtn.addEventListener('click', function (e) { e.stopPropagation(); finishTutorial(); });
+    window.addEventListener('resize', renderStep);
+    btnEl.addEventListener('click', (e) => { e.stopPropagation(); next(); });
+    skipBtn.addEventListener('click', (e) => { e.stopPropagation(); finishTutorial(); });
 
     renderStep();
   }
 
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
   barPercent = BAR_START;
   renderCards();
   resetTimer();
   updateStarProgress();
+  applyNoScrollLayout();
 
-  initTutorial();
-  initSpecialTutorial();
+  // 1. Quiz first (L2-10). For L1, onComplete fires immediately.
+  // 2. Then tutorial if unseen (L1 or L6).
+  // 3. Player ready — first card click starts the timer.
+  showPreLevelQuiz(function () {
+    if (level === 1 && pGet('tutorialSeen', null) !== '1') {
+      initTutorial();
+    } else if (level === 6 && pGet('specialTutorialSeen', null) !== '1') {
+      initLevel6Tutorial();
+    }
+  });
 });
