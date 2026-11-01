@@ -4696,6 +4696,7 @@ h1, h2, h3, h4, h5, h6,
   .quiz-content { padding: 18px 16px; gap: 10px; }
   .quiz-question { font-size: 0.95rem; }
   .quiz-option { padding: 10px 14px; font-size: 0.85rem; }
+<<<<<<< HEAD
 }
 
 /* ================================================================
@@ -4750,4 +4751,6 @@ h1, h2, h3, h4, h5, h6,
   -webkit-backdrop-filter: blur(4px);
   z-index: 2;
   text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+=======
+>>>>>>> parent of bcfb469 (nnn)
 }

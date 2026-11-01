@@ -1313,6 +1313,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2200);
   }
 
+<<<<<<< HEAD
   function showFloatingTimeBonus(seconds) {
     const anchor = document.getElementById('timerDisplay');
     if (!anchor) return;
@@ -1330,6 +1331,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1400);
   }
 
+=======
+>>>>>>> parent of bcfb469 (nnn)
   // ============================================================
   // GRID LAYOUT
   // ============================================================
@@ -1382,7 +1385,6 @@ document.addEventListener('DOMContentLoaded', function() {
   let timerInterval = null;
   let gameStarted   = false;
   let gameFinished  = false;
-  let pendingQuizBonus = 0;   // seconds earned from a correct pre-level quiz
 
   if (levelDisplay) levelDisplay.textContent = level;
 
@@ -1536,7 +1538,7 @@ document.addEventListener('DOMContentLoaded', function() {
     stopTimer();
     secondsLeft = GAME_DURATION;
     if (timerDisplay) {
-      timerDisplay.textContent = formatTime(secondsLeft + pendingQuizBonus);
+      timerDisplay.textContent = formatTime(secondsLeft);
       timerDisplay.classList.remove('timer-frozen', 'timer-bonus');
     }
     isTimerFrozen = false;
@@ -1550,21 +1552,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const el = grid.children[index];
     if (!el) return;
     if (el.classList.contains('flipped') || el.classList.contains('matched')) return;
-
-    if (!gameStarted) {
-      gameStarted = true;
-      if (pendingQuizBonus > 0) {
-        secondsLeft += pendingQuizBonus;
-        if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
-        showFloatingTimeBonus(pendingQuizBonus);
-        pendingQuizBonus = 0;
-      }
-      startTimer();
-    }
-
+    if (!gameStarted) { gameStarted = true; startTimer(); }
     el.classList.add('flipped');
     flippedCards.push({ index, el, pair: deck[index] });
-
     if (flippedCards.length === 2) {
       moves++;
       updateStarProgress();
@@ -1586,15 +1576,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
       comboCount++;
       if (comboCount >= 3 && comboCount % 3 === 0) {
-        const COMBO_TIME_BONUS = 15;
-        secondsLeft += COMBO_TIME_BONUS;
+        secondsLeft += 15;
         if (timerDisplay) {
           timerDisplay.textContent = formatTime(secondsLeft);
           timerDisplay.classList.add('timer-bonus');
           setTimeout(() => timerDisplay.classList.remove('timer-bonus'), 800);
         }
-        showComboToast('🔥 ' + comboCount + ' Combo! +' + COMBO_TIME_BONUS + 's');
-        showFloatingTimeBonus(COMBO_TIME_BONUS);
+        showComboToast('🔥 ' + comboCount + ' Combo! +15s Time Bonus!');
         showAudioLoader();
         setTimeout(hideAudioLoader, 1000);
       }
@@ -2104,6 +2092,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (isCorrect) {
+<<<<<<< HEAD
           pendingQuizBonus = 10;
           if (timerDisplay) {
             timerDisplay.textContent = formatTime(secondsLeft + pendingQuizBonus);
@@ -2111,10 +2100,13 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => timerDisplay.classList.remove('timer-bonus'), 800);
           }
           feedbackEl.textContent = 'Correct! +10s Time Bonus!';
+=======
+          feedbackEl.textContent = '✅ Correct! Great job!';
+>>>>>>> parent of bcfb469 (nnn)
           feedbackEl.className = 'quiz-feedback success';
           if (window.MMSfx && MMSfx.click) MMSfx.click();
         } else {
-          feedbackEl.textContent = 'Not quite — the answer is: ' + quiz.correct;
+          feedbackEl.textContent = '❌ Not quite — the answer is: ' + quiz.correct;
           feedbackEl.className = 'quiz-feedback error';
           if (window.MMSfx && window.MMSfx.wrong) window.MMSfx.wrong();
         }
