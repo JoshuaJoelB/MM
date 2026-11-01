@@ -1,0 +1,14 @@
+{
+  "name": "matchmonster",
+  "version": "1.0.0",
+  "description": "Match Monster - a fun memory card game for kids",
+  "scripts": {
+    "build": "echo 'Static HTML project - no build needed'"
+  },
+  "keywords": ["game", "memory", "cards"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^1.1.1"
+  }
+}
