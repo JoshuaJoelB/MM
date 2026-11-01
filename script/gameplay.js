@@ -148,6 +148,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // FILE_MAP — image filenames (UPDATED)
   // ============================================================
   const FILE_MAP = {
+    // ---- CORRECTIONS FOR DISK MATCHING ----
+    'ap:5:May':                  'hottest  month',
+    'computer:6:pro':            'pro',
+    'computer:6:proj':           'pro',
+    'computer:7:Address bar':    'adress bar',
+    'computer:7:Bookmark this page': 'book mark',
+    'computer:7:Display window': 'Display window buttons',
+    'computer:7:Customize and control': 'tabs',
+    'computer:8:Username':       'usenname',
+    'science:9:Gallbladder':     'gallblader',
     // ---- AP 1 ----
     'ap:1:Pacific Ocean':        'pacific ocean',
     'ap:1:Pasig River':          'pasig river',
@@ -397,6 +407,24 @@ document.addEventListener('DOMContentLoaded', function() {
   const AUDIO_SUBJECT_FOLDER = { ap: 'AP', computer: 'epp', science: 'science' };
 
   const AUDIO_MAP = {
+    // ---- CORRECTIONS FOR DISK MATCHING ----
+    'ap:5:May':                  'hottest month',
+    'ap:5:January':              'coolest month',
+    'ap:9:Manunggul Jar':        'mangunggul jar',
+    'ap:10:Biag ni Lam-ang':     'biag ni lim-ang',
+    'computer:5:Ask permission': 'Ask permission before posting others_ photos',
+    'computer:5:Kind words':     'use kind words',
+    'computer:5:Sharing password': 'sharing your password',
+    'computer:5:Fake news':      'spreading fake news',
+    'computer:6:pro':            'pro',
+    'computer:6:proj':           'pro',
+    'computer:8:Forward':        'forward',
+    'science:4:Helium':          'hellum',
+    'science:5:Texture':         'twxture',
+    'science:7:Kilogram':        'kg',
+    'science:7:Centimeter':      'cm',
+    'science:8:Boiling':         'boilimg',
+    'science:10:Mouth':          'mouthh',
     // ---- AP ----
     'ap:1:Pacific Ocean':       'pacific ocean', 'ap:1:Pasig River': 'pasig river', 'ap:1:Laguna de Bay': 'laguna de bay',
     'ap:2:Mount Apo':           'mount apo', 'ap:2:Mayon Volcano': 'mayon', 'ap:2:Chocolate Hills': 'chocolate hills', 'ap:2:Central Luzon Plain': 'Central Luzon Plain',
@@ -601,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: IMG.dashboard, name: 'int', nickname: '.int' }, 
         { id: IMG.dashboard, name: 'net', nickname: '.net' },
         { id: IMG.dashboard, name: 'org', nickname: '.org' }, 
-        { id: IMG.dashboard, name: 'proj', nickname: '.proj' }
+        { id: IMG.dashboard, name: 'pro', nickname: '.pro' }
       ]},
       7: { title: 'Parts of a Web Browser', cards: [
         { id: IMG.monitor,    name: 'Browser window buttons', nickname: 'Window Btns' }, 
@@ -891,8 +919,17 @@ document.addEventListener('DOMContentLoaded', function() {
     return candidates;
   }
   function attachImageFallback(imgEl, pairIndex) {
-    const candidates  = buildLocalCandidates(pairIndex);
-    const label       = getCardLabel(pairIndex);
+    const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
+    const cardName = entry ? entry.name : '';
+    let exactUrl = null;
+    if (window.assetLoader && typeof window.assetLoader.getCardImage === 'function') {
+      exactUrl = window.assetLoader.getCardImage(subject, level, cardName);
+    }
+    const candidates = buildLocalCandidates(pairIndex);
+    if (exactUrl && candidates.indexOf(exactUrl) === -1) {
+      candidates.unshift(exactUrl);
+    }
+    const label = getCardLabel(pairIndex);
     const placeholder = makePlaceholderDataUri(label);
 
     let stage = 0, stopped = false;
@@ -1094,9 +1131,10 @@ document.addEventListener('DOMContentLoaded', function() {
   function speakCard(pairIndex, onDone) {
     dialogOnDone = onDone || null;
 
-    const title      = getCardLabel(pairIndex);
-    const desc       = getCardDescription(pairIndex);
-    const candidates = buildAudioCandidates(pairIndex);
+    const title    = getCardLabel(pairIndex);
+    const desc     = getCardDescription(pairIndex);
+    const entry    = topicInfo.cards[pairIndex % topicInfo.cards.length];
+    const cardName = entry ? entry.name : '';
 
     showCharacterDialog(title);
 
@@ -1121,7 +1159,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const cb = dialogOnDone;
           dialogOnDone = null;
           if (typeof cb === 'function') cb();
-        }, 400);
+        }, 350);
       }
     }
 
@@ -1130,21 +1168,19 @@ document.addEventListener('DOMContentLoaded', function() {
       checkBothDone();
     });
 
-    playAudioWithBudget(candidates, AUDIO_BUDGET_MS).then(function (audio) {
-      if (!audio) {
+    if (window.assetLoader && typeof window.assetLoader.playCardAudio === 'function') {
+      window.assetLoader.playCardAudio(subject, level, cardName).then(function (audio) {
+        currentAudio = audio;
         audioDone = true;
         checkBothDone();
-        return;
-      }
-      currentAudio = audio;
-      const maxDur = setTimeout(function () {
-        if (!audioDone) { audioDone = true; checkBothDone(); }
-      }, 6000);
-      audio.addEventListener('ended', function () {
-        clearTimeout(maxDur);
-        if (!audioDone) { audioDone = true; checkBothDone(); }
+      }).catch(function () {
+        audioDone = true;
+        checkBothDone();
       });
-    });
+    } else {
+      audioDone = true;
+      checkBothDone();
+    }
   }
 
   // ============================================================
@@ -1313,7 +1349,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2200);
   }
 
-<<<<<<< HEAD
   function showFloatingTimeBonus(seconds) {
     const anchor = document.getElementById('timerDisplay');
     if (!anchor) return;
@@ -1330,9 +1365,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (el.parentNode) el.parentNode.removeChild(el);
     }, 1400);
   }
-
-=======
->>>>>>> parent of bcfb469 (nnn)
   // ============================================================
   // GRID LAYOUT
   // ============================================================
@@ -1583,8 +1615,7 @@ document.addEventListener('DOMContentLoaded', function() {
           setTimeout(() => timerDisplay.classList.remove('timer-bonus'), 800);
         }
         showComboToast('🔥 ' + comboCount + ' Combo! +15s Time Bonus!');
-        showAudioLoader();
-        setTimeout(hideAudioLoader, 1000);
+        
       }
 
       if (isPairSpecial) {
@@ -1628,15 +1659,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (pairA === -1 && pairB === -1) {
       showComboToast('💣 Bomb! Auto-destroyed a random pair!');
-      showAudioLoader();
-      setTimeout(() => { hideAudioLoader(); destroyRandomPair(); }, 500);
+      destroyRandomPair(); 
       return;
     }
 
     if ((pairA === -2 && pairB === -3) || (pairA === -3 && pairB === -2)) {
       showComboToast('🔑 Key & Lock! Board revealed for 2s!');
-      showAudioLoader();
-      setTimeout(() => { hideAudioLoader(); revealBoardFor2Seconds(); }, 400);
+      revealBoardFor2Seconds(); 
       return;
     }
 
@@ -1649,16 +1678,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (pairA === -5 && pairB === -5) {
       showComboToast('🔄 Shuffle! Unmatched cards rearranged!');
-      showAudioLoader();
-      setTimeout(() => { hideAudioLoader(); shuffleRemainingCards(); }, 400);
+      shuffleRemainingCards(); 
       return;
     }
 
     if (pairA === -6 && pairB === -6) {
       bonusPoints += 100;
       showComboToast('💎 Multiplier! +100 Flat Points!');
-      showAudioLoader();
-      setTimeout(hideAudioLoader, 1000);
+      
       finishSpecialTurn();
       return;
     }
@@ -2092,17 +2119,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (isCorrect) {
-<<<<<<< HEAD
-          pendingQuizBonus = 10;
+pendingQuizBonus = 10;
           if (timerDisplay) {
             timerDisplay.textContent = formatTime(secondsLeft + pendingQuizBonus);
             timerDisplay.classList.add('timer-bonus');
             setTimeout(() => timerDisplay.classList.remove('timer-bonus'), 800);
           }
           feedbackEl.textContent = 'Correct! +10s Time Bonus!';
-=======
-          feedbackEl.textContent = '✅ Correct! Great job!';
->>>>>>> parent of bcfb469 (nnn)
           feedbackEl.className = 'quiz-feedback success';
           if (window.MMSfx && MMSfx.click) MMSfx.click();
         } else {

@@ -1,15 +1,38 @@
 /* ================================================================
-   SFX.JS — Click / wrong / gameover (synthesized via Web Audio API)
+   SFX.JS — Audio Effects (Preloaded Audio Files + Web Audio Synth Fallback)
    ----------------------------------------------------------------
-   No .mp3 files needed. Works everywhere, instantly.
+   Instant SFX for button clicks, wrong match, gameover, and win.
+   Zero delay, zero dependencies, works on mobile & Vercel.
    ================================================================ */
 
 (function () {
   'use strict';
 
+  const inGameplayFolder = /\/Gameplay\//i.test(window.location.pathname);
+  const base = inGameplayFolder ? '../' : '';
+
   let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
   let audioCtx = null;
   let unlocked = false;
+
+  const SFX_FILES = {
+    click:    base + 'Assets/sound/button click2.mp3',
+    wrong:    base + 'Assets/sound/wrong card4.mp3',
+    gameover: base + 'Assets/sound/game over3.mp3',
+    win:      base + 'Assets/sound/mm win.mp3'
+  };
+
+  const audioCache = {};
+
+  // Pre-instantiate audio objects
+  try {
+    for (const key in SFX_FILES) {
+      const a = new Audio();
+      a.preload = 'auto';
+      a.src = SFX_FILES[key];
+      audioCache[key] = a;
+    }
+  } catch (e) {}
 
   function getCtx() {
     if (audioCtx) return audioCtx;
@@ -77,21 +100,47 @@
     osc.stop(ctx.currentTime + duration + 0.05);
   }
 
-  // --- Sound bank ---
-  function play(name) {
+  function playSynthFallback(name) {
     switch (name) {
       case 'click':
-        tone(880, 0.08, 'triangle', 1);
+        tone(880, 0.08, 'triangle', 0.8);
         break;
       case 'wrong':
-        sweep(300, 120, 0.35, 'sawtooth', 1);
+        sweep(300, 120, 0.35, 'sawtooth', 0.8);
         break;
       case 'gameover':
-        tone(220, 0.25, 'square', 1);
-        setTimeout(function () { tone(165, 0.35, 'square', 1); }, 200);
-        setTimeout(function () { tone(110, 0.55, 'square', 1); }, 480);
+        tone(220, 0.25, 'square', 0.8);
+        setTimeout(function () { tone(165, 0.35, 'square', 0.8); }, 200);
+        setTimeout(function () { tone(110, 0.55, 'square', 0.8); }, 480);
+        break;
+      case 'win':
+        tone(523.25, 0.15, 'sine', 0.8);
+        setTimeout(function () { tone(659.25, 0.15, 'sine', 0.8); }, 120);
+        setTimeout(function () { tone(783.99, 0.15, 'sine', 0.8); }, 240);
+        setTimeout(function () { tone(1046.50, 0.4, 'triangle', 0.9); }, 360);
         break;
     }
+  }
+
+  // --- Sound bank ---
+  function play(name) {
+    if (!soundEnabled) return;
+
+    const audio = audioCache[name];
+    if (audio) {
+      try {
+        const soundClone = audio.cloneNode();
+        soundClone.volume = (name === 'win') ? 1.0 : 0.8;
+        const p = soundClone.play();
+        if (p && typeof p.then === 'function') {
+          p.catch(function () {
+            playSynthFallback(name);
+          });
+        }
+        return;
+      } catch (e) {}
+    }
+    playSynthFallback(name);
   }
 
   // --- Global click sound on buttons ---
@@ -121,8 +170,11 @@
     play:     play,
     click:    function () { play('click'); },
     wrong:    function () { play('wrong'); },
-    gameover: function () { play('gameover'); }
+    gameover: function () { play('gameover'); },
+    win:      function () { play('win'); },
+    tone:     tone,
+    sweep:    sweep
   };
 
-  console.log('[SFX] Synthesized SFX ready (no files needed).');
+  console.log('[SFX] Ready with audio files + Web Audio synth fallback.');
 })();

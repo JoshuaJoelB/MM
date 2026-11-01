@@ -1482,7 +1482,7 @@ body::before {
   display: grid !important;
   width: 100% !important;
   height: auto !important;
-  max-width: 640px !important;
+  max-width: 860px;
   margin: 0 auto !important;
   justify-content: center !important;
   align-content: center !important;
