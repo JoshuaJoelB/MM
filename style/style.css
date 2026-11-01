@@ -1482,7 +1482,7 @@ body::before {
   display: grid !important;
   width: 100% !important;
   height: auto !important;
-  max-width: 860px;
+  max-width: 640px !important;
   margin: 0 auto !important;
   justify-content: center !important;
   align-content: center !important;
@@ -3830,7 +3830,6 @@ h1, h2, h3, h4, h5, h6,
 
 .character-dialog.show {
   opacity: 1;
-  pointer-events: auto !important;
   transform: translate(-50%, 0);
 }
 
@@ -4697,7 +4696,6 @@ h1, h2, h3, h4, h5, h6,
   .quiz-content { padding: 18px 16px; gap: 10px; }
   .quiz-question { font-size: 0.95rem; }
   .quiz-option { padding: 10px 14px; font-size: 0.85rem; }
-<<<<<<< HEAD
 }
 
 /* ================================================================
@@ -4728,30 +4726,4 @@ h1, h2, h3, h4, h5, h6,
   20%  { opacity: 1; transform: translateX(-50%) translateY(-6px)  scale(1.15); }
   60%  { opacity: 1; transform: translateX(-50%) translateY(-28px) scale(1); }
   100% { opacity: 0; transform: translateX(-50%) translateY(-52px) scale(0.9); }
-}
-
-/* ================================================================
-   CARD NICKNAME BADGE
-   ================================================================ */
-.card-name-label {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(10, 20, 40, 0.85);
-  color: #FFD700;
-  font-family: 'DynaPuff', system-ui, sans-serif !important;
-  font-weight: 700 !important;
-  font-size: 0.75rem;
-  text-align: center;
-  padding: 6px 4px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-top: 1px solid rgba(255, 215, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 2;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-=======
->>>>>>> parent of bcfb469 (nnn)
 }
