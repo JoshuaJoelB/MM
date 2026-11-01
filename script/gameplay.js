@@ -106,9 +106,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============================================================
   const urlParams = new URLSearchParams(window.location.search);
   const level   = parseInt(urlParams.get('level')) || 1;
-  const subject = urlParams.get('subject')
+  const rawSubject = urlParams.get('subject')
                 || (window.location.pathname.match(/Gameplay-(\w+)\.html/)?.[1])
                 || 'computer';
+  const subject = String(rawSubject).toLowerCase();
 
   // ADDED shortName HERE
   const subjectInfo = {
@@ -963,9 +964,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const entry = topicInfo.cards[pairIndex % topicInfo.cards.length];
     if (!entry) return [];
 
-    const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
-    const mapped = AUDIO_MAP[subject + ':' + level + ':' + entry.name] || '';
+    const out = [];
     const cardName = entry.name;
+
+    // 1. Exact verified URL from assetLoader (100% verified on disk)
+    if (window.assetLoader && typeof window.assetLoader.getCardAudioUrl === 'function') {
+      const exact = window.assetLoader.getCardAudioUrl(subject, level, cardName);
+      if (exact && out.indexOf(exact) === -1) out.push(exact);
+    }
+
+    // 2. Fallbacks from AUDIO_MAP
+    const folder = AUDIO_SUBJECT_FOLDER[subject] || 'epp';
+    const mapped = AUDIO_MAP[subject + ':' + level + ':' + cardName] || '';
 
     const names = [];
     if (mapped && names.indexOf(mapped) === -1) names.push(mapped);
@@ -974,10 +984,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const levelFolder = String(level);
     const exts = ['m4a', 'mp3', 'wav', 'ogg'];
 
-    const out = [];
     for (const name of names) {
       for (const ext of exts) {
-        out.push(`../Assets/sound/${folder}/${levelFolder}/${encodeURIComponent(name)}.${ext}`);
+        const u1 = `../Assets/sound/${folder}/${levelFolder}/${encodeURIComponent(name)}.${ext}`;
+        if (out.indexOf(u1) === -1) out.push(u1);
+        const u2 = `../Assets/sound/${folder}/${levelFolder}/${name}.${ext}`;
+        if (out.indexOf(u2) === -1) out.push(u2);
       }
     }
     return out;
@@ -985,37 +997,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function playAudioWithBudget(candidates, budgetMs) {
     return new Promise((resolve) => {
-      if (!candidates || !candidates.length) { resolve(null); return; }
+      const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+      if (!soundEnabled || !candidates || !candidates.length) {
+        resolve(null);
+        return;
+      }
 
-      showAudioLoader();
       let resolved = false;
       let idx = 0;
       const startTime = Date.now();
+      const maxBudget = budgetMs || 2500;
 
       const budgetTimer = setTimeout(function () {
         if (resolved) return;
         resolved = true;
-        hideAudioLoader();
         resolve(null);
-      }, budgetMs);
+      }, maxBudget);
 
       function finish(audio) {
         if (resolved) return;
         resolved = true;
         clearTimeout(budgetTimer);
-        hideAudioLoader();
         resolve(audio);
       }
 
       function tryNext() {
         if (resolved) return;
-        if (idx >= candidates.length) { finish(null); return; }
-        if (Date.now() - startTime > budgetMs - 100) { finish(null); return; }
+        if (idx >= candidates.length || (Date.now() - startTime > maxBudget - 100)) {
+          finish(null);
+          return;
+        }
 
         const src = candidates[idx++];
         const audio = new Audio();
         audio.preload = 'auto';
-        audio.crossOrigin = 'anonymous';
 
         let settled = false;
         const perTry = setTimeout(function () {
@@ -1023,45 +1038,35 @@ document.addEventListener('DOMContentLoaded', function() {
           settled = true;
           try { audio.src = ''; } catch (e) {}
           tryNext();
-        }, AUDIO_PER_TRY_MS);
+        }, 500);
 
-        audio.addEventListener('canplaythrough', function () {
+        function onReadyToPlay() {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
 
-          const ctx = getVoiceCtx();
-          if (ctx) {
-            if (ctx.state === 'suspended') ctx.resume().catch(function(){});
-            try {
-              const source = ctx.createMediaElementSource(audio);
-              const gainNode = ctx.createGain();
-              gainNode.gain.value = 2.5;
-              source.connect(gainNode);
-              gainNode.connect(ctx.destination);
-            } catch (err) {
-              console.warn("Volume boost failed, playing standard:", err);
-              audio.volume = 1.0;
-            }
-          } else {
-            audio.volume = 1.0;
-          }
-
+          audio.volume = 1.0;
           const p = audio.play();
           if (p && typeof p.then === 'function') {
-            p.then(function () { finish(audio); })
-             .catch(function () { tryNext(); });
+            p.then(function () {
+              finish(audio);
+            }).catch(function (err) {
+              console.log('[Audio] Play blocked/failed, trying next:', err && err.message);
+              tryNext();
+            });
           } else {
             finish(audio);
           }
-        });
+        }
 
+        audio.addEventListener('canplaythrough', onReadyToPlay, { once: true });
+        audio.addEventListener('loadeddata', onReadyToPlay, { once: true });
         audio.addEventListener('error', function () {
           if (settled) return;
           settled = true;
           clearTimeout(perTry);
           tryNext();
-        });
+        }, { once: true });
 
         audio.src = src;
         try { audio.load(); } catch (e) { tryNext(); }
@@ -1087,19 +1092,14 @@ document.addEventListener('DOMContentLoaded', function() {
   function showCharacterDialog(title) {
     if (!characterDialog) return;
     if (characterTitle) characterTitle.textContent = title || '';
-    characterDialog.classList.add('show');
+    characterDialog.classList.add('show', 'skippable');
     dialogActive  = true;
     skipRequested = false;
-    characterDialog.classList.add('skippable');
-    if (!characterDialog.__skipBound) {
-      characterDialog.addEventListener('click', function () { skipRequested = true; });
-      characterDialog.__skipBound = true;
-    }
   }
+
   function hideCharacterDialog() {
     if (!characterDialog) return;
-    characterDialog.classList.remove('show');
-    characterDialog.classList.remove('skippable');
+    characterDialog.classList.remove('show', 'skippable');
     dialogActive = false;
   }
 
@@ -1109,7 +1109,7 @@ document.addEventListener('DOMContentLoaded', function() {
     characterText.textContent = '';
     characterText.classList.add('typing');
     let i = 0;
-    const speed = 22;
+    const speed = 20;
     typingTimer = setInterval(function () {
       if (skipRequested) {
         characterText.textContent = text;
@@ -1131,10 +1131,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function speakCard(pairIndex, onDone) {
     dialogOnDone = onDone || null;
 
-    const title    = getCardLabel(pairIndex);
-    const desc     = getCardDescription(pairIndex);
-    const entry    = topicInfo.cards[pairIndex % topicInfo.cards.length];
-    const cardName = entry ? entry.name : '';
+    const title      = getCardLabel(pairIndex);
+    const desc       = getCardDescription(pairIndex);
+    const candidates = buildAudioCandidates(pairIndex);
 
     showCharacterDialog(title);
 
@@ -1144,23 +1143,43 @@ document.addEventListener('DOMContentLoaded', function() {
     let audioDone    = false;
     let finishCalled = false;
 
+    function finishDialog() {
+      if (finishCalled) return;
+      finishCalled = true;
+
+      hideCharacterDialog();
+
+      if (currentAudio) {
+        try { currentAudio.pause(); } catch (e) {}
+        currentAudio = null;
+      }
+
+      if (window.MMBgMusic) window.MMBgMusic.play();
+
+      const cb = dialogOnDone;
+      dialogOnDone = null;
+      if (typeof cb === 'function') cb();
+    }
+
     function checkBothDone() {
       if (typingDone && audioDone && !finishCalled) {
-        finishCalled = true;
-        setTimeout(function () {
-          hideCharacterDialog();
-          if (currentAudio) {
-            try { currentAudio.pause(); } catch (e) {}
-            currentAudio = null;
-          }
-
-          if (window.MMBgMusic) window.MMBgMusic.play();
-
-          const cb = dialogOnDone;
-          dialogOnDone = null;
-          if (typeof cb === 'function') cb();
-        }, 350);
+        setTimeout(finishDialog, 350);
       }
+    }
+
+    // Safety timeout: NEVER freeze the game! Max 3.6s total!
+    const safetyTimer = setTimeout(function () {
+      if (!finishCalled) finishDialog();
+    }, 3800);
+
+    // Allow user to click anywhere on dialog to skip immediately
+    if (characterDialog) {
+      const skipHandler = function () {
+        clearTimeout(safetyTimer);
+        characterDialog.removeEventListener('click', skipHandler);
+        finishDialog();
+      };
+      characterDialog.addEventListener('click', skipHandler, { once: true });
     }
 
     typeText(desc, function () {
@@ -1168,22 +1187,34 @@ document.addEventListener('DOMContentLoaded', function() {
       checkBothDone();
     });
 
-    if (window.assetLoader && typeof window.assetLoader.playCardAudio === 'function') {
-      window.assetLoader.playCardAudio(subject, level, cardName).then(function (audio) {
-        currentAudio = audio;
+    playAudioWithBudget(candidates, 2500).then(function (audio) {
+      if (!audio) {
         audioDone = true;
         checkBothDone();
-      }).catch(function () {
-        audioDone = true;
-        checkBothDone();
-      });
-    } else {
+        return;
+      }
+      currentAudio = audio;
+
+      const maxAudioDuration = setTimeout(function () {
+        if (!audioDone) {
+          audioDone = true;
+          checkBothDone();
+        }
+      }, 4000);
+
+      audio.addEventListener('ended', function () {
+        clearTimeout(maxAudioDuration);
+        if (!audioDone) {
+          audioDone = true;
+          checkBothDone();
+        }
+      }, { once: true });
+    }).catch(function () {
       audioDone = true;
       checkBothDone();
-    }
+    });
   }
 
-  // ============================================================
   // SAFETY CHECKS
   // ============================================================
   let unlockedLevels = pJSON('unlocked_' + subject, [1]);
