@@ -1008,14 +1008,18 @@ function initHomePage() {
     });
   }
 
-  function renderLeaderboard() {
+  async function renderLeaderboard() {
     const emptyEl = document.getElementById('navLbEmpty');
     if (!emptyEl || !window.MMLeaderboard) return;
 
-    const all = MMLeaderboard.getAllForSubject(currentSubject);
+    // Show loading state
+    emptyEl.hidden = false;
+    emptyEl.textContent = "Loading leaderboard...";
+
+    const all = await MMLeaderboard.getAllForSubject(currentSubject);
 
     if (!all.length) {
-      emptyEl.hidden = false;
+      emptyEl.textContent = "No scores yet for this subject — be the first! 🎉";
       renderPodium([]);
       renderRows([]);
       return;
