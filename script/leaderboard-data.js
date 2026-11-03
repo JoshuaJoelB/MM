@@ -1,8 +1,13 @@
 /* ================================================================
-   SUPABASE CONFIGURATION & HELPER
+   LEADERBOARD-DATA.JS
+   ----------------------------------------------------------------
+   Empty seed — no fake names.
+   The leaderboard starts empty. Real players appear as they
+   finish levels.
    ================================================================ */
 
-const SUPABASE_URL = 'https://vynipvyzfvzkrhbjdfty.supabase.co'; // <--- PUT YOUR URL HERE
-const SUPABASE_ANON_KEY = 'sb_publishable_vrnWwRvsWDGnDTXNAETvFw_WDmMZOc6'; // <--- PUT YOUR ANON KEY HERE
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.MM_LEADERBOARD_SEED = {
+  version: 2,
+  updatedAt: null,
+  entries: []
+};
