@@ -2030,8 +2030,21 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    // ✅ Use elapsed time for stats & leaderboard (faster = better rank)
+     // ✅ Use elapsed time for stats
     const elapsed = timeSpent;
+
+    // 1. Save the best time for THIS specific level
+    const levelTimeKey = 'levelTime_' + subject + '_' + level;
+    const prevBest = parseInt(pGet(levelTimeKey, '0'), 10);
+    if (prevBest === 0 || elapsed < prevBest) {
+      pSet(levelTimeKey, String(elapsed));
+    }
+
+    // 2. Calculate the TOTAL time for all 10 levels of this subject
+    let totalTime = 0;
+    for (let i = 1; i <= 10; i++) {
+      totalTime += parseInt(pGet('levelTime_' + subject + '_' + i, '0'), 10);
+    }
 
     if (winMoves) winMoves.textContent = moves;
     // ✅ MATCH the timer: display the same value the timer last showed
@@ -2100,12 +2113,14 @@ document.addEventListener('DOMContentLoaded', function() {
     celebrateWin();
     if (typeof window.completeLevel === 'function') window.completeLevel(subject, level);
     if (level === 1) { try { pSet('tutorialSeen', '1'); } catch (e) {} }
+
     if (window.MMLeaderboard && window.MMPlayer) {
       const nickname = MMPlayer.getNickname();
       if (nickname) {
         MMLeaderboard.recordWin({
           nickname: nickname, subject: subject, level: level,
-          stars: starsEarned, time: elapsed, // ✅ Sends the true elapsed time
+          stars: starsEarned, 
+          time: totalTime, // <--- CHANGED: Sends the total accumulated time
           pointsEarned: wasCompletedBefore ? bonusPoints : pointsEarned
         });
         MMLeaderboard.prune();
