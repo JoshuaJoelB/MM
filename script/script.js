@@ -9,6 +9,36 @@ document.addEventListener('DOMContentLoaded', function () {
   const isHome  = document.getElementById('homePage')  !== null;
 
   // ============================================================
+  // 🛠️ ONE-TIME MIGRATION: Fix old leaderboard data
+  // ============================================================
+  (function migrateLeaderboardData() {
+    const migrationKey = 'mm_lb_migrated_to_total_time';
+    if (localStorage.getItem(migrationKey) === 'true') return;
+
+    try {
+      // Wipe the old leaderboard data so it regenerates using the NEW total time logic
+      // (Otherwise, old single-level times will conflict with total times)
+      if (window.MMLeaderboard && typeof MMLeaderboard.clear === 'function') {
+        MMLeaderboard.clear();
+      } else {
+        // Fallback: clear any leaderboard-related keys
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && (k.includes('leaderboard') || k.includes('mm_lb'))) {
+            keysToRemove.push(k);
+          }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+      }
+      localStorage.setItem(migrationKey, 'true');
+      console.log("✅ Old leaderboard data cleared. Will now use Total Time.");
+    } catch (e) {
+      console.warn("Migration failed:", e);
+    }
+  })();
+
+  // ============================================================
   // INDEX PAGE — loading bar with progress, then redirect
   // ============================================================
   if (isIndex) {
@@ -285,7 +315,6 @@ function initSettings() {
     );
     if (!ok) return;
 
-    /* -------- Wipe current player's prefixed keys -------- */
     if (window.MMPlayer && MMPlayer.wipePlayerData) {
       MMPlayer.wipePlayerData(nickname);
     } else if (nickname) {
@@ -298,18 +327,15 @@ function initSettings() {
       keys.forEach(k => localStorage.removeItem(k));
     }
 
-    /* -------- Remove THIS player from leaderboards -------- */
     if (window.MMLeaderboard && MMLeaderboard.removePlayer && nickname) {
       try { MMLeaderboard.removePlayer(nickname); } catch (err) {}
     }
 
-    /* -------- Refresh UI -------- */
     if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
     if (typeof window.updatePlayerLevelBox === 'function') {
       window.updatePlayerLevelBox();
     }
 
-    /* -------- Clear leaderboard modal in DOM (if open) -------- */
     const listEl  = document.getElementById('navLbList');
     const emptyEl = document.getElementById('navLbEmpty');
     const podium  = document.getElementById('lbPodium');
@@ -317,14 +343,12 @@ function initSettings() {
     if (podium)  podium.hidden = true;
     if (emptyEl) emptyEl.hidden = false;
 
-    /* -------- Close settings modal -------- */
     const modalEl = document.getElementById('settingsModal');
     if (modalEl && window.bootstrap) {
       const modal = bootstrap.Modal.getInstance(modalEl);
       if (modal) modal.hide();
     }
 
-    /* -------- Toast -------- */
     const toast = document.createElement('div');
     toast.textContent = '✅ Progress + leaderboard reset!';
     toast.style.cssText = `
@@ -347,7 +371,6 @@ function initSettings() {
     document.body.appendChild(toast);
     setTimeout(function () { toast.remove(); }, 2600);
 
-    /* -------- Reset home board view -------- */
     const homeLobby      = document.getElementById('homeLobby');
     const homeGameScreen = document.getElementById('homeGameScreen');
     if (homeLobby)      homeLobby.style.display = 'block';
@@ -359,12 +382,11 @@ function initSettings() {
   document.addEventListener('change', function (e) {
     const target = e.target;
 
-        if (target.classList && target.classList.contains('settings-toggle')) {
+    if (target.classList && target.classList.contains('settings-toggle')) {
       const key = target.dataset.key;
       if (key) {
         localStorage.setItem(key, target.checked);
 
-        // ✅ Notify audio + sfx modules in real time
         if (key === 'musicEnabled') {
           window.dispatchEvent(new CustomEvent('musicToggled', {
             detail: { enabled: target.checked }
@@ -574,18 +596,189 @@ function initHomePage() {
   }
 
   function showWin() {
-    if (winMoves) winMoves.textContent = moves;
-    if (winTime)  winTime.textContent  = seconds + 's';
-    if (winOverlay) winOverlay.classList.add('show');
+    if (gameFinished) return;
+    gameFinished = true;
 
-    const stats = getStats();
-    stats.gamesPlayed += 1;
-    if (stats.bestTime === null || seconds < stats.bestTime) {
-      stats.bestTime = seconds;
+    if (window.MMBgMusic) window.MMBgMusic.pause();
+
+    if (window.MMSfx && window.MMSfx.win) {
+      window.MMSfx.win();
+    } else {
+      try {
+        const winSound = new Audio('../Assets/sound/mm win.mp3');
+        winSound.volume = 1.0;
+        winSound.play().catch(function(e) { console.log('Win sound play failed:', e); });
+      } catch (e) { console.log('Win sound error:', e); }
     }
-    stats.totalMatches += PAIR_COUNT;
+
+    const elapsed = timeSpent;
+
+    if (winMoves) winMoves.textContent = moves;
+    if (winTime)  winTime.textContent  = formatTime(secondsLeft);
+
+    const wasCompletedBefore = wasLevelCompletedBefore();
+    const starsEarned  = calculateStars();
+    const pointsEarned = getPointsForStars(basePoints, starsEarned) + bonusPoints;
+
+    try {
+      sessionStorage.setItem('mm_preWin', JSON.stringify({
+        subject: subject, level: level,
+        wasCompleted: wasCompletedBefore,
+        pointsEarned: pointsEarned,
+        pointsAwarded: !wasCompletedBefore
+      }));
+    } catch (e) {}
+
+    if (typeof window.recordLevelStars === 'function') {
+      window.recordLevelStars(subject, level, starsEarned);
+    }
+    if (!wasCompletedBefore) {
+      if (typeof window.addPoints === 'function') {
+        window.addPoints(pointsEarned);
+      } else {
+        const cur = parseInt(pGet('pointsTotal', '0'), 10) || 0;
+        pSet('pointsTotal', String(cur + pointsEarned));
+      }
+    } else if (bonusPoints > 0) {
+      if (typeof window.addPoints === 'function') {
+        window.addPoints(bonusPoints);
+      } else {
+        const cur = parseInt(pGet('pointsTotal', '0'), 10) || 0;
+        pSet('pointsTotal', String(cur + bonusPoints));
+      }
+    }
+    if (winCoinsEarned) {
+      winCoinsEarned.textContent = wasCompletedBefore ? (bonusPoints > 0 ? '+' + bonusPoints : '+0') : '+' + pointsEarned;
+    }
+
+    if (!winStarsRow) {
+      const container = winOverlay ? winOverlay.querySelector('.win-box') : null;
+      if (container) {
+        const pTag = container.querySelector('p');
+        const starRow = document.createElement('div');
+        starRow.id = 'winStarRating';
+        starRow.className = 'win-star-rating';
+        starRow.innerHTML = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+        if (pTag && pTag.parentNode) pTag.parentNode.insertBefore(starRow, pTag.nextSibling);
+        else container.insertBefore(starRow, container.firstChild);
+        winStarsRow = starRow;
+      }
+    }
+    if (winStarsRow) {
+      const icons = winStarsRow.querySelectorAll('i');
+      icons.forEach((icon, i) => { icon.classList.toggle('filled', i < starsEarned); });
+    }
+    if (winStarsEarned) {
+      const total = (typeof window.getStarsTotal === 'function')
+        ? window.getStarsTotal()
+        : parseInt(pGet('starsTotal', '0'), 10) || 0;
+      winStarsEarned.textContent = total;
+    }
+
+    if (winOverlay) winOverlay.classList.add('show');
+    celebrateWin();
+    if (typeof window.completeLevel === 'function') window.completeLevel(subject, level);
+    if (level === 1) { try { pSet('tutorialSeen', '1'); } catch (e) {} }
+
+    // ================================================================
+    // 🏆 LEADERBOARD LOGIC (Highest Level + Best Time)
+    // ================================================================
+    if (window.MMLeaderboard && window.MMPlayer) {
+      const nickname = MMPlayer.getNickname();
+      if (nickname) {
+        // Check what we have stored locally for this player's best run
+        const lbLevelKey = 'lb_best_level_' + subject;
+        const lbTimeKey  = 'lb_best_time_' + subject;
+        const prevHighest = parseInt(pGet(lbLevelKey, '0'), 10);
+        const prevTime    = parseInt(pGet(lbTimeKey,  '999999'), 10);
+
+        let shouldUpdate = false;
+        let newTimeToSave = elapsed;
+
+        if (level > prevHighest) {
+          // Reached a new highest level, always update
+          shouldUpdate = true;
+        } else if (level === prevHighest && elapsed < prevTime) {
+          // Replayed the highest level and got a faster time
+          shouldUpdate = true;
+        }
+
+        if (shouldUpdate) {
+          // Save new local best
+          pSet(lbLevelKey, String(level));
+          pSet(lbTimeKey, String(elapsed));
+
+          // Send to leaderboard
+          MMLeaderboard.recordWin({
+            nickname: nickname, 
+            subject: subject, 
+            level: level,
+            stars: starsEarned, 
+            time: newTimeToSave, // Shows exactly 4 secs for level 2
+            pointsEarned: wasCompletedBefore ? bonusPoints : pointsEarned
+          });
+          MMLeaderboard.prune();
+        }
+      }
+    }
+    // ================================================================
+
+    if (typeof window.updatePlayerLevelBox === 'function') window.updatePlayerLevelBox();
+
+    const nextLevel = level + 1;
+    if (nextLevelBtn) {
+      if (nextLevel <= 10) {
+        const nextUnlocked = isNextLevelUnlocked();
+        if (nextUnlocked) {
+          nextLevelBtn.innerHTML = 'Next Level <i class="fas fa-arrow-right ms-2"></i>';
+          nextLevelBtn.onclick = function () {
+            window.location.href = 'Gameplay-' + subject + '.html?level=' + nextLevel + '&subject=' + subject;
+          };
+        } else {
+          nextLevelBtn.innerHTML = '<i class="fas fa-unlock me-2"></i> Unlock Next Level';
+          nextLevelBtn.onclick = function () {
+            if (typeof window.tryUnlockLevel !== 'function') {
+              window.location.href = '../Level.html?subject=' + subject;
+              return;
+            }
+            const result = window.tryUnlockLevel(subject, nextLevel);
+            if (result.ok) {
+              if (!result.alreadyUnlocked) {
+                try { sessionStorage.setItem('mm_just_unlocked', JSON.stringify({ subject: subject, level: nextLevel })); } catch (e) {}
+              }
+              window.location.href = '../Level.html?subject=' + subject;
+            } else if (result.reason === 'not_enough_points') {
+              alert('⭐ Not enough points!\r\n\r\nLevel ' + nextLevel + ' costs ' + result.cost + ' points.\r\nYou have ' + result.points + ' points.\r\n\r\nPlay more levels to earn points!');
+            } else if (result.reason === 'previous_not_completed') {
+              alert('Finish Level ' + (nextLevel - 1) + ' first!');
+            } else if (result.reason === 'previous_locked') {
+              alert('Complete the previous level first!');
+            } else if (result.reason === 'save_failed') {
+              alert('Could not save your progress. Please try again.');
+            }
+          };
+        }
+        nextLevelBtn.style.display = 'inline-block';
+      } else {
+        nextLevelBtn.innerHTML = '<i class="fas fa-trophy me-2"></i> All Done';
+        nextLevelBtn.onclick = function () { window.location.href = '../Level.html?subject=' + subject; };
+      }
+    }
+
+    const stats = {
+      gamesPlayed:  parseInt(pGet('gamesPlayed',  '0'), 10) || 0,
+      bestTime:     pGet('bestTime', null),
+      totalMatches: parseInt(pGet('totalMatches', '0'), 10) || 0,
+      rewards:      parseInt(pGet('rewardsCount', '0'), 10) || 0
+    };
+    stats.gamesPlayed += 1;
+    if (stats.bestTime === null || elapsed < Number(stats.bestTime)) stats.bestTime = elapsed;
+    stats.totalMatches += pairs;
     stats.rewards += 1;
-    saveStats(stats);
+    pSet('gamesPlayed',  String(stats.gamesPlayed));
+    pSet('bestTime',     String(stats.bestTime));
+    pSet('totalMatches', String(stats.totalMatches));
+    pSet('rewardsCount', String(stats.rewards));
   }
 
   function initGame() {
@@ -761,7 +954,9 @@ function initHomePage() {
     if (sec === 0) return '--';
     const m = Math.floor(sec / 60);
     const s = sec % 60;
-    return String(m).padStart(1, '0') + ':' + String(s).padStart(2, '0');
+    
+    // ✅ FIXED: Pads minutes with 2 digits (e.g., 00:05 instead of 0:05)
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
 
   function currentNickname() {
@@ -884,19 +1079,16 @@ function initHomePage() {
   function doLogout() {
     if (!confirm('Log out? Your progress stays saved. Enter your nickname again to resume.')) return;
 
-    // ✅ Stop + destroy the AudioContext
     if (window.MMBgMusic && typeof MMBgMusic.stop === 'function') {
       MMBgMusic.stop();
     }
 
-    // ✅ Clear session music/login flags
     try {
       sessionStorage.removeItem('mm_music_pos');
       sessionStorage.removeItem('mm_logged_in');
       sessionStorage.removeItem('mm_just_logged_in');
     } catch (e) {}
 
-    // ✅ Clear nickname (player data stays in localStorage)
     if (window.MMPlayer && typeof MMPlayer.clearNickname === 'function') {
       MMPlayer.clearNickname();
     } else {
@@ -913,6 +1105,7 @@ function initHomePage() {
     doLogout();
   });
 })();
+
 /* ================================================================
    HOME WELCOME / HELLO GREETING
    ================================================================ */
