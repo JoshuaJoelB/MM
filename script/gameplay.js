@@ -370,15 +370,15 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:8:Dissolving sugar':      'sugar',
     'science:8:Folding paper':         'fold',
     'science:9:Mouth':                 'mouth',
-    'science:9:Teeth':                 'teeth',
+    'science:9:Teeth':                 'teeth_',
     'science:9:Salivary glands':       'glands',
-    'science:9:Esophagus':             'esophagus',
+    'science:9:Esophagus':             'esophagus_',
     'science:9:Stomach':               'stomach',
     'science:9:Liver':                 'liver',
     'science:9:Gallbladder':           'gallbladder',
     'science:9:Pancreas':              'pancreas',
     'science:9:Small intestine':       'small',
-    'science:9:Large intestine':       'large',
+    'science:9:Large intestine':       'large_',
     'science:9:Rectum':                'rectum',
     'science:10:Nose':                 'nose',
     'science:10:Nasal cavity':         'nasal',
@@ -1494,6 +1494,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const GAME_DURATION = 120;
   let secondsLeft = GAME_DURATION;
+  let timeSpent = 0; // ✅ Track exact seconds spent
   let isTimerFrozen = false;
   let freezeTimeout = null;
 
@@ -1740,6 +1741,7 @@ document.addEventListener('DOMContentLoaded', function() {
     timerInterval = setInterval(() => {
       if (dialogActive || isTimerFrozen) return;
       secondsLeft--;
+      timeSpent++; // ✅ Track exact seconds spent
       if (timerDisplay) timerDisplay.textContent = formatTime(secondsLeft);
       barPercent = Math.max(0, barPercent - BAR_PENALTY_TIME);
       updateStarProgress();
@@ -1750,6 +1752,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function resetTimer() {
     stopTimer();
     secondsLeft = GAME_DURATION;
+    timeSpent = 0; // ✅ Reset the time counter
     if (timerDisplay) {
       timerDisplay.textContent = formatTime(secondsLeft + pendingQuizBonus);
       timerDisplay.classList.remove('timer-frozen', 'timer-bonus');
@@ -2027,9 +2030,13 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    const elapsed = GAME_DURATION - secondsLeft;
+    // ✅ Use elapsed time for stats & leaderboard (faster = better rank)
+    const elapsed = timeSpent;
+
     if (winMoves) winMoves.textContent = moves;
-    if (winTime)  winTime.textContent  = formatTime(elapsed);
+    // ✅ MATCH the timer: display the same value the timer last showed
+    if (winTime)  winTime.textContent  = formatTime(secondsLeft);
+
     const wasCompletedBefore = wasLevelCompletedBefore();
     const starsEarned  = calculateStars();
     const pointsEarned = getPointsForStars(basePoints, starsEarned) + bonusPoints;
@@ -2098,7 +2105,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (nickname) {
         MMLeaderboard.recordWin({
           nickname: nickname, subject: subject, level: level,
-          stars: starsEarned, time: elapsed,
+          stars: starsEarned, time: elapsed, // ✅ Sends the true elapsed time
           pointsEarned: wasCompletedBefore ? bonusPoints : pointsEarned
         });
         MMLeaderboard.prune();
