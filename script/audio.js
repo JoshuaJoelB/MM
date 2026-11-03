@@ -17,13 +17,11 @@
 
   // Filename variants — first one that works is used
   const BG_VARIANTS = [
-    base + 'Assets/sound/bgmusic.mp3',
+    base + 'Assets/sound/bg music1.mp3',
+    base + 'Assets/sound/' + encodeURIComponent('bg music1') + '.mp3',
     base + 'Assets/sound/bgmusic1.mp3',
-    base + 'Assets/sound/bg_music.mp3',
-    base + 'Assets/sound/bg_music1.mp3',
-    base + 'Assets/sound/BGM.mp3',
-    base + 'Assets/sound/backgroundmusic.mp3',
-    base + 'Assets/sound/' + encodeURIComponent('bg music1') + '.mp3'
+    base + 'Assets/sound/bgmusic.mp3',
+    base + 'Assets/sound/BGM.mp3'
   ];
 
   let musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
