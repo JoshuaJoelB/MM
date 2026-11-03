@@ -1008,31 +1008,41 @@ function initHomePage() {
     });
   }
 
-async function renderLeaderboard() {
-  const emptyEl = document.getElementById('navLbEmpty');
-  if (!emptyEl || !window.MMLeaderboard) return;
+  async function renderLeaderboard() {
+    const emptyEl = document.getElementById('navLbEmpty');
+    if (!emptyEl || !window.MMLeaderboard) return;
 
-  emptyEl.hidden = false;
-  emptyEl.textContent = "Loading leaderboard...";
+    // 1. Show a loading state
+    emptyEl.hidden = false;
+    emptyEl.textContent = "Loading leaderboard...";
+    
+    // Clear previous rows so they don't duplicate
+    const listEl = document.getElementById('navLbList');
+    if (listEl) listEl.innerHTML = '';
+    renderPodium([]); 
 
-  const all = await MMLeaderboard.getAllForSubject(currentSubject);
+    // 2. Await the data from Supabase
+    const all = await MMLeaderboard.getAllForSubject(currentSubject);
 
-  if (!all || !all.length) {
-    emptyEl.textContent = "No scores yet for this subject — be the first! 🎉";
-    renderPodium([]);
-    renderRows([]);
-    return;
+    // 3. Handle empty state
+    if (!all || !all.length) {
+      emptyEl.textContent = "No scores yet for this subject — be the first! 🎉";
+      renderPodium([]);
+      renderRows([]);
+      return;
+    }
+    
+    // 4. Render the data
+    emptyEl.hidden = true;
+
+    if (all.length >= 3) {
+      renderPodium(all.slice(0, 3));
+      renderRows(all.slice(3, MMLeaderboard.DISPLAY_LIMIT), 4);
+    } else {
+      renderPodium([]);
+      renderRows(all, 1);
+    }
   }
-  emptyEl.hidden = true;
-
-  if (all.length >= 3) {
-    renderPodium(all.slice(0, 3));
-    renderRows(all.slice(3, MMLeaderboard.DISPLAY_LIMIT), 4);
-  } else {
-    renderPodium([]);
-    renderRows(all, 1);
-  }
-}
 
   document.addEventListener('click', function (e) {
     const tab = e.target.closest('.lb-tab');
