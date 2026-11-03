@@ -813,31 +813,31 @@ function initHomePage() {
     });
   }
 
-    async function renderLeaderboard() {
-    const emptyEl = document.getElementById('navLbEmpty');
-    if (!emptyEl || !window.MMLeaderboard) return;
+async function renderLeaderboard() {
+  const emptyEl = document.getElementById('navLbEmpty');
+  if (!emptyEl || !window.MMLeaderboard) return;
 
-    emptyEl.hidden = false;
-    emptyEl.textContent = "Loading leaderboard...";
+  emptyEl.hidden = false;
+  emptyEl.textContent = "Loading leaderboard...";
 
-    const all = await MMLeaderboard.getAllForSubject(currentSubject);
+  const all = await MMLeaderboard.getAllForSubject(currentSubject);
 
-    if (!all || !all.length) {
-      emptyEl.textContent = "No scores yet for this subject — be the first! 🎉";
-      renderPodium([]);
-      renderRows([]);
-      return;
-    }
-    emptyEl.hidden = true;
-
-    if (all.length >= 3) {
-      renderPodium(all.slice(0, 3));
-      renderRows(all.slice(3, MMLeaderboard.DISPLAY_LIMIT), 4);
-    } else {
-      renderPodium([]);
-      renderRows(all, 1);
-    }
+  if (!all || !all.length) {
+    emptyEl.textContent = "No scores yet for this subject — be the first! 🎉";
+    renderPodium([]);
+    renderRows([]);
+    return;
   }
+  emptyEl.hidden = true;
+
+  if (all.length >= 3) {
+    renderPodium(all.slice(0, 3));
+    renderRows(all.slice(3, MMLeaderboard.DISPLAY_LIMIT), 4);
+  } else {
+    renderPodium([]);
+    renderRows(all, 1);
+  }
+}
 
   document.addEventListener('click', function (e) {
     const tab = e.target.closest('.lb-tab');
