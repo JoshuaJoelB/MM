@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const IMG_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'JPG', 'JPEG', 'PNG', 'WEBP', 'AVIF'];
 
   // ============================================================
-  // FILE_MAP — image filenames (UPDATED)
+  // FILE_MAP — image filenames
   // ============================================================
   const FILE_MAP = {
     // ---- AP 1 ----
@@ -197,9 +197,11 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:7:Davao Gulf':           'Davao Gulf',
     'ap:7:Sibuyan Sea':          'Sibuyan Sea',
     // ---- AP 8 ---- 
+    'ap:8:Barangay':             'barangay',
     'ap:8:Datu':                 'Datu (chief)',
     'ap:8:Maharlika':            'Maharlika (noble)',
     'ap:8:Timawa':               'Timawa (freeman)',
+    'ap:8:Alipin':               'alipin',
     'ap:8:Babaylan':             'Babaylan (spiritual leader', 
     'ap:8:Balangay':             'Balangay (boat)',
     'ap:8:Baybayin':             'Baybayin (ancient writing)',
@@ -286,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:8:Bcc':         'bcc',
     'computer:8:Subject':     'subject_',
     'computer:8:Body':        'body',
+    'computer:8:Attach File': 'attachfile',
     'computer:8:Send':        'send',
 
     'computer:9:Gmail':        'gmail',
@@ -367,14 +370,15 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:8:Dissolving sugar':      'sugar',
     'science:8:Folding paper':         'fold',
     'science:9:Mouth':                 'mouth',
-    'science:9:Teeth':                 'teeth_',
+    'science:9:Teeth':                 'teeth',
     'science:9:Salivary glands':       'glands',
-    'science:9:Esophagus':             'esophagus_',
+    'science:9:Esophagus':             'esophagus',
+    'science:9:Stomach':               'stomach',
     'science:9:Liver':                 'liver',
     'science:9:Gallbladder':           'gallbladder',
     'science:9:Pancreas':              'pancreas',
     'science:9:Small intestine':       'small',
-    'science:9:Large intestine':       'large_',
+    'science:9:Large intestine':       'large',
     'science:9:Rectum':                'rectum',
     'science:10:Nose':                 'nose',
     'science:10:Nasal cavity':         'nasal',
@@ -404,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'ap:5:Cool dry season':     'cool dry season', 'ap:5:Dry season': 'dry season', 'ap:5:Hot dry season': 'hot dry season', 'ap:5:May': 'hottest month', 'ap:5:January': 'coolest month', 'ap:5:Rainy season': 'rainy season', 'ap:5:Tropical climate': 'tropical climate',
     'ap:6:Luzon':               'Luzon', 'ap:6:Visayas': 'visayas', 'ap:6:Mindanao': 'Mindanao', 'ap:6:Palawan': 'palawan', 'ap:6:Mindoro': 'mindoro', 'ap:6:Samar': 'samar', 'ap:6:Leyte': 'leyte', 'ap:6:Cebu': 'cebu',
     'ap:7:Mount Pulag':         'mount pulag', 'ap:7:Mount Pinatubo': 'mount pinatubo', 'ap:7:Taal Volcano': 'taal volcano', 'ap:7:Cagayan River': 'cagayan river', 'ap:7:Agusan River': 'agusan river', 'ap:7:Lake Lanao': 'lake lanao', 'ap:7:Subic Bay': 'subic', 'ap:7:Davao Gulf': 'davao gulf', 'ap:7:Sibuyan Sea': 'sibuyan sea',
-    'ap:8:Datu':                'datu', 'ap:8:Maharlika': 'maharlika', 'ap:8:Timawa': 'timawa', 'ap:8:Babaylan': 'babaylan', 'ap:8:Balangay': 'balangay', 'ap:8:Baybayin': 'baybayin', 'ap:8:Bahay Kubo': 'bahay kubo', 'ap:8:Panday': 'panday',
+    'ap:8:Barangay':            'barangay', 'ap:8:Datu':                'datu', 'ap:8:Maharlika': 'maharlika', 'ap:8:Timawa': 'timawa', 'ap:8:Alipin': 'alipin', 'ap:8:Babaylan': 'babaylan', 'ap:8:Balangay': 'balangay', 'ap:8:Baybayin': 'baybayin', 'ap:8:Bahay Kubo': 'bahay kubo', 'ap:8:Panday': 'panday',
     'ap:9:Manunggul Jar':       'manunggal jar', 'ap:9:Banaue Rice Terraces':'banaue rice terrace', 'ap:9:Bulul': 'bulul', 'ap:9:Laguna Copperplate': 'Laguna Copperplate Inscription', 'ap:9:Golden Tara': 'Golden Tara of Agusan', 'ap:9:Tabon Cave': 'tabon cave', 'ap:9:Angono Petroglyphs': 'angono', 'ap:9:Fort Santiago': 'fort santiago', 'ap:9:San Agustin Church': 'san agustin church', 'ap:9:Bahay na Bato': 'bahay na bato', 'ap:9:Barasoain Church': 'barasain church',
     'ap:10:Hudhud':             'hudhud', 'ap:10:Biag ni Lam-ang': 'Biag ni Lam-ang', 'ap:10:Alamat': 'alamat', 'ap:10:Bugtong': 'bugtong', 'ap:10:Salawikain': 'salawikain', 'ap:10:Kundiman': 'kundiman', 'ap:10:Tinikling': 'tinikling', 'ap:10:Singkil': 'singkil', 'ap:10:Pandanggo sa Ilaw': 'Pandanggo sa Ilaw', 'ap:10:Fiesta': 'fiesta', 'ap:10:Pamahiin': 'pamahiin', 'ap:10:Mano po': 'mano po',
 
@@ -419,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     'computer:7:Browser window buttons': 'browser window button', 'computer:7:Tab name': 'tab name', 'computer:7:Navigation buttons': 'navigation buttons', 'computer:7:New tab': 'new tab', 'computer:7:Customize and control': 'customize and control', 'computer:7:Bookmark this page': 'bookmark', 'computer:7:Address bar': 'address bar', 'computer:7:Display window': 'display window', 'computer:7:Scroll bar': 'scroll bar',
     
-    'computer:8:Username':    'username', 'computer:8:Domain name': 'domain name', 'computer:8:Domain type': 'domain type', 'computer:8:To': 'to', 'computer:8:Cc': 'Cc', 'computer:8:Bcc': 'Bcc', 'computer:8:Subject': 'subject', 'computer:8:Body': 'body', 'computer:8:Send': 'send',
+    'computer:8:Username':    'username', 'computer:8:Domain name': 'domain name', 'computer:8:Domain type': 'domain type', 'computer:8:To': 'to', 'computer:8:Cc': 'Cc', 'computer:8:Bcc': 'Bcc', 'computer:8:Subject': 'subject', 'computer:8:Body': 'body', 'computer:8:Attach File': 'attach file', 'computer:8:Send': 'send',
     
     'computer:9:Gmail':        'gmail', 'computer:9:Yahoo Mail': 'yahoo mail', 'computer:9:Outlook': 'outlook', 'computer:9:Compose Mail': 'compose mail', 'computer:9:Inbox': 'inbox', 'computer:9:Sent': 'sent', 'computer:9:Drafts': 'draft', 'computer:9:Spam': 'spam', 'computer:9:Attachment': 'attachment', 'computer:9:Reply': 'reply', 'computer:9:Forward': 'forward',
     
@@ -434,40 +438,134 @@ document.addEventListener('DOMContentLoaded', function() {
     'science:6:Platform balance': 'platform balance', 'science:6:Triple beam balance': 'triple beam balance', 'science:6:Weighing scale': 'Weighing scale', 'science:6:Graduated cylinder': 'graduated cylinder', 'science:6:Meter stick': 'meter stick', 'science:6:Thermometer': 'thermometer', 'science:6:Measuring cup': 'measuring cup', 'science:6:Beaker': 'beaker',
     'science:7:Gram': 'gram', 'science:7:Kilogram': 'kg', 'science:7:Milliliter': 'milliliter', 'science:7:Liter': 'liter', 'science:7:Centimeter': 'cm', 'science:7:Meter': 'meter', 'science:7:Degree Celsius': 'degree Celsius', 'science:7:Cubic meter': 'cubic meter', 'science:7:Cubic centimeter': 'cubic centimeter',
     'science:8:Melting': 'melting', 'science:8:Freezing': 'freezing', 'science:8:Evaporation': 'evaporation', 'science:8:Condensation': 'condensation', 'science:8:Boiling': 'boilimg', 'science:8:Cutting paper': 'cutting paper', 'science:8:Tearing paper': 'tearing paper', 'science:8:Crushing a can': 'crushing a can', 'science:8:Dissolving sugar': 'dissolving sugar', 'science:8:Folding paper': 'folding paper',
-    'science:9:Mouth': 'mouth', 'science:9:Teeth': 'teeth', 'science:9:Salivary glands': 'salivary glands', 'science:9:Esophagus': 'esophagus', 'science:9:Liver': 'liver', 'science:9:Gallbladder': 'gallbladder', 'science:9:Pancreas': 'pancreas', 'science:9:Small intestine': 'small intestine', 'science:9:Large intestine': 'large intestine', 'science:9:Rectum': 'rectum',
+    'science:9:Mouth': 'mouth', 'science:9:Teeth': 'teeth', 'science:9:Salivary glands': 'salivary glands', 'science:9:Esophagus': 'esophagus', 'science:9:Stomach': 'stomach', 'science:9:Liver': 'liver', 'science:9:Gallbladder': 'gallbladder', 'science:9:Pancreas': 'pancreas', 'science:9:Small intestine': 'small intestine', 'science:9:Large intestine': 'large intestine', 'science:9:Rectum': 'rectum',
     'science:10:Nose': 'nose', 'science:10:Nasal cavity': 'nasal cavity', 'science:10:Mouth': 'mouth', 'science:10:Pharynx': 'Pharynx', 'science:10:Larynx': 'Larynx', 'science:10:Trachea': 'Trachea', 'science:10:Bronchi': 'Bronchi', 'science:10:Bronchioles': 'Bronchioles', 'science:10:Alveoli': 'Alveoli', 'science:10:Lungs': 'lungs', 'science:10:Diaphragm': 'diaphragm', 'science:10:Ribs': 'ribs'
   };
 
   // ============================================================
-  // DESC_MAP
+  // DESC_MAP — UPDATED WITH EXACT DESCRIPTIONS FROM DOCS
   // ============================================================
   const DESC_MAP = {
-    'ap:1:Pacific Ocean':       "Earth's largest and deepest ocean.", 'ap:1:Pasig River': "Historic river running through Manila.", 'ap:1:Laguna de Bay': "Largest lake in the Philippines.",
-    'ap:2:Mount Apo':           "The highest peak in the Philippines.", 'ap:2:Mayon Volcano': "Volcano famous for its perfect cone.", 'ap:2:Chocolate Hills': "Famous brown hills in Bohol.", 'ap:2:Central Luzon Plain': "The rice granary of the country.",
-    'ap:3:Malaysia':            "Southeast Asian country near Palawan.", 'ap:3:Indonesia': "Giant archipelago south of Mindanao.", 'ap:3:Vietnam': "Country across the West Philippine Sea.", 'ap:3:Thailand': "Asian country famous for tourism.", 'ap:3:Brunei': "Small, wealthy nation on Borneo.",
-    'ap:4:Weather':             "Day-to-day condition of the atmosphere.", 'ap:4:Climate': "Long-term average weather pattern.", 'ap:4:Temperature': "Measure of hotness or coldness.", 'ap:4:Humidity': "Amount of moisture in air.", 'ap:4:Rainfall': "Water falling down as rain.", 'ap:4:PAGASA': "Philippine official weather forecasting agency.",
-    'ap:5:Rainy season':        "Months with heavy rainfall (June-November).", 'ap:5:Dry season': "Months with very little rain.", 'ap:5:Cool dry season': "Pleasant weather with cool breezes.", 'ap:5:Hot dry season': "Warmest months of the year.", 'ap:5:May': "Peak of the dry season.", 'ap:5:January': "Time of lowest yearly temperatures.", 'ap:5:Tropical climate': "Warm, humid climate near the equator.",
-    'ap:6:Luzon':               "Largest northern Philippine island group.", 'ap:6:Visayas': "Central island group of the Philippines.", 'ap:6:Mindanao': "Southern island group of the Philippines.", 'ap:6:Palawan': "Island known as the last frontier.", 'ap:6:Mindoro': "Island located south of Luzon.", 'ap:6:Samar': "Large island in eastern Visayas.", 'ap:6:Leyte': "Visayan island next to Samar.", 'ap:6:Cebu': "Major hub in the central Philippines.",
-    'ap:7:Mount Pulag':         "Luzon's highest peak, above a sea of clouds.", 'ap:7:Mount Pinatubo': "Volcano that erupted in 1991.", 'ap:7:Taal Volcano': "Small active volcano within a lake.", 'ap:7:Cagayan River': "Longest river in the Philippines.", 'ap:7:Agusan River': "Large river in eastern Mindanao.", 'ap:7:Lake Lanao': "Large ancient lake in Mindanao.", 'ap:7:Subic Bay': "Famous harbor in Central Luzon.", 'ap:7:Davao Gulf': "Large gulf in southern Mindanao.", 'ap:7:Sibuyan Sea': "Sea at the center of the Philippines.",
-    'ap:8:Datu':                "Ruler of an ancient barangay.", 'ap:8:Maharlika': "Feudal warrior class of the Tagalogs.", 'ap:8:Timawa': "Free citizens of ancient society.", 'ap:8:Babaylan': "Priestess or shaman of the community.", 'ap:8:Balangay': "Ancient Filipino wooden water vessel.", 'ap:8:Baybayin': "Pre-colonial native writing system.", 'ap:8:Bahay Kubo': "Traditional Filipino stilt house.", 'ap:8:Panday': "Maker of metal tools and weapons.",
-    'ap:9:Manunggul Jar':       "Ancient burial jar found in Palawan.", 'ap:9:Banaue Rice Terraces':"Hand-carved mountainside agricultural terraces.", 'ap:9:Bulul': "Wooden Igorot rice granary god.", 'ap:9:Laguna Copperplate': "Oldest written document in the Philippines.", 'ap:9:Golden Tara': "Ancient Hindu golden statue artifact.", 'ap:9:Tabon Cave': "Site of early human remains.", 'ap:9:Angono Petroglyphs': "Oldest known rock art carvings.", 'ap:9:Fort Santiago': "Spanish defense fortress in Manila.", 'ap:9:San Agustin Church': "Oldest stone church in Manila.", 'ap:9:Bahay na Bato': "Spanish colonial noble stone house.", 'ap:9:Barasoain Church': "Historic site of the first republic.",
-    'ap:10:Hudhud':             "Chanted epic stories of the Ifugao.", 'ap:10:Biag ni Lam-ang': "Famous Ilocano folk epic poem.", 'ap:10:Alamat': "Traditional story explaining origins.", 'ap:10:Bugtong': "Filipino rhyming word puzzle game.", 'ap:10:Salawikain': "Traditional saying containing wisdom.", 'ap:10:Kundiman': "Traditional Filipino love song genre.", 'ap:10:Tinikling': "Bamboo pole traditional dance.", 'ap:10:Singkil': "Royal Maranao bamboo dance.", 'ap:10:Pandanggo sa Ilaw': "Dance with balancing oil lamps.", 'ap:10:Fiesta': "Community celebration honoring patron saints.", 'ap:10:Pamahiin': "Traditional cultural beliefs and myths.", 'ap:10:Mano po': "Respect gesture for greeting elders.",
+    // ---- AP ----
+    'ap:1:Pacific Ocean':       "Earth's largest and deepest ocean.", 
+    'ap:1:Pasig River':         "Historic river running through Manila.", 
+    'ap:1:Laguna de Bay':       "Largest lake in the Philippines.",
+    'ap:2:Mount Apo':           "The highest peak in the Philippines.", 
+    'ap:2:Mayon Volcano':       "Volcano famous for perfect cone.", 
+    'ap:2:Chocolate Hills':     "Famous brown hills in Bohol.", 
+    'ap:2:Central Luzon Plain': "The rice granary of the country.",
+    'ap:3:Malaysia':            "Southeast Asian country near Palawan.", 
+    'ap:3:Indonesia':           "Giant archipelago south of Mindanao.", 
+    'ap:3:Vietnam':             "Country across the West Philippine Sea.", 
+    'ap:3:Thailand':            "Asian country famous for tourism.", 
+    'ap:3:Brunei':              "Small, wealthy nation on Borneo.",
+    'ap:4:Weather':             "Day-to-day condition of the atmosphere.", 
+    'ap:4:Climate':             "Long-term average weather pattern.", 
+    'ap:4:Temperature':         "Measure of hotness or coldness.", 
+    'ap:4:Humidity':            "Amount of moisture in air.", 
+    'ap:4:Rainfall':            "Water falling down as rain.", 
+    'ap:4:PAGASA':              "Philippine official weather forecasting agency.",
+    'ap:5:Rainy season':        "June–November: Months with heavy rainfall.", 
+    'ap:5:Dry season':          "December–May: Months with very little rain.", 
+    'ap:5:Cool dry season':     "December–February: Pleasant weather with cool breezes.", 
+    'ap:5:Hot dry season':      "March–May: Warmest months of the year.", 
+    'ap:5:May':                 "Peak of the dry season.", 
+    'ap:5:January':             "Time of lowest yearly temperatures.", 
+    'ap:5:Tropical climate':    "Warm, humid climate near equator.",
+    'ap:6:Luzon':               "Largest northern Philippine island group.", 
+    'ap:6:Visayas':             "Central island group of Philippines.", 
+    'ap:6:Mindanao':            "Southern island group of Philippines.", 
+    'ap:6:Palawan':             "Island known as last frontier.", 
+    'ap:6:Mindoro':             "Island located south of Luzon.", 
+    'ap:6:Samar':               "Large island in eastern Visayas.", 
+    'ap:6:Leyte':               "Visayan island next to Samar.", 
+    'ap:6:Cebu':                "Major hub in central Philippines.",
+    'ap:7:Mount Pulag':         "Luzon's highest, sea of clouds.", 
+    'ap:7:Mount Pinatubo':      "Volcano that erupted in 1991.", 
+    'ap:7:Taal Volcano':        "Small active volcano within lake.", 
+    'ap:7:Cagayan River':       "Longest river in the Philippines.", 
+    'ap:7:Agusan River':        "Large river in eastern Mindanao.", 
+    'ap:7:Lake Lanao':          "Large ancient lake in Mindanao.", 
+    'ap:7:Subic Bay':           "Famous harbor in Central Luzon.", 
+    'ap:7:Davao Gulf':          "Large gulf in southern Mindanao.", 
+    'ap:7:Sibuyan Sea':         "Sea at center of Philippines.",
+    'ap:8:Barangay':            "Ancient Filipino community or village.",
+    'ap:8:Datu':                "Ruler of an ancient barangay.", 
+    'ap:8:Maharlika':           "Feudal warrior class of Tagalogs.", 
+    'ap:8:Timawa':              "Free citizens of ancient society.", 
+    'ap:8:Alipin':              "Servant class in ancient times.",
+    'ap:8:Babaylan':            "Priestess or shaman of community.", 
+    'ap:8:Balangay':            "Ancient Filipino wooden water vessel.", 
+    'ap:8:Baybayin':            "Pre-colonial native writing system.", 
+    'ap:8:Bahay Kubo':          "Traditional Filipino stilt house.", 
+    'ap:8:Panday':              "Maker of metal tools, weapons.",
+    'ap:9:Manunggul Jar':       "Ancient burial jar found Palawan.", 
+    'ap:9:Banaue Rice Terraces':"Hand-carved mountainside agricultural terraces.", 
+    'ap:9:Bulul':               "Wooden Igorot rice granary god.", 
+    'ap:9:Laguna Copperplate':  "Oldest written document in Philippines.", 
+    'ap:9:Golden Tara':         "Ancient Hindu golden statue artifact.", 
+    'ap:9:Tabon Cave':          "Site of early human remains.", 
+    'ap:9:Angono Petroglyphs':  "Oldest known rock art carvings.", 
+    'ap:9:Fort Santiago':       "Spanish defense fortress in Manila.", 
+    'ap:9:San Agustin Church':  "Oldest stone church in Manila.", 
+    'ap:9:Bahay na Bato':       "Spanish colonial noble stone house.", 
+    'ap:9:Barasoain Church':    "Historic site of first republic.",
+    'ap:10:Hudhud':             "Chanted epic stories of Ifugao.", 
+    'ap:10:Biag ni Lam-ang':    "Famous Ilocano folk epic poem.", 
+    'ap:10:Alamat':             "Traditional story explaining origins.", 
+    'ap:10:Bugtong':            "Filipino rhyming word puzzle game.", 
+    'ap:10:Salawikain':         "Traditional saying containing wisdom.", 
+    'ap:10:Kundiman':           "Traditional Filipino love song genre.", 
+    'ap:10:Tinikling':          "Bamboo pole traditional dance.", 
+    'ap:10:Singkil':            "Royal Maranao bamboo dance.", 
+    'ap:10:Pandanggo sa Ilaw':  "Dance with balancing oil lamps.", 
+    'ap:10:Fiesta':             "Community celebration honoring patron saints.", 
+    'ap:10:Pamahiin':           "Traditional cultural beliefs and myths.", 
+    'ap:10:Mano po':            "Respect gesture for greeting elders.",
 
-    'computer:1:Google':         "Most popular modern search engine.", 'computer:1:Yahoo': "Search engine with internet directory.", 'computer:1:Lycos': "Pioneer search engine from the nineties.",
-    'computer:2:Search box':     "Where you type keywords online.", 'computer:2:Search button': "Click this to start searching.", 'computer:2:Search results': "List of websites found online.", 'computer:2:Tabs': "Filters search results into categories.",
-    'computer:3:Safari':         "Apple devices default web browser.", 'computer:3:Opera': "Browser known for speed features.", 'computer:3:Microsoft Edge': "Windows default built-in web browser.", 'computer:3:Mozilla Firefox':"Independent, open-source web browser.", 'computer:3:Google Chrome': "Widely used browser by Google.",
-    'computer:4:Email':          "Digital letters sent over the internet.", 'computer:4:Chat': "Real-time text messaging with others.", 'computer:4:Instant message':"Fast text sent instantly online.", 'computer:4:Video call': "See and hear people digitally.", 'computer:4:Social media': "Platforms for sharing media content.", 'computer:4:Online class': "Learning using internet-connected devices.",
-    'computer:5:Kind words':         "Be polite in online messages.", 'computer:5:Ask permission': "Respect privacy of other people.", 'computer:5:Be respectful': "Listen carefully to your teacher.", 'computer:5:Typing in ALL CAPS': "Feels like shouting at someone.", 'computer:5:Sharing password': "Keep account access keys secret.", 'computer:5:Using bad words': "Never use offensive language online.", 'computer:5:Fake news': "Never share unverified false information.",
-
-    'computer:6:com': "Extension for general commercial businesses.", 
-    'computer:6:edu': "Used by schools and universities.", 
-    'computer:6:net': "Used by network provider systems.", 
-    'computer:6:org': "Used mostly by non-profit groups.", 
-    'computer:6:gov': "Official government website extension identifier.", 
-    'computer:6:pro': "Reserved for certified professional individuals.", 
+    // ---- EPP ----
+    'computer:1:Google':         "Most popular modern search engine.", 
+    'computer:1:Yahoo':          "Search engine with internet directory.", 
+    'computer:1:Lycos':          "Pioneer search engine from nineties.",
+    'computer:2:Search box':     "Where you type keywords online.", 
+    'computer:2:Search button':  "Click this to start searching.", 
+    'computer:2:Search results': "List of websites found online.", 
+    'computer:2:Tabs':           "Filters search results into categories.",
+    'computer:3:Safari':         "Apple devices default web browser.", 
+    'computer:3:Opera':          "Browser known for speed features.", 
+    'computer:3:Microsoft Edge': "Windows default built-in web browser.", 
+    'computer:3:Mozilla Firefox':"Independent, open-source web browser program.", 
+    'computer:3:Google Chrome':  "Widely used browser by Google.",
+    'computer:4:Email':          "Digital letters sent over internet.", 
+    'computer:4:Chat':           "Real-time text messaging with others.", 
+    'computer:4:Instant message':"Fast text sent instantly online.", 
+    'computer:4:Video call':     "See and hear people digitally.", 
+    'computer:4:Social media':   "Platforms for sharing media content.", 
+    'computer:4:Online class':   "Learning using internet-connected devices.",
+    'computer:5:Kind words':         "Be polite in online messages.", 
+    'computer:5:Ask permission':     "Respect privacy of other people.", 
+    'computer:5:Be respectful':      "Listen carefully to your teacher.", 
+    'computer:5:Typing in ALL CAPS': "Feels like shouting at someone.", 
+    'computer:5:Sharing password':   "Keep account access keys secret.", 
+    'computer:5:Using bad words':    "Never use offensive language online.", 
+    'computer:5:Fake news':          "Never share unverified false information.",
+    'computer:6:com':  "Extension for general commercial businesses.", 
+    'computer:6:edu':  "Used by schools and universities.", 
+    'computer:6:net':  "Used by network provider systems.", 
+    'computer:6:org':  "Used mostly by non-profit groups.", 
+    'computer:6:gov':  "Official government website extension identifier.", 
+    'computer:6:pro':  "Reserved for certified professional individuals.", 
     'computer:6:info': "Open extension for informational websites.", 
-    'computer:6:int': "Used by international treaty organizations.",
-
+    'computer:6:int':  "Used by international treaty organizations.",
+    'computer:7:Browser window buttons': "Minimize, maximize, or close window.", 
+    'computer:7:Tab name':               "Displays current web page title.", 
+    'computer:7:Navigation buttons':     "Go backward or forward online.", 
+    'computer:7:New tab':                "Opens blank web page window.", 
+    'computer:7:Customize and control':  "Browser settings and options menu.", 
+    'computer:7:Bookmark this page':     "Saves web address for later.", 
+    'computer:7:Address bar':            "Where you type web addresses.", 
+    'computer:7:Display window':         "Main area showing website content.", 
+    'computer:7:Scroll bar':             "Moves page up and down.",
     'computer:8:Username':    "Unique name identifying email owner.", 
     'computer:8:Domain name': "Website company hosting email service.", 
     'computer:8:Domain type': "Shows type of email organization.", 
@@ -476,28 +574,108 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:8:Bcc':         "Hides recipient names from others.", 
     'computer:8:Subject':     "Title of email message topic.", 
     'computer:8:Body':        "Main written message text area.", 
+    'computer:8:Attach File': "Add documents or images here.",
     'computer:8:Send':        "Button to deliver your email.",
+    'computer:9:Gmail':        "Google's electronic mail provider system.", 
+    'computer:9:Yahoo Mail':   "Longtime popular email provider service.", 
+    'computer:9:Outlook':      "Microsoft email client service provider.", 
+    'computer:9:Compose Mail': "Start writing new email message.", 
+    'computer:9:Inbox':        "Where incoming new emails arrive.", 
+    'computer:9:Sent':         "Folder storing delivered email messages.", 
+    'computer:9:Drafts':       "Stores unfinished email message texts.", 
+    'computer:9:Spam':         "Folder filtering unwanted junk emails.", 
+    'computer:9:Attachment':   "File attached to email message.", 
+    'computer:9:Reply':        "Answer back to sender's email.", 
+    'computer:9:Forward':      "Send received email to someone.",
+    'computer:10:Monitor':         "Screen showing computer's visual output.", 
+    'computer:10:Keyboard':        "Device for typing letters, numbers.", 
+    'computer:10:Mouse':           "Pointing device used to click.", 
+    'computer:10:System unit':     "Main case housing internal hardware.", 
+    'computer:10:Speakers':        "Audio output device for sound.", 
+    'computer:10:Printer':         "Machine printing digital documents onto paper.", 
+    'computer:10:Webcam':          "Camera capturing live video feeds.", 
+    'computer:10:Microphone':      "Input hardware capturing audio voice.", 
+    'computer:10:Headset':         "Headphones combined with voice microphone.", 
+    'computer:10:Scanner':         "Copies paper documents into computer.", 
+    'computer:10:USB flash drive': "Portable file storage device tool.", 
+    'computer:10:Touchpad':        "Touch-sensitive mouse surface on laptops.",
 
-    'computer:9:Attachment':  "File attached to email message.",
-    'computer:9:Yahoo Mail': "Longtime popular email provider service.",
-    'computer:9:Outlook': "Microsoft email client service provider.",
-    'computer:9:Compose Mail': "Start writing new email message.",
-    'computer:9:Inbox': "Where incoming new emails arrive.",
-    'computer:9:Sent': "Where copies of sent emails are stored.",
-    'computer:9:Drafts': "Where unfinished email messages are saved.",
-    'computer:9:Spam': "Where unwanted junk emails are filtered.",
-     'computer:9: Gmail': "Google's electronic mail provider system.",
-      'computer:9:rep;ly': "Answer to sender's email message.", 
-      'computer:9:Forward': "Send a copy of received email to others.",
-
-    'computer:10:Monitor': "Displays computer visual output.", 'computer:10:Keyboard': "Input device for typing text.", 'computer:10:Mouse': "Pointing device for computer navigation.", 'computer:10:System unit': "Main computer hardware enclosure.", 'computer:10:Speakers': "Output device for sound playback.", 'computer:10:Printer': "Device that produces physical copies.", 'computer:10:Webcam': "Camera capturing live video input.", 'computer:10:Microphone': "Device capturing audio input.", 'computer:10:Headset': "Combination of headphones and microphone.", 'computer:10:Scanner': "Device converting physical documents to digital.", 'computer:10:USB flash drive': "Portable storage device for data transfer.", 'computer:10:Touchpad': "Built-in pointing device on laptops.",
-
-    'science:5:Mass': "Amount of matter inside object.", 'science:5:Weight': "Gravitational pull force on object.", 'science:5:Volume': "Amount of space object occupies.", 'science:5:Shape': "External form outline of matter.", 'science:5:Color': "Visual appearance shade of matter.", 'science:5:Texture': "Feel of surface when touched.", 'science:5:Smell': "Odor detected by your nose.",
-    'science:6:Platform balance': "Tool comparing heavy item masses.", 'science:6:Triple beam balance': "Measures mass very precisely.", 'science:6:Weighing scale': "Displays object current weight.", 'science:6:Graduated cylinder': "Measures exact liquid volume.", 'science:6:Meter stick': "Ruler measuring long object length.", 'science:6:Thermometer': "Tracks hotness or coldness.", 'science:6:Measuring cup': "Cup for kitchen fluid measurements.", 'science:6:Beaker': "Glass cup measuring laboratory liquids.",
-    'science:7:Gram': "Metric unit tracking light mass.", 'science:7:Kilogram': "Base unit tracking heavy mass.", 'science:7:Milliliter': "Small unit tracking liquid volume.", 'science:7:Liter': "Common unit tracking liquid volume.", 'science:7:Centimeter': "Unit measuring small item lengths.", 'science:7:Meter': "Base unit measuring distance.", 'science:7:Cubic centimeter':"Volume unit for solid matter.", 'science:7:Degree Celsius': "Unit measuring temperature level.", 'science:7:Cubic meter': "Large unit measuring massive volumes.",
-    'science:8:Melting': "Solid turning into a liquid.", 'science:8:Freezing': "Liquid turning into a solid.", 'science:8:Evaporation': "Liquid turning into a gas.", 'science:8:Condensation': "Gas turning into a liquid.", 'science:8:Boiling': "Liquid rapidly vaporizing from heat.", 'science:8:Cutting paper': "Changing shape using scissors.", 'science:8:Tearing paper': "Pulling paper apart into pieces.", 'science:8:Crushing a can': "Smashing metal changing its form.", 'science:8:Dissolving sugar': "Mixing crystals into liquid.", 'science:8:Folding paper': "Creasing paper without tearing.",
-    'science:9:Mouth': "Where food enters digestive path.", 'science:9:Teeth': "Hard structures crushing food items.", 'science:9:Salivary glands': "Glands producing spit to dissolve food.", 'science:9:Esophagus': "Tube moving food down to stomach.", 'science:9:Liver': "Filters toxins, produces bile.", 'science:9:Gallbladder': "Small sac storing digestive bile.", 'science:9:Pancreas': "Produces useful digestive enzymes.", 'science:9:Small intestine': "Where most nutrients get absorbed.", 'science:9:Large intestine': "Absorbs water from waste.", 'science:9:Rectum': "Final storage area for waste.",
-    'science:10:Nose': "Main external pathway for breathing.", 'science:10:Nasal cavity': "Warms and filters inhaled air.", 'science:10:Mouth': "Secondary opening used for breathing.", 'science:10:Pharynx': "Throat passage connecting nose and mouth.", 'science:10:Larynx': "Voice box housing vocal cords.", 'science:10:Trachea': "Main windpipe tube leading to lungs.", 'science:10:Bronchi': "Two large air tube branches.", 'science:10:Bronchioles': "Smallest air tubes inside the lungs.", 'science:10:Alveoli': "Tiny sacs where gas exchange happens.", 'science:10:Lungs': "Primary organs used for breathing.", 'science:10:Diaphragm': "Muscle driving lung breathing actions.", 'science:10:Ribs': "Bones protecting vital lung organs."
+    // ---- Science ----
+    'science:1:Rock':  "Hard solid form of matter.", 
+    'science:1:Water': "Life-sustaining liquid type of matter.", 
+    'science:1:Air':   "Invisible gas surrounding the Earth.",
+    'science:2:Chair': "Solid furniture piece for sitting.", 
+    'science:2:Desk':  "Solid table used for working.", 
+    'science:2:Bag':   "Solid container carrying your school items.", 
+    'science:2:Shoes': "Solid protective footwear items worn.",
+    'science:3:Water': "Clear liquid essential for life.", 
+    'science:3:Coffee': "Hot liquid energy morning drink.", 
+    'science:3:Chocolate drink': "Sweet liquid treat enjoyed cold.", 
+    'science:3:Juice': "Flavorful liquid squeezed from fruits.", 
+    'science:3:Milk':  "Nutritious liquid white dairy drink.",
+    'science:4:Air': "The gaseous atmosphere of Earth.", 
+    'science:4:Wind': "Moving air across landscape terrains.", 
+    'science:4:Oxygen': "Gas living organisms breathe in.", 
+    'science:4:Carbon dioxide': "Gas released when breathing out.", 
+    'science:4:Water vapor': "Water existing in gaseous state.", 
+    'science:4:Helium': "Light gas inflating flying balloons.",
+    'science:5:Mass': "Amount of matter inside object.", 
+    'science:5:Weight': "Gravitational pull force on object.", 
+    'science:5:Volume': "Amount of space object occupies.", 
+    'science:5:Shape': "External form outline of matter.", 
+    'science:5:Color': "Visual appearance shade of matter.", 
+    'science:5:Texture': "Feel of surface when touched.", 
+    'science:5:Smell': "Odor detected by your nose.",
+    'science:6:Platform balance': "Tool comparing heavy item masses.", 
+    'science:6:Triple beam balance': "Instrument measuring mass very precisely.", 
+    'science:6:Weighing scale': "Device displaying object's current weight.", 
+    'science:6:Graduated cylinder': "Container measuring exact liquid volume.", 
+    'science:6:Meter stick': "Ruler measuring long object length.", 
+    'science:6:Thermometer': "Instrument tracking hotness or coldness.", 
+    'science:6:Measuring cup': "Cup for kitchen fluid measurements.", 
+    'science:6:Beaker': "Glass cup measuring laboratory liquids.",
+    'science:7:Gram': "Metric unit tracking light mass.", 
+    'science:7:Kilogram': "Base unit tracking heavy mass.", 
+    'science:7:Milliliter': "Small unit tracking liquid volume.", 
+    'science:7:Liter': "Common unit tracking liquid volume.", 
+    'science:7:Centimeter': "Unit measuring small item lengths.", 
+    'science:7:Meter': "Base unit measuring distance, length.", 
+    'science:7:Cubic centimeter':"Volume unit for solid matter.", 
+    'science:7:Degree Celsius': "Unit measuring thermal temperature level.", 
+    'science:7:Cubic meter': "Large unit measuring massive volumes.",
+    'science:8:Melting': "Solid turning into a liquid.", 
+    'science:8:Freezing': "Liquid turning into a solid.", 
+    'science:8:Evaporation': "Liquid turning into a gas.", 
+    'science:8:Condensation': "Gas turning into a liquid.", 
+    'science:8:Boiling': "Liquid rapidly vaporizing from heat.", 
+    'science:8:Cutting paper': "Changing shape using scissors tool.", 
+    'science:8:Tearing paper': "Pulling paper apart into pieces.", 
+    'science:8:Crushing a can': "Smashing metal changing its form.", 
+    'science:8:Dissolving sugar': "Mixing solid crystals into liquid.", 
+    'science:8:Folding paper': "Creasing paper sheets without tearing.",
+    'science:9:Mouth': "Where food enters digestive path.", 
+    'science:9:Teeth': "Hard structures crushing food items.", 
+    'science:9:Salivary glands': "Glands producing spit dissolving food.", 
+    'science:9:Esophagus': "Tube moving food down stomach.", 
+    'science:9:Stomach': "Organ churning food using acid.",
+    'science:9:Liver': "Organ filtering toxins, producing bile.", 
+    'science:9:Gallbladder': "Small sac storing digestive bile.", 
+    'science:9:Pancreas': "Organ producing useful digestive enzymes.", 
+    'science:9:Small intestine': "Where most nutrients get absorbed.", 
+    'science:9:Large intestine': "Organ absorbing water from waste.", 
+    'science:9:Rectum': "Final storage area for waste.",
+    'science:10:Nose': "Main external pathway for breathing.", 
+    'science:10:Nasal cavity': "Warms and filters inhaled air.", 
+    'science:10:Mouth': "Secondary opening used for breathing.", 
+    'science:10:Pharynx': "Throat passage connecting nose, mouth.", 
+    'science:10:Larynx': "Voice box housing vocal cords.", 
+    'science:10:Trachea': "Main windpipe tube leading lungs.", 
+    'science:10:Bronchi': "Two large air tube branches.", 
+    'science:10:Bronchioles': "Smallest air tubes inside lungs.", 
+    'science:10:Alveoli': "Tiny sacs where gas exchanges.", 
+    'science:10:Lungs': "Primary organs used for breathing.", 
+    'science:10:Diaphragm': "Muscle driving lung breathing actions.", 
+    'science:10:Ribs': "Bones protecting vital lung organs."
   };
 
   function getCardDescription(pairIndex) {
@@ -656,6 +834,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: IMG.security,   name: 'Bcc', nickname: 'Bcc'         },
         { id: IMG.writing,    name: 'Subject', nickname: 'Subject'     }, 
         { id: IMG.docs,       name: 'Body', nickname: 'Body'           },
+        { id: IMG.gadgets,    name: 'Attach File', nickname: 'Attach'  },
         { id: IMG.uiDesign,   name: 'Send', nickname: 'Send'        }
       ]},
       9: { title: 'Email Words', cards: [
@@ -667,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: IMG.analytics,  name: 'Sent', nickname: 'Sent'         },
         { id: IMG.notebook,   name: 'Drafts', nickname: 'Drafts'       }, 
         { id: IMG.security,   name: 'Spam', nickname: 'Spam'         },
-        { id: IMG.gadgets,    name: 'Attachment', nickname: 'Attachment'   }, 
+        { id: IMG.gadgets,    name: 'Attachment', nickname: 'Attach'   }, 
         { id: IMG.mouse,      name: 'Reply', nickname: 'Reply'        },
         { id: IMG.uiDesign,   name: 'Forward', nickname: 'Forward'      }
       ]},
@@ -760,6 +939,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: IMG.face,      name: 'Teeth', nickname: 'Teeth'           },
         { id: IMG.face,      name: 'Salivary glands', nickname: 'Glands' }, 
         { id: IMG.analytics, name: 'Esophagus', nickname: 'Esophagus'       },
+        { id: IMG.analytics, name: 'Stomach', nickname: 'Stomach'       },
         { id: IMG.analytics, name: 'Liver', nickname: 'Liver'           }, 
         { id: IMG.analytics, name: 'Gallbladder', nickname: 'Gallbladder'     },
         { id: IMG.analytics, name: 'Pancreas', nickname: 'Pancreas'        }, 
@@ -840,9 +1020,11 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: IMG.ocean,      name: 'Sibuyan Sea', nickname: 'Sibuyan'    }
       ]},
       8: { title: 'Ancient Filipino Society and Life', cards: [
+        { id: IMG.town,      name: 'Barangay', nickname: 'Barangay' },
         { id: IMG.face,      name: 'Datu', nickname: 'Datu'       }, 
         { id: IMG.police,    name: 'Maharlika', nickname: 'Maharlika'  },
         { id: IMG.farmer,    name: 'Timawa', nickname: 'Timawa'     }, 
+        { id: IMG.farmer,    name: 'Alipin', nickname: 'Alipin'     },
         { id: IMG.tradition, name: 'Babaylan', nickname: 'Babaylan'   },
         { id: IMG.boat,      name: 'Balangay', nickname: 'Balangay'   }, 
         { id: IMG.weaving,   name: 'Baybayin', nickname: 'Baybayin'   },
@@ -1525,7 +1707,7 @@ document.addEventListener('DOMContentLoaded', function() {
       badge.appendChild(iconImg);
       const subjectLabel = document.createElement('span');
       subjectLabel.className = 'card-subject-name';
-      subjectLabel.textContent = subjectInfo.shortName; // Short name here!
+      subjectLabel.textContent = subjectInfo.shortName;
       badge.appendChild(subjectLabel);
       back.appendChild(badge);
       inner.appendChild(back);
@@ -2307,170 +2489,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ============================================================
-  // SPECIAL CARDS TUTORIAL — Level 6 only (First time)
-  // ============================================================
-  function initLevel6Tutorial() {
-    if (level !== 6) return;
-    if (pGet('specialTutorialSeen', null) === '1') return;
-
-    stopTimer();
-    isLocked = true;
-
-    const STEPS = [
-      {
-        title: "Level 6: Special Cards!",
-        text: "Welcome to Level 6! Special cards are now in play.",
-        target: null,
-        btnText: "Next"
-      },
-      {
-        title: "Bomb Card 💣",
-        text: "Match Bombs to destroy a random pair!",
-        target: () => document.querySelector('.card-item[data-pair="-1"]'),
-        flipTarget: true,
-        btnText: "Next"
-      },
-      {
-        title: "Key & Lock 🔑🔒",
-        text: "Match the Key and Lock to reveal the board!",
-        target: () => document.querySelector('.card-item[data-pair="-2"]') || document.querySelector('.card-item[data-pair="-3"]'),
-        flipBothKeyLock: true,
-        btnText: "Next"
-      },
-      {
-        title: "Ready to Play?",
-        text: "Good luck! Match all the cards to win!",
-        target: null,
-        btnText: "Let's Play!"
-      }
-    ];
-
-    let current = 0;
-    let tutorialActive = true;
-
-    const spotlight = document.createElement('div');
-    spotlight.className = 'l6-tutorial-spotlight';
-    const hole = document.createElement('div');
-    hole.className = 'l6-spotlight-hole';
-    spotlight.appendChild(hole);
-    document.body.appendChild(spotlight);
-
-    const box = document.createElement('div');
-    box.className = 'l6-tutorial-box-wrap';
-    box.innerHTML = `
-      <div class="l6-tutorial-box">
-        <span class="l6-tutorial-icon">✨</span>
-        <h3 class="l6-tutorial-title"></h3>
-        <p class="l6-tutorial-text"></p>
-        <div class="l6-tutorial-progress">
-          <span class="l6-tutorial-dot"></span>
-          <span class="l6-tutorial-dot"></span>
-          <span class="l6-tutorial-dot"></span>
-          <span class="l6-tutorial-dot"></span>
-        </div>
-        <button type="button" class="l6-tutorial-btn"></button>
-      </div>
-    `;
-    document.body.appendChild(box);
-
-    const titleEl = box.querySelector('.l6-tutorial-title');
-    const textEl  = box.querySelector('.l6-tutorial-text');
-    const btnEl   = box.querySelector('.l6-tutorial-btn');
-    const dots    = box.querySelectorAll('.l6-tutorial-dot');
-
-    const skipBtn = document.createElement('button');
-    skipBtn.type = 'button';
-    skipBtn.className = 'tutorial-skip-fixed';
-    skipBtn.textContent = 'Skip';
-    skipBtn.setAttribute('aria-label', 'Skip tutorial');
-    document.body.appendChild(skipBtn);
-
-    function positionHole(el) {
-      if (!el) { hole.style.display = 'none'; return; }
-      hole.style.display = 'block';
-      const r = el.getBoundingClientRect();
-      const pad = 6;
-      hole.style.left   = (r.left - pad) + 'px';
-      hole.style.top    = (r.top - pad) + 'px';
-      hole.style.width  = (r.width + pad * 2) + 'px';
-      hole.style.height = (r.height + pad * 2) + 'px';
-    }
-
-    function renderStep() {
-      const s = STEPS[current];
-      titleEl.textContent = s.title;
-      textEl.textContent  = s.text;
-      btnEl.textContent   = s.btnText;
-
-      dots.forEach((dot, idx) => {
-        dot.classList.toggle('active', idx === current);
-      });
-
-      document.querySelectorAll('.card-item.flipped').forEach(c => {
-        if (!c.classList.contains('matched')) c.classList.remove('flipped');
-      });
-
-      const targetEl = (typeof s.target === 'function') ? s.target() : null;
-      if (s.flipTarget && targetEl) targetEl.classList.add('flipped');
-      if (s.flipBothKeyLock) {
-        const k = document.querySelector('.card-item[data-pair="-2"]');
-        const l = document.querySelector('.card-item[data-pair="-3"]');
-        if (k) k.classList.add('flipped');
-        if (l) l.classList.add('flipped');
-      }
-
-      positionHole(targetEl);
-    }
-
-    function next() {
-      current++;
-      if (current >= STEPS.length) { finishTutorial(); return; }
-      renderStep();
-    }
-
-    function finishTutorial() {
-      if (!tutorialActive) return;
-      tutorialActive = false;
-      try { pSet('specialTutorialSeen', '1'); } catch (e) {}
-
-      document.removeEventListener('keydown', onDocKeydown);
-      window.removeEventListener('resize', renderStep);
-
-      if (spotlight.parentNode) spotlight.parentNode.removeChild(spotlight);
-      if (box.parentNode) box.parentNode.removeChild(box);
-      if (skipBtn.parentNode) skipBtn.parentNode.removeChild(skipBtn);
-
-      deck = buildDeck();
-      totalCards = deck.length;
-      pairs = totalCards / 2;
-      renderCards();
-      resetTimer();
-      barPercent = BAR_START;
-      updateStarProgress();
-      flippedCards = [];
-      matchedPairs = 0;
-      moves = 0;
-      comboCount = 0;
-      bonusPoints = 0;
-      isLocked = false;
-      gameStarted = false;
-      gameFinished = false;
-      applyNoScrollLayout();
-    }
-
-    function onDocKeydown(e) {
-      if (e.key === 'Escape' && tutorialActive) finishTutorial();
-    }
-
-    document.addEventListener('keydown', onDocKeydown);
-    window.addEventListener('resize', renderStep);
-    btnEl.addEventListener('click', (e) => { e.stopPropagation(); next(); });
-    skipBtn.addEventListener('click', (e) => { e.stopPropagation(); finishTutorial(); });
-
-    renderStep();
-  }
-
-  // ============================================================
   // INITIALIZATION
   // ============================================================
   barPercent = BAR_START;
@@ -2482,8 +2500,6 @@ document.addEventListener('DOMContentLoaded', function() {
   showPreLevelQuiz(function () {
     if (level === 1 && pGet('tutorialSeen', null) !== '1') {
       initTutorial();
-    } else if (level === 6 && pGet('specialTutorialSeen', null) !== '1') {
-      initLevel6Tutorial();
     }
   });
 });
