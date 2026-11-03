@@ -1008,31 +1008,18 @@ function initHomePage() {
     });
   }
 
-  async function renderLeaderboard() {
+  function renderLeaderboard() {
     const emptyEl = document.getElementById('navLbEmpty');
     if (!emptyEl || !window.MMLeaderboard) return;
 
-    // 1. Show a loading state
-    emptyEl.hidden = false;
-    emptyEl.textContent = "Loading leaderboard...";
-    
-    // Clear previous rows so they don't duplicate
-    const listEl = document.getElementById('navLbList');
-    if (listEl) listEl.innerHTML = '';
-    renderPodium([]); 
+    const all = MMLeaderboard.getAllForSubject(currentSubject);
 
-    // 2. Await the data from Supabase
-    const all = await MMLeaderboard.getAllForSubject(currentSubject);
-
-    // 3. Handle empty state
-    if (!all || !all.length) {
-      emptyEl.textContent = "No scores yet for this subject — be the first! 🎉";
+    if (!all.length) {
+      emptyEl.hidden = false;
       renderPodium([]);
       renderRows([]);
       return;
     }
-    
-    // 4. Render the data
     emptyEl.hidden = true;
 
     if (all.length >= 3) {

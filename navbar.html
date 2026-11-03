@@ -69,6 +69,7 @@
   </div>
 </nav>
 
+<!-- LEADERBOARD MODAL -->
 <div class="modal fade" id="leaderboardModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
@@ -78,7 +79,6 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-
       <div class="modal-body">
         <div class="lb-tabs" role="tablist">
           <button type="button" class="lb-tab active" data-subject="computer" role="tab">
@@ -91,22 +91,17 @@
             <i class="fas fa-globe-asia"></i> AP
           </button>
         </div>
-
         <div class="lb-podium" id="lbPodium" hidden>
           <div class="lb-podium-slot lb-podium-2" data-slot="2"></div>
           <div class="lb-podium-slot lb-podium-1" data-slot="1"></div>
           <div class="lb-podium-slot lb-podium-3" data-slot="3"></div>
         </div>
-
         <ol class="lb-list" id="navLbList"></ol>
-
         <p class="lb-empty" id="navLbEmpty" hidden>
           No scores yet for this subject — be the first! 🎉
         </p>
-
         <p class="lb-note">Scores are saved only on this device.</p>
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn-modal-close" data-bs-dismiss="modal">
           <i class="fas fa-check me-2"></i> Got it!
@@ -115,6 +110,7 @@
     </div>
   </div>
 </div>
+
 <!-- SETTINGS MODAL -->
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -154,12 +150,3 @@
     </div>
   </div>
 </div>
-
-  <!-- 1. Load Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- 2. Load your scripts -->
-  <script src="script/player.js"></script>
-  <script src="script/leaderboard-data.js"></script> <!-- This now has your URL and Key -->
-  <script src="script/leaderboard.js"></script>
-  <!-- ... rest of your scripts -->
