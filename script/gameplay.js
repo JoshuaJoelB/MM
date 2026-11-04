@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'computer:7:Display window':         'Display window buttons',
     'computer:7:Scroll bar':             'scroll bar',
 
-    'computer:8:Username':    'usemname',
+    'computer:8:Username':    'username',
     'computer:8:Domain name': 'domainname',
     'computer:8:Domain type': 'domain type',
     'computer:8:To':          'to',
